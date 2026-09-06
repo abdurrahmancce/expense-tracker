@@ -477,21 +477,22 @@ See the [`LICENSE`](LICENSE) file for the complete terms and conditions.
 If you find this project useful:
 
 ⭐ **Star the repository**
+
 🍴 **Fork the project**
+
 🐛 **Report issues**
+
 💡 **Suggest improvements**
+
 🤝 **Contribute**
 
 ---
 
 <div align="center">
 
-### 💰 Track Better. Spend Smarter. 💡
+💰 Manage Your Money. 📊 Understand Your Spending. 🚀 Improve Your Financial Habits.
 
-**Expense Tracker & Bonus Tracker**
-*Simple financial tracking with powerful insights.*
-
-⭐ **If this project helped you, consider giving it a star!** ⭐
+Built with ❤️ by Abdur Rahman
 
 </div>
 
