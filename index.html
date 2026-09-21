@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Expense Tracker & Bonus Tracker</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#007bff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Expenses">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -13,6 +17,13 @@
 
   <!-- Excel export -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script>
+    if(typeof XLSX === "undefined"){
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"><\/script>');
+    }
+  </script>
+
+
 
   <!-- Firebase SDKs (compat version - simple global `firebase` object) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -23,37 +34,64 @@
 </head>
 <body>
 
-  <!-- 
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+    <p id="loadingText">Loading...</p>
+  </div>
+
+
+  <!-- ===========================
        LOGIN / SIGNUP SCREEN
-   -->
-       
-  <div class="container" id="authScreen">
-    <h1>💰 Expense Tracker 💰</h1>
-    <p id="authError" class="auth-error"></p>
+  ============================ -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <!-- Animated background blobs -->
+      <div class="auth-blob auth-blob-1"></div>
+      <div class="auth-blob auth-blob-2"></div>
 
-    <div class="auth-tabs">
-      <button id="loginTab" class="auth-tab active">Login</button>
-      <button id="signupTab" class="auth-tab">Sign Up</button>
-    </div>
+      <div class="auth-logo">💰</div>
+      <h1 class="auth-title">Expense Tracker</h1>
+      <p class="auth-subtitle">Track your finances, anytime, anywhere</p>
 
-    <div id="loginForm" class="form auth-form">
-      <input type="email" id="loginEmail" placeholder="Email">
-      <input type="password" id="loginPassword" placeholder="Password">
-      <button id="loginBtn">Login</button>
-    </div>
+      <p id="authError" class="auth-error"></p>
 
-    <div id="signupForm" class="form auth-form hidden">
-      <input type="email" id="signupEmail" placeholder="Email">
-      <input type="password" id="signupPassword" placeholder="Password (min 6 characters)">
-      <button id="signupBtn">Create Account</button>
+      <div class="auth-tabs">
+        <button id="loginTab" class="auth-tab active">Login</button>
+        <button id="signupTab" class="auth-tab">Sign Up</button>
+      </div>
+
+      <div id="loginForm" class="auth-form">
+        <div class="auth-field">
+          <span class="auth-icon">✉️</span>
+          <input type="email" id="loginEmail" placeholder="Email address">
+        </div>
+        <div class="auth-field">
+          <span class="auth-icon">🔒</span>
+          <input type="password" id="loginPassword" placeholder="Password">
+        </div>
+        <button id="loginBtn" class="auth-submit-btn">Login</button>
+        <button type="button" id="forgotPasswordBtn" class="link-btn">Forgot Password?</button>
+      </div>
+
+      <div id="signupForm" class="auth-form hidden">
+        <div class="auth-field">
+          <span class="auth-icon">✉️</span>
+          <input type="email" id="signupEmail" placeholder="Email address">
+        </div>
+        <div class="auth-field">
+          <span class="auth-icon">🔒</span>
+          <input type="password" id="signupPassword" placeholder="Password (min 6 characters)">
+        </div>
+        <button id="signupBtn" class="auth-submit-btn">Create Account</button>
+      </div>
     </div>
   </div>
 
-  <!-- 
+  <!-- ===========================
        MAIN APP (hidden until logged in)
-   -->
-
-  <div class="container hidden" id="appScreen">
+  ============================ -->
+  <div class="app-wrapper hidden" id="appScreen">
     <button id="logoutBtn" class="logout-btn">🚪 Logout</button>
     <button id="toggleDarkMode">🌙 Dark Mode</button>
     <h1>💰 Expense Tracker 💰</h1>
@@ -65,8 +103,31 @@
     <div class="form">
       <input type="text" id="item" placeholder="Item Name">
       <input type="number" id="amount" placeholder="Amount">
+      <select id="expenseCategory"></select>
       <input type="date" id="date">
+      <input type="text" id="expenseNote" placeholder="Note (optional)">
       <button onclick="addExpense()">Save Expense</button>
+    </div>
+
+    <!-- Pinned Items (quick-fill shortcuts for frequently typed item names) -->
+    <div class="pinned-section">
+      <div class="pinned-list" id="pinnedItemsList"></div>
+      <div class="pinned-add">
+        <input type="text" id="newPinInput" placeholder="New pin text (e.g., Tuition KY Factory 6)">
+        <button type="button" id="addPinBtn">📌 Pin</button>
+      </div>
+    </div>
+
+    <!-- Manage Categories (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn category-btn" id="categoryDropdownBtn">🏷️ Manage Categories <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="categoryDropdownContent">
+        <div class="category-list" id="categoryManageList"></div>
+        <div class="pinned-add">
+          <input type="text" id="newCategoryInput" placeholder="New category name">
+          <button type="button" id="addCategoryBtn">🏷️ Add Category</button>
+        </div>
+      </div>
     </div>
 
     <!-- All Expenses (Dropdown Menu) -->
@@ -74,11 +135,21 @@
       <button class="dropdown-btn" id="expenseDropdownBtn">All Expenses <span class="caret">▾</span></button>
       <div class="dropdown-content" id="expenseDropdownContent">
         <div class="month-nav" id="expenseMonthNav"></div>
+        <input type="text" id="expenseSearchInput" class="search-input" placeholder="🔍 Search by item name...">
+        <div class="filter-sort-row">
+          <select id="expenseCategoryFilter"></select>
+          <select id="expenseSortBy">
+            <option value="date-asc">Date (Oldest → Newest)</option>
+            <option value="date-desc">Date (Newest → Oldest)</option>
+            <option value="amount-asc">Amount (Choto → Boro)</option>
+            <option value="amount-desc">Amount (Boro → Choto)</option>
+          </select>
+        </div>
         <div class="expense-total" id="expenseTotal"></div>
         <div class="table-wrapper">
           <table id="expenseTable">
             <thead>
-              <tr><th>Item</th><th>Amount</th><th>Date</th><th>Action</th></tr>
+              <tr><th>Item</th><th>Category</th><th>Amount</th><th>Date</th><th>Note</th><th>Action</th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -104,6 +175,13 @@
     <div class="chart-wrapper">
       <canvas id="monthlyChart" class="chart"></canvas>
       <canvas id="yearlyChart" class="chart"></canvas>
+      <canvas id="categoryChart" class="chart"></canvas>
+    </div>
+
+    <h2>Bonus/Income Charts</h2>
+    <div class="chart-wrapper">
+      <canvas id="monthlyIncomeChart" class="chart"></canvas>
+      <canvas id="yearlyIncomeChart" class="chart"></canvas>
     </div>
 
     <!-- Bonus/Income Section -->
@@ -130,9 +208,66 @@
       <input type="number" id="eidAmount" placeholder="Amount">
       <button type="submit">Save Bonus</button>
     </form>
-    <div id="eidTables"></div>
+
+    <!-- All Bonus/Income (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn" id="eidAllDropdownBtn">All Bonus/Income <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="eidAllDropdownContent">
+        <div class="month-nav" id="eidMonthNav"></div>
+        <div class="expense-total" id="eidTotal"></div>
+        <div class="table-wrapper">
+          <table id="eidFlatTable">
+            <thead>
+              <tr><th>Date</th><th>Giver</th><th>Amount</th><th>Action</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bonus/Income Monthly & Yearly Summary (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn" id="eidSummaryDropdownBtn">Bonus/Income Monthly & Yearly Summary <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="eidSummaryDropdownContent">
+        <div id="eidTables"></div>
+      </div>
+    </div>
+
+    <!-- Trash (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn trash-btn" id="trashDropdownBtn">🗑️ Trash <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="trashDropdownContent">
+        <p class="trash-note">Deleted entries will stay in the trash for 7 days before permanent deletion. You can restore them anytime within this period.</p>
+
+        <h4>Trashed Expenses</h4>
+        <div class="table-wrapper">
+          <table id="trashExpenseTable">
+            <thead>
+              <tr><th>Item</th><th>Amount</th><th>Date</th><th>Deleted On</th><th>Action</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <h4>Trashed Bonus/Income</h4>
+        <div class="table-wrapper">
+          <table id="trashSalamiTable">
+            <thead>
+              <tr><th>Giver</th><th>Amount</th><th>Month/Year</th><th>Deleted On</th><th>Action</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
+  <script>
+    if("serviceWorker" in navigator){
+      navigator.serviceWorker.register("/Expense-Tracker/sw.js");
+    }
+  </script>
 </body>
 </html>
