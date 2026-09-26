@@ -266,7 +266,14 @@
   <script src="script.js"></script>
   <script>
     if("serviceWorker" in navigator){
-      navigator.serviceWorker.register("/Expense-Tracker/sw.js");
+      // Self-healing: clear out any old/broken service worker + caches
+      // from before (they may be stuck serving a stale 404), then
+      // register the corrected one fresh.
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(r => r.unregister());
+      });
+      caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+      navigator.serviceWorker.register("sw.js");
     }
   </script>
 </body>
