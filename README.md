@@ -1,498 +1,911 @@
-# 💰 Expense Tracker & Bonus Tracker
+# 💰 Expense Tracker
 
-> **A modern, responsive web application for managing personal expenses, tracking bonus/income, analyzing spending patterns, and exporting financial records.**
+> A responsive personal finance web application for tracking expenses, managing income, analyzing financial activity, and exporting organized reports.
 
-![Expense Tracker](https://img.shields.io/badge/Expense-Tracker-007BFF?style=for-the-badge\&logo=moneygram\&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge\&logo=javascript\&logoColor=black)
-![Firebase](https://img.shields.io/badge/Firebase-Firestore-FFCA28?style=for-the-badge\&logo=firebase\&logoColor=black)
-![Chart.js](https://img.shields.io/badge/Charts-Chart.js-FF6384?style=for-the-badge\&logo=chartdotjs\&logoColor=white)
-![Responsive](https://img.shields.io/badge/Design-Responsive-28A745?style=for-the-badge)
+<p align="center">
+  <img src="https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript">
+  <img src="https://img.shields.io/badge/Firebase-Backend-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase">
+  <img src="https://img.shields.io/badge/Chart.js-Data%20Visualization-FF6384?style=for-the-badge&logo=chart.js&logoColor=white" alt="Chart.js">
+  <img src="https://img.shields.io/badge/PWA-Enabled-5A0FC8?style=for-the-badge" alt="PWA">
+  <img src="https://img.shields.io/badge/Responsive-Design-2563EB?style=for-the-badge" alt="Responsive">
+</p>
 
----
-
-## 📌 Overview
-
-**Expense Tracker & Bonus Tracker** is a web-based personal finance management application designed to make everyday expense and income tracking simple, organized, and accessible.
-
-The application allows users to securely **create an account, log in, record expenses, manage bonus/income entries, view monthly and yearly summaries, analyze spending through charts, switch between light and dark modes, and export financial data to PDF or Excel.**
-
-User data is stored in **Firebase Firestore**, while authentication is handled through **Firebase Authentication**.
+<p align="center">
+  <a href="https://abdurrahmancce.github.io/expense-tracker/">🌐 Live Demo</a>
+  •
+  <a href="https://github.com/abdurrahmancce/expense-tracker">📂 Repository</a>
+</p>
 
 ---
 
-## 🔗 Project Links
+## 📖 Overview
 
-* 📂 **GitHub Repository:** [Expense Tracker](https://github.com/abdurrahmancce/Expense-Tracker)
-* 🌐 **Live Preview:** [View Live Demo](https://abdurrahmancce.github.io/expense-tracker/)
+**Expense Tracker** is a web-based personal finance management application designed to help users keep track of their everyday expenses and additional income in one place.
+
+The application provides tools for recording transactions, organizing expenses into categories, searching and sorting records, analyzing financial activity through interactive charts, generating PDF and Excel reports, and recovering deleted records.
+
+It also includes **Firebase Authentication and Cloud Firestore** for account-based data storage, along with **Progressive Web App (PWA)** support for an app-like experience.
+
+The application is designed to be simple enough for everyday personal use while providing useful features for organized financial tracking.
 
 ---
 
-## ✨ Key Features
+## 🌐 Live Application
 
-### 🔐 User Authentication
+🚀 **Use the application:**  
+https://abdurrahmancce.github.io/expense-tracker/
 
-* 👤 User registration
-* 🔑 Email/password login
-* 🚪 Logout functionality
-* ⚠️ Authentication error handling
-* 🔒 User-specific financial data
+📂 **GitHub Repository:**  
+https://github.com/abdurrahmancce/expense-tracker
 
-The authentication interface provides dedicated **Login** and **Sign Up** forms.
+---
 
-### 💸 Expense Management
+# ✨ Features
 
-* ➕ Add new expenses
-* ✏️ Edit existing expenses
-* 🗑️ Delete expenses
-* 📅 Record expense dates
-* 💰 Track expense amounts
-* 🏷️ Store expense item names
-* 📋 View all recorded expenses
+## 🔐 Authentication
 
-Expense records contain an item, amount, and date, with editing and deletion controls available directly from the expense table.
+Users can create an account and access their personal financial records.
 
-### 📆 Monthly Expense Filtering
+- 👤 Create an account
+- 🔑 Email/password login
+- 🚪 Logout
+- 🔄 Password reset
+- ⚠️ Authentication error messages
+- 👥 User-specific financial data
 
-* 🔎 View all expenses
-* 📅 Filter expenses by month
-* 📊 Display monthly totals
-* 🧮 Calculate all-time expense totals
-* ⚡ Quickly switch between available months
+The application provides separate **Login** and **Sign Up** interfaces.
 
-### 📊 Financial Summaries
+---
 
-The application automatically organizes expenses into:
+## 💸 Expense Management
 
-* 📅 Monthly summaries
-* 📆 Yearly summaries
-* 💰 Monthly spending totals
-* 📈 Yearly spending totals
+Record and manage everyday expenses with detailed information.
 
-The JavaScript groups expense records by year and month before generating the summary tables.
+Each expense can include:
 
-### 📈 Expense Visualization
+- 📝 Item name
+- 💰 Amount
+- 🏷️ Category
+- 📅 Date
+- 🗒️ Optional note
 
-The application provides visual spending analysis using **Chart.js**:
+Users can:
 
-* 📊 Monthly spending bar chart
-* 🥧 Yearly spending pie chart
-* 🔄 Automatic chart updates when data changes
+- ➕ Add expenses
+- ✏️ Edit expenses
+- 🗑️ Delete expenses
+- 🔎 Search expenses
+- 🏷️ Filter by category
+- ↕️ Sort by date or amount
+- 📅 Filter by month
 
-The charts are generated from monthly and yearly expense totals.
+The updated interface includes category and note fields directly in the expense form.
 
-### 🎁 Bonus / Income Tracker
+---
 
-Users can record additional income or bonus information including:
+## 🏷️ Custom Expense Categories
 
-* 📅 Year
-* 🗓️ Month
-* 📆 Date
-* 👤 Giver name
-* 💵 Amount
+Users can create and manage their own expense categories.
 
-The application includes a dedicated Bonus/Income Tracker section.
+### Features
 
-### 📄 PDF Export
+- 🏷️ Add categories
+- ✏️ Edit categories
+- 🗑️ Remove categories
+- 🔎 Filter expenses by category
+- 📊 Analyze spending by category
 
-Generate a complete financial report containing:
+Default categories are available while users can also create categories according to their needs.
 
-* 💰 Total expenses
-* 🎁 Total bonus/income
-* 🧮 Net balance
-* 📋 Complete expense table
-* 🎁 Complete bonus/income table
-* 📅 Date-based sorting
+---
 
-The PDF report calculates total expenses, total income, and net income minus expenses before exporting the data.
+## 📌 Pinned Items
 
-### 📊 Excel Export
+Frequently used expense names can be pinned for faster entry.
 
-Export financial records into an Excel workbook containing:
-
-* 📑 **Expenses**
-* 🎁 **Bonus_Income**
-* 📅 **Monthly Summary**
-
-Expense and income records are sorted chronologically before being added to the workbook.
-
-### 🌙 Dark Mode
-
-* 🌙 Dark Mode
-* ☀️ Light Mode
-* 💾 User preference saved to Firestore
-* 📱 Responsive dark-mode styling
-
-The selected theme is stored along with the user's financial data.
-
-### ☁️ Cloud Data Storage
-
-The application uses **Firebase Firestore** to store:
+For example:
 
 ```text
-users
- └── user UID
-      ├── expenses
-      ├── salamis
-      └── darkMode
+📌 Transport Cost
+📌 Lunch
+📌 Internet Bill
+📌 Tuition Fee
+📌 Mobile Recharge
 ```
 
-Data is loaded after authentication and saved to the authenticated user's Firestore document.
-
-### 🔄 Data Migration
-
-If older expense or bonus data exists in browser `localStorage`, the application can detect it and provide an option to migrate that data into the user's Firebase account.
+Clicking a pinned item can help speed up repetitive expense entry.
 
 ---
 
-## 🛠️ Technology Stack
+## 🔎 Search, Filter & Sort
 
-| Technology                     | Purpose                               |
-| ------------------------------ | ------------------------------------- |
-| 🌐 **HTML5**                   | Application structure                 |
-| 🎨 **CSS3**                    | Styling and responsive UI             |
-| ⚡ **JavaScript**               | Application logic and data processing |
-| 🔥 **Firebase Authentication** | User authentication                   |
-| ☁️ **Firebase Firestore**      | Cloud data storage                    |
-| 📈 **Chart.js**                | Financial charts                      |
-| 📄 **jsPDF**                   | PDF generation                        |
-| 📋 **jsPDF AutoTable**         | PDF tables                            |
-| 📊 **SheetJS / XLSX**          | Excel export                          |
-| 💾 **LocalStorage**            | Legacy data migration                 |
+The expense list includes tools for finding records quickly.
 
-The required third-party libraries are loaded directly in the HTML application.
+### 🔍 Search
+
+Search expenses by item name.
+
+### 🏷️ Category Filter
+
+Display expenses belonging to a specific category.
+
+### ↕️ Sorting
+
+Available sorting options include:
+
+- 📅 Oldest → Newest
+- 📅 Newest → Oldest
+- 💰 Lowest → Highest
+- 💰 Highest → Lowest
+
+These controls are available inside the **All Expenses** section.
 
 ---
 
-## 📂 Project Structure
+# 📅 Monthly & Yearly Analysis
+
+The application automatically organizes financial records into different time periods.
+
+### 📆 Monthly Summary
+
+View total spending for individual months.
+
+### 🗓️ Yearly Summary
+
+Review spending across an entire year.
+
+This makes it easier to understand how expenses change over time.
+
+---
+
+# 📊 Financial Analytics
+
+Interactive charts provide a visual overview of financial activity.
+
+### 💸 Expense Charts
+
+- 📊 Monthly expenses
+- 📈 Yearly expenses
+- 🏷️ Category-based expenses
+
+### 💰 Income Charts
+
+- 📊 Monthly income
+- 📈 Yearly income
+
+The current application includes dedicated chart sections for both expenses and bonus/income.
+
+---
+
+# 💰 Bonus / Income Tracker
+
+The application also tracks money received from different sources.
+
+Each income record can contain:
+
+- 🗓️ Year
+- 📅 Month
+- 📆 Date
+- 👤 Giver name
+- 💵 Amount
+
+Users can:
+
+- ➕ Add income
+- ✏️ Edit income
+- 🗑️ Delete income
+- 📅 Filter income by month
+- 📊 View income summaries
+- 📈 Analyze income through charts
+
+The dedicated Bonus/Income section is built into the main application.
+
+---
+
+# 🗑️ Trash & Recovery
+
+Deleted financial records are not immediately removed from the application.
+
+Instead, deleted records are placed in a **Trash** section.
+
+### 🛡️ Recovery Features
+
+- 🗑️ Move deleted expenses to Trash
+- 🗑️ Move deleted income records to Trash
+- 🔄 Restore deleted records
+- ⏳ Keep deleted records for 7 days
+- 🧹 Permanently remove expired records
+
+The application explicitly informs users that deleted entries remain in Trash for seven days before permanent deletion.
+
+---
+
+# 📄 PDF Export
+
+Generate a financial report in PDF format.
+
+The export functionality is useful for:
+
+- 📋 Personal records
+- 📊 Financial summaries
+- 🖨️ Printing
+- 📤 Sharing reports
+
+The application uses **jsPDF** and **jsPDF AutoTable** for PDF generation.
+
+---
+
+# 📊 Excel Export
+
+Export financial records to Excel for further analysis.
+
+Excel export can be useful for:
+
+- 📈 Data analysis
+- 🧮 Calculations
+- 📊 Custom reports
+- 💾 Offline backups
+
+The application uses **SheetJS / XLSX** for spreadsheet generation.
+
+---
+
+# 🌙 Dark Mode
+
+The application supports both light and dark themes.
+
+- ☀️ Light Mode
+- 🌙 Dark Mode
+- 💾 Theme preference persistence
+- 📱 Responsive dark-mode interface
+
+---
+
+# 📱 Progressive Web App
+
+The updated project includes **PWA support**.
+
+The application contains a web app manifest with:
+
+- 📱 Standalone display mode
+- 📲 Installable app experience
+- 🎨 Custom theme color
+- 🖼️ 192×192 application icon
+- 🖼️ 512×512 maskable icon
+- 📐 Portrait orientation
+
+The manifest defines the application as **Expense Tracker** with the short name **Expenses** and a standalone display mode.
+
+A service worker is also included to cache core application resources and provide better resilience when network connectivity is unavailable.
+
+---
+
+# ☁️ Firebase Integration
+
+The application uses Firebase for authentication and cloud data storage.
+
+### 🔐 Firebase Authentication
+
+Used for:
+
+- Account creation
+- Login
+- Logout
+- Password recovery
+
+### ☁️ Cloud Firestore
+
+Used for storing user-specific financial information.
+
+Conceptually, the application organizes data around the authenticated user:
 
 ```text
-Expense-Tracker/
+users/
+└── USER_UID/
+    ├── expenses
+    ├── salamis
+    ├── categories
+    ├── pinnedItems
+    ├── trash
+    └── darkMode
+```
+
+> 🔒 **Security:** Firebase client configuration is not itself an authorization mechanism. Firestore Security Rules should enforce which authenticated users can read and modify their own records.
+
+---
+
+# 🔄 Legacy Data Migration
+
+The project supports migration of older data stored in browser `localStorage`.
+
+If previous data is detected on the device, the application can provide an option to import the old records into the Firebase-backed account.
+
+This helps users move from an older local-storage version to the newer cloud-based application.
+
+---
+
+# 🎨 User Interface
+
+The application focuses on a clean and practical interface.
+
+### UI elements include:
+
+- 💳 Modern authentication card
+- 🔘 Interactive buttons
+- 📂 Expandable dropdown sections
+- 📊 Financial charts
+- 📋 Responsive tables
+- 🔍 Search controls
+- 🏷️ Category chips
+- 📌 Pinned-item chips
+- 🔔 Toast notifications
+- ⏳ Loading overlay
+- 🌙 Dark mode
+- 📱 Mobile-friendly layout
+
+---
+
+# 📱 Responsive Design
+
+The application is designed for multiple screen sizes.
+
+| Device | Support |
+|---|---|
+| 🖥️ Desktop | ✅ |
+| 💻 Laptop | ✅ |
+| 📱 Mobile | ✅ |
+| 📲 Tablet | ✅ |
+
+On smaller screens, forms, filters, charts, and other interface elements adapt to the available screen width.
+
+---
+
+# 🛠️ Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| 🌐 **HTML5** | Application structure |
+| 🎨 **CSS3** | UI design and responsive layout |
+| ⚡ **JavaScript ES6+** | Application logic |
+| 🔥 **Firebase Authentication** | User authentication |
+| ☁️ **Cloud Firestore** | Cloud data storage |
+| 📊 **Chart.js** | Financial data visualization |
+| 📄 **jsPDF** | PDF generation |
+| 📋 **jsPDF AutoTable** | PDF table generation |
+| 📊 **SheetJS / XLSX** | Excel export |
+| 💾 **LocalStorage** | Legacy data migration |
+| 📱 **Web App Manifest** | PWA configuration |
+| ⚙️ **Service Worker** | Asset caching and PWA support |
+| 🌐 **GitHub Pages** | Web hosting |
+
+---
+
+# 📂 Project Structure
+
+```text
+expense-tracker/
 │
 ├── 📄 index.html
 ├── 🎨 style.css
 ├── ⚡ script.js
+├── 📱 manifest.json
+├── ⚙️ sw.js
 │
 ├── 🔄 restore.html
+├── 🧹 dedupe.html
 ├── 💾 Expense_Tracker_Recovery.html
-└── 🧹 dedupe.html
+│
+├── 📜 LICENSE
+├── 📖 README.md
+│
+└── 🖼️ docs/
+    └── screenshots/
 ```
 
-### Core Application
+### 📄 `index.html`
 
-```text
-index.html
-   │
-   ├── Authentication UI
-   ├── Expense Management
-   ├── Expense Tables
-   ├── Monthly/Yearly Summary
-   ├── Charts
-   ├── Bonus/Income Tracker
-   └── Export Controls
+Main application interface containing:
 
-style.css
-   │
-   ├── Responsive Layout
-   ├── Forms
-   ├── Tables
-   ├── Buttons
-   ├── Dropdowns
-   └── Dark Mode
+- 🔐 Authentication
+- 💸 Expense form
+- 🏷️ Category management
+- 📌 Pinned items
+- 📋 Expense tables
+- 📊 Financial summaries
+- 📈 Charts
+- 💰 Income tracker
+- 🗑️ Trash
+- 📤 Export controls
 
-script.js
-   │
-   ├── Firebase Configuration
-   ├── Authentication
-   ├── Firestore Operations
-   ├── Expense Management
-   ├── Income Management
-   ├── Charts
-   ├── PDF Export
-   ├── Excel Export
-   └── Data Migration
-```
+The current interface includes all of these major sections in the main application screen.
+
+### ⚡ `script.js`
+
+Contains the application's core JavaScript logic, including:
+
+- 🔐 Firebase Authentication
+- ☁️ Firestore operations
+- 💸 Expense management
+- 💰 Income management
+- 🏷️ Categories
+- 📌 Pinned items
+- 🔎 Search and filtering
+- 📊 Charts
+- 📄 PDF generation
+- 📊 Excel generation
+- 🌙 Theme management
+- 🗑️ Trash and recovery
+- 🔄 Data migration
+
+### 🎨 `style.css`
+
+Controls:
+
+- 🎨 Visual design
+- 📱 Responsive layouts
+- 🌙 Dark mode
+- 🔐 Authentication UI
+- 📋 Tables
+- 📊 Charts
+- 🔘 Buttons
+- 🏷️ Category chips
+- 📌 Pinned items
+- 🔔 Toast notifications
+
+### 📱 `manifest.json`
+
+Defines the PWA metadata and installation behavior.
+
+### ⚙️ `sw.js`
+
+Provides service-worker functionality for:
+
+- 💾 Caching application assets
+- ⚡ Faster repeat loading
+- 📴 Better resilience during temporary network problems
+- 📱 PWA support
+
+### 🔄 `restore.html`
+
+Provides a recovery interface for restoring stored financial data.
+
+### 🧹 `dedupe.html`
+
+Provides a utility for identifying and removing duplicate financial records.
+
+### 💾 `Expense_Tracker_Recovery.html`
+
+Provides additional recovery and maintenance functionality.
 
 ---
 
-## 🚀 Getting Started
+# 🚀 Getting Started
 
-### 1️⃣ Clone the Repository
+## 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/expense-tracker.git
+git clone https://github.com/abdurrahmancce/expense-tracker.git
 ```
 
-### 2️⃣ Open the Project
-
-Navigate into the project directory:
+Move into the project:
 
 ```bash
 cd expense-tracker
 ```
 
-### 3️⃣ Run the Application
+---
 
-Because this is a client-side web application, you can run it using a local development server.
+## 2️⃣ Run Locally
 
-For example, with VS Code:
+Because the project is a client-side web application, you can run it using a local development server.
+
+### 💻 VS Code
+
+Install the **Live Server** extension and open:
+
+```text
+index.html
+```
+
+Then:
 
 ```text
 Right Click → Open with Live Server
 ```
 
-Or use any static web server.
-
-### 4️⃣ Configure Firebase
-
-Create a Firebase project and enable:
-
-* 🔐 Firebase Authentication
-* ☁️ Cloud Firestore
-
-Then update the Firebase configuration in `script.js`.
-
-> ⚠️ **Security Note:** Do not commit sensitive credentials, service-account keys, or private Firebase configuration files to a public repository.
+A static HTTP server is recommended instead of opening the file directly with `file://`.
 
 ---
 
-## 🔄 Application Workflow
+# 🔥 Firebase Configuration
+
+To use authentication and cloud storage:
+
+### Step 1: Create a Firebase Project
+
+Create a project from the Firebase Console.
+
+### Step 2: Enable Authentication
+
+Enable the authentication provider required by the application.
+
+### Step 3: Create Firestore
+
+Create a Cloud Firestore database.
+
+### Step 4: Configure the Application
+
+Add the Firebase web configuration to the project.
+
+### Step 5: Configure Security Rules
+
+Configure Firestore Security Rules so that users can only access records belonging to their authenticated account.
+
+> ⚠️ Never use client-side JavaScript as the only layer of authorization.
+
+---
+
+# ▶️ How to Use
+
+## 🔐 1. Create an Account
+
+Open the application and select:
 
 ```text
-            👤 User
-               │
-               ▼
-        🔐 Login / Sign Up
-               │
-               ▼
-        ☁️ Firebase Auth
-               │
-               ▼
-        📊 Expense Tracker
-          ┌────┴────┐
-          ▼         ▼
-      💸 Expenses  🎁 Income
-          │         │
-          └────┬────┘
-               ▼
-       📊 Summaries & Charts
-               │
-          ┌────┴────┐
-          ▼         ▼
-       📄 PDF    📊 Excel
-               │
-               ▼
-          💾 Reports
+Sign Up
+```
+
+Enter your email and password.
+
+---
+
+## 🔑 2. Login
+
+Use your registered credentials to access the application.
+
+---
+
+## 💸 3. Add an Expense
+
+Enter:
+
+```text
+Item Name
+Amount
+Category
+Date
+Optional Note
+```
+
+Then select:
+
+```text
+Save Expense
 ```
 
 ---
 
-## 🎯 Main Use Cases
+## 📌 4. Use Pinned Items
 
-### 💰 Personal Expense Management
-
-Track everyday expenses such as:
-
-* 🍔 Food
-* 🚌 Transportation
-* 🎓 Education
-* 🛍️ Shopping
-* 📱 Mobile recharge
-* 🏠 Living expenses
-* 🎁 Gifts
-* 💳 Other personal expenses
-
-### 🎁 Bonus / Income Tracking
-
-Maintain a separate record of money received from different sources.
-
-### 📊 Spending Analysis
-
-Use monthly and yearly summaries to understand spending patterns and monitor financial activity.
-
-### 📁 Financial Reporting
-
-Export records for:
-
-* 📄 Documentation
-* 📊 Spreadsheet analysis
-* 💼 Personal financial records
-* 🗂️ Data backup
+Pin frequently used expense names to speed up repeated entries.
 
 ---
 
-## 📱 Responsive Design
+## 🏷️ 5. Manage Categories
 
-The interface is designed to adapt to different screen sizes.
+Create categories that match your personal spending habits.
 
-The CSS includes responsive rules that change form layouts and chart sizing on smaller screens.
-
-Supported layouts include:
-
-* 🖥️ Desktop
-* 💻 Laptop
-* 📱 Mobile
-* 📟 Tablet
-
----
-
-## 🧹 Data Recovery & Maintenance Tools
-
-The project also contains supporting utilities for managing and recovering stored data.
-
-### 🔄 Data Recovery
-
-`restore.html` provides a recovery interface for restoring expense data from a JSON array into browser storage.
-
-### 🗄️ Firebase Data Restoration
-
-The Firebase restoration utility can merge recovered expense and bonus/income data into the current Firestore account rather than replacing the existing records.
-
-### 🧹 Duplicate Removal
-
-`dedupe.html` provides a utility for removing exact duplicate expense and bonus/income records from Firestore. Expenses are compared using:
+For example:
 
 ```text
-item + amount + date
-```
-
-while bonus/income records use:
-
-```text
-year + month + date + giver + amount
+🍔 Food
+🚌 Transport
+🎓 Education
+🏥 Medical
+🏠 Family Cost
+💻 Technology
 ```
 
 ---
 
-## 💡 Design Highlights
+## 🔎 6. Search & Filter
 
-* 🎨 Clean and minimal interface
-* 📱 Responsive layout
-* 🌙 Dark mode support
-* 📊 Visual financial analytics
-* 🔐 Authentication-based access
-* ☁️ Cloud-backed data storage
-* 📄 Professional report generation
-* 📊 Spreadsheet export
-* 🔄 Legacy data migration
-* 🧹 Data maintenance utilities
+Open **All Expenses** and use:
+
+- 🔍 Search
+- 🏷️ Category filter
+- 📅 Month filter
+- ↕️ Sort options
 
 ---
 
-## 🔮 Future Improvements
+## 📊 7. Analyze Your Finances
 
-Potential enhancements for future versions:
+Review:
 
-* 📌 Expense categories
-* 🔍 Advanced search
-* 🏷️ Category-based analytics
-* 💰 Budget management
-* 🔔 Spending alerts
-* 📅 Calendar-based expense view
-* 📈 More advanced financial dashboards
-* 📱 Progressive Web App support
-* 🔄 Automatic cloud backups
-* 📤 CSV import/export
-* 🎯 Monthly spending limits
-* 📊 Category-wise charts
-* 💡 Financial insights and recommendations
+- 📅 Monthly summaries
+- 🗓️ Yearly summaries
+- 📈 Expense charts
+- 💰 Income charts
+- 🏷️ Category analysis
 
 ---
 
-## 🤝 Contributing
+## 💰 8. Track Income
 
-Contributions are welcome!
+Use the **Bonus/Income Tracker** to record money received from different sources.
 
-If you'd like to improve the project:
+---
+
+## 🗑️ 9. Recover Deleted Records
+
+Open:
+
+```text
+🗑️ Trash
+```
+
+Restore records within the available recovery period.
+
+---
+
+## 📤 10. Export Reports
+
+Generate:
+
+```text
+📄 PDF
+📊 Excel
+```
+
+for record keeping or further analysis.
+
+---
+
+# 🔄 Application Workflow
+
+```text
+                    👤 User
+                       │
+                       ▼
+               🔐 Authentication
+                       │
+                       ▼
+                📊 Main Dashboard
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+          ▼            ▼            ▼
+       💸 Expenses   💰 Income   🏷️ Categories
+          │            │            │
+          └────────────┼────────────┘
+                       │
+                       ▼
+              📊 Search & Analysis
+                       │
+              ┌────────┼────────┐
+              │        │        │
+              ▼        ▼        ▼
+           📅 Monthly 📈 Charts 🗑️ Trash
+           /Yearly
+              │
+              ▼
+          📤 Export Reports
+           ┌──────┴──────┐
+           ▼             ▼
+        📄 PDF        📊 Excel
+```
+
+---
+
+# 🎯 Use Cases
+
+### 👤 Personal Finance
+
+Track everyday spending and income.
+
+### 🎓 Students
+
+Manage:
+
+- 🍔 Food expenses
+- 🚌 Transportation
+- 🎓 Tuition
+- 📚 Study materials
+- 📱 Mobile expenses
+
+### 🏠 Household Tracking
+
+Keep track of recurring personal or family expenses.
+
+### 📊 Financial Analysis
+
+Review monthly and yearly spending patterns.
+
+### 📁 Record Keeping
+
+Export financial information into PDF or Excel for documentation.
+
+---
+
+# 🔮 Future Improvements
+
+Planned or potential improvements include:
+
+- 🎯 Budget limits
+- 🔔 Budget notifications
+- 📊 Advanced dashboard KPIs
+- 📅 Calendar-based transactions
+- 🔁 Recurring expenses
+- 📤 CSV import/export
+- 📈 Advanced category analytics
+- 💳 Multiple account/payment tracking
+- 🔍 More advanced search
+- 📴 Improved offline functionality
+- ☁️ Automated backup and restore
+- 📊 Custom date-range reports
+- 📱 Further PWA improvements
+- 🧪 Automated testing
+- 🧩 Modular JavaScript architecture
+
+---
+
+# 🤝 Contributing
+
+Contributions and suggestions are welcome, subject to the project's license terms.
+
+### Development Workflow
 
 ```bash
 # Fork the repository
-# Create a new branch
+
+# Clone your fork
+git clone https://github.com/your-username/expense-tracker.git
+
+# Create a feature branch
 git checkout -b feature/your-feature
 
 # Make your changes
+
+# Stage changes
 git add .
 
-# Commit your changes
-git commit -m "Add: your feature"
+# Commit
+git commit -m "feat: add your feature"
 
-# Push your branch
+# Push
 git push origin feature/your-feature
 ```
 
-Then open a **Pull Request**.
+Then create a Pull Request.
+
+### 📝 Commit Convention
+
+Recommended prefixes:
+
+```text
+feat:      New feature
+fix:       Bug fix
+docs:      Documentation
+style:     Styling/UI
+refactor:  Code restructuring
+perf:      Performance improvement
+security:  Security improvement
+chore:     Maintenance
+```
 
 ---
 
-## 🐛 Issues & Feedback
+# 🐛 Issues & Feedback
 
-Found a bug or have an idea?
+If you find a problem or have an improvement idea, open a GitHub Issue.
 
-Feel free to open an **Issue** and provide:
+Please include:
 
-* 📝 A clear description
-* 🔁 Steps to reproduce
-* 🖥️ Browser/device information
-* 📸 Screenshots when helpful
-* 💡 Suggested improvement
+- 📝 Problem description
+- 🔁 Steps to reproduce
+- 🌐 Browser information
+- 💻 Device/OS information
+- 📸 Screenshot if applicable
+- 💡 Suggested solution if available
 
 ---
 
-## 📜 License
+# 📸 Screenshots
 
-🔒 **Permission Required — All Rights Reserved**
+Add application screenshots under:
+
+```text
+docs/screenshots/
+```
+
+Recommended screenshots:
+
+```text
+docs/screenshots/
+├── 🔐 authentication.png
+├── 📊 dashboard.png
+├── 💸 expenses.png
+├── 🏷️ categories.png
+├── 📈 analytics.png
+├── 💰 income.png
+├── 🗑️ trash.png
+├── 🌙 dark-mode.png
+└── 📱 mobile.png
+```
+
+Example:
+
+```markdown
+## 📸 Preview
+
+![Dashboard](docs/screenshots/dashboard.png)
+```
+
+> 🖼️ Use real screenshots from the current version of the application rather than placeholder images.
+
+---
+
+# ⚖️ License
+
+## 🔒 Permission Required License
 
 Copyright © 2026 **Abdur Rahman Akash**
 
-This project is **not open source** and may not be copied, modified, redistributed, deployed, or used commercially without prior written permission from the author.
+This project and its source code are **not licensed for free reuse, redistribution, modification, deployment, or commercial use**.
 
-You may view and study the source code for educational purposes. Any other use requires explicit permission.
+Viewing and studying the source code for educational purposes is permitted.
 
-📩 **Permission Requests:**
+Any other use requires prior written permission from the author.
 
-Please contact **Abdur Rahman Akash** through 📧 Email: ```akash.abdur.2002@gmail.com```
+For complete terms, see:
 
-See the [`LICENSE`](LICENSE) file for the complete terms and conditions.
+📄 [`LICENSE`](LICENSE)
 
----
-
-## 👨‍💻 Developer
+### 📩 Permission Requests
 
 **Abdur Rahman Akash**
 
-* 🎓 Computer & Communication Engineering Student
-* 💻 Python & Software Developer
-* 🤖 AI & Machine Learning Enthusiast
+📧 `akash.abdur.2002@gmail.com`
 
-### 🔗 Connect With Me
-
-* 💼 LinkedIn: [Abdur Rahman Akash](https://www.linkedin.com/in/abdur-rahman-akash26/)
-* 🐙 GitHub: [abdurrahmancce](https://github.com/abdurrahmancce)
-* 🌐 Portfolio: [Personal Portfolio](https://abdurrahmancce.github.io/Personal-Portfolio/)
-* 📧 Email: `akash.abdur.2002@gmail.com`
+🐙 https://github.com/abdurrahmancce
 
 ---
 
-## ⭐ Support the Project
+# 👨‍💻 Author
+
+## Abdur Rahman Akash
+
+🎓 Computer & Communication Engineering Student  
+💻 Developer  
+🤖 AI & Technology Enthusiast  
+📚 Research & Software Development Learner
+
+### 🔗 Connect
+
+- 🐙 **GitHub:** https://github.com/abdurrahmancce
+- 💼 **LinkedIn:** https://www.linkedin.com/in/abdur-rahman-akash26/
+- 🌐 **Portfolio:** https://abdurrahmancce.github.io/Personal-Portfolio/
+- 📧 **Email:** `akash.abdur.2002@gmail.com`
+
+---
+
+# ⭐ Support
 
 If you find this project useful:
 
-⭐ **Star the repository**
-
-🍴 **Fork the project**
-
-🐛 **Report issues**
-
-💡 **Suggest improvements**
-
-🤝 **Contribute**
+⭐ Star the repository  
+🍴 Fork the project  
+🐛 Report bugs  
+💡 Suggest improvements  
+🤝 Contribute where permitted
 
 ---
 
 <div align="center">
 
-💰 Manage Your Money. 📊 Understand Your Spending. 🚀 Improve Your Financial Habits.
+## 💰 Track Better. 📊 Understand Better. 🚀 Manage Better.
 
-Built with ❤️ by Abdur Rahman
+**Built with ❤️ by Abdur Rahman Akash**
 
 </div>
-
