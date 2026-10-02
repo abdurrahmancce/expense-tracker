@@ -834,15 +834,9 @@ docs/screenshots/
 └── 📱 mobile.png
 ```
 
-Example:
-
-```markdown
 ## 📸 Preview
 
-![Dashboard](docs/screenshots/dashboard.png)
-```
-
-> 🖼️ Use real screenshots from the current version of the application rather than placeholder images.
+<img width="1920" height="2650" alt="image" src="https://github.com/user-attachments/assets/414f8dad-a0b2-443c-9fb0-84c80178dfe9" />
 
 ---
 
