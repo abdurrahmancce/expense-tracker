@@ -266,6 +266,7 @@ auth.onAuthStateChanged(async (user) => {
     currentUser = user;
     authScreen.classList.add("hidden");
     appScreen.classList.remove("hidden");
+    document.body.classList.remove("auth-screen-active");
 
     // Show app shell instantly — dark mode + theme from localStorage while Firestore loads
     const cachedDark = localStorage.getItem("darkMode_cache");
@@ -326,6 +327,7 @@ auth.onAuthStateChanged(async (user) => {
     salamis = [];
     appScreen.classList.add("hidden");
     authScreen.classList.remove("hidden");
+    document.body.classList.add("auth-screen-active");
   }
 });
 
@@ -1342,7 +1344,7 @@ function renderSummaryCard(){
           </div>
         </div>
         <div class="summary-divider"></div>
-        <div class="summary-stat net">
+        <div class="summary-stat net net-balance-stat">
           <span class="summary-icon">${net >= 0 ? "✅" : "⚠️"}</span>
           <div>
             <div class="summary-label">Net Balance</div>
