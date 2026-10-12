@@ -493,6 +493,19 @@ td button:last-of-type:hover { background: var(--danger-h); }
 .export-btn { background: var(--purple); }
 .export-btn:hover { opacity: 0.88; transform: translateY(-1px); }
 .excel-btn { background: #16a34a; }
+.json-btn    { background: #b45309; }
+.restore-btn { background: #0e7490; cursor: pointer; text-align: center; }
+
+/* Backup row — two buttons side by side */
+.backup-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 0;
+}
+.backup-row .export-btn {
+  flex: 1;
+  margin-bottom: 10px;
+}
 
 /* ============================================================
    PINNED ITEMS
@@ -892,3 +905,322 @@ body:has(#authScreen:not(.hidden)) {
   padding: 0;
   overflow: hidden;
 }
+
+/* ============================================================
+   SUMMARY CARD — top-of-page monthly overview
+   ============================================================ */
+.summary-card { margin: 12px 0 18px; }
+
+.summary-card-inner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 20px 16px;
+  box-shadow: var(--shadow);
+}
+
+.summary-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text2);
+  text-align: center;
+  letter-spacing: .3px;
+}
+
+.summary-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.summary-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 120px;
+}
+
+.summary-icon {
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.summary-label {
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 2px;
+}
+
+.summary-amount {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.summary-stat.expense .summary-amount { color: var(--danger); }
+.summary-stat.income  .summary-amount { color: var(--success); }
+
+.summary-divider {
+  width: 1px;
+  height: 44px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .summary-divider { display: none; }
+  .summary-stats   { justify-content: flex-start; gap: 14px; }
+  .summary-stat    { min-width: 0; }
+  .summary-amount  { font-size: 16px; }
+}
+
+/* ============================================================
+   SKELETON / SHIMMER — shown before first data load
+   ============================================================ */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.summary-skeleton {
+  display: flex;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.skel-block {
+  flex: 1;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--surface2) 25%,
+    var(--border)   50%,
+    var(--surface2) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  will-change: background-position;
+}
+
+/* ============================================================
+   PERFORMANCE: hint the browser about animated / scrolling layers
+   ============================================================ */
+.chart { will-change: auto; }          /* reset after Chart.js renders */
+.loading-overlay { will-change: opacity; }
+.toast { will-change: opacity, transform; }
+
+/* ============================================================
+   FEATURE 12: OFFLINE / ONLINE STATUS INDICATOR
+   ============================================================ */
+#networkStatus {
+  display: none;
+  position: fixed;
+  bottom: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9000;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.3s ease;
+}
+#networkStatus.offline {
+  display: block;
+  background: #dc2626;
+  color: #fff;
+}
+#networkStatus.back-online {
+  display: block;
+  background: #16a34a;
+  color: #fff;
+}
+
+/* ============================================================
+   FEATURE 3: BOTTOM NAVIGATION BAR (mobile only)
+   ============================================================ */
+#bottomNav {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  #bottomNav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 8000;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 16px rgba(0,0,0,.12);
+    justify-content: space-around;
+    align-items: center;
+    height: 60px;
+    padding: 0 4px;
+  }
+  .bnav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    padding: 6px 0;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition), color var(--transition);
+    color: var(--text2);
+    font-size: 11px;
+    font-weight: 600;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .bnav-item .bnav-icon { font-size: 22px; line-height: 1; }
+  .bnav-item.active { color: var(--primary); }
+  .bnav-item:active { background: var(--surface2); }
+
+  /* Push app content above bottom nav */
+  .app-wrapper { padding-bottom: 72px !important; }
+
+  /* FAB: floating add button */
+  #fabAdd {
+    position: fixed;
+    bottom: 72px;
+    right: 18px;
+    z-index: 8100;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 28px;
+    line-height: 54px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(37,99,235,.5);
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: background var(--transition), transform 0.15s ease, box-shadow 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #fabAdd:active {
+    background: var(--primary-h);
+    transform: scale(0.94);
+    box-shadow: 0 2px 10px rgba(37,99,235,.4);
+  }
+
+  /* networkStatus sits above nav */
+  #networkStatus {
+    bottom: 70px;
+  }
+}
+
+/* ============================================================
+   FEATURE 3: TOUCH-FRIENDLY IMPROVEMENTS
+   ============================================================ */
+/* Bigger tap targets on mobile */
+@media (max-width: 640px) {
+  button, .auth-tab, select, input[type="date"],
+  input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
+    min-height: 44px;
+  }
+  .dropdown-btn { min-height: 48px; font-size: 15px; }
+  #expenseTable td, #eidFlatTable td { padding: 10px 8px; font-size: 13px; }
+  #expenseTable th, #eidFlatTable th { padding: 8px 6px; font-size: 12px; }
+}
+
+/* ============================================================
+   FEATURE 14: SHARE BUTTON on Summary Card
+   ============================================================ */
+.summary-share-btn {
+  margin-top: 12px;
+  display: block;
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  letter-spacing: .2px;
+}
+.summary-share-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* ============================================================
+   FEATURE 15: THEME PICKER
+   ============================================================ */
+.theme-picker-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 10px 0 6px;
+}
+.theme-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: border-color 0.2s, transform 0.15s;
+  outline: none;
+  box-shadow: var(--shadow-sm);
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-swatch:hover, .theme-swatch.active {
+  border-color: var(--text);
+  transform: scale(1.18);
+}
+.theme-swatch[data-theme="blue"]   { background: #2563eb; }
+.theme-swatch[data-theme="purple"] { background: #7c3aed; }
+.theme-swatch[data-theme="green"]  { background: #16a34a; }
+.theme-swatch[data-theme="rose"]   { background: #e11d48; }
+.theme-swatch[data-theme="orange"] { background: #ea580c; }
+
+/* Theme overrides — applied on :root when data-theme attr set */
+:root[data-theme="purple"] {
+  --primary:   #7c3aed;
+  --primary-h: #6d28d9;
+}
+:root[data-theme="green"] {
+  --primary:   #16a34a;
+  --primary-h: #15803d;
+}
+:root[data-theme="rose"] {
+  --primary:   #e11d48;
+  --primary-h: #be123c;
+}
+:root[data-theme="orange"] {
+  --primary:   #ea580c;
+  --primary-h: #c2410c;
+}
+/* blue is the default — no override needed */
