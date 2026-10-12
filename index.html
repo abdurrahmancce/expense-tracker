@@ -4,31 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Expense Tracker & Bonus Tracker</title>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FVN5YKTWHG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FVN5YKTWHG');
+  </script>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#007bff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Expenses">
+  <!-- ── DNS / TLS pre-warm for every external origin ── -->
+  <link rel="preconnect" href="https://www.gstatic.com">
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- PDF export -->
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+  <!-- All scripts use defer — HTML parses without blocking, scripts run
+       in order after parsing is done. Firebase → Chart.js → script.js -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+  <script src="script.js" defer></script>
 
-  <!-- Excel export -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script>
-    if(typeof XLSX === "undefined"){
-      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"><\/script>');
-    }
-  </script>
-
-
-
-  <!-- Firebase SDKs (compat version - simple global `firebase` object) -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <!-- PDF + Excel — heavy libs loaded lazily on first export click -->
 
 <base target="_blank">
 </head>
@@ -39,6 +44,28 @@
     <div class="spinner"></div>
     <p id="loadingText">Loading...</p>
   </div>
+
+  <!-- Feature 12: Network status banner -->
+  <div id="networkStatus"></div>
+
+  <!-- Feature 3: Bottom Navigation Bar (mobile only) -->
+  <nav id="bottomNav" aria-label="Bottom navigation">
+    <div class="bnav-item active" data-bnav="expenses">
+      <span class="bnav-icon">💸</span>Expenses
+    </div>
+    <div class="bnav-item" data-bnav="income">
+      <span class="bnav-icon">💰</span>Income
+    </div>
+    <div class="bnav-item" data-bnav="charts">
+      <span class="bnav-icon">📊</span>Charts
+    </div>
+    <div class="bnav-item" data-bnav="summary">
+      <span class="bnav-icon">📋</span>Summary
+    </div>
+  </nav>
+
+  <!-- Feature 3: FAB — floating add expense button (mobile) -->
+  <button id="fabAdd" aria-label="Add expense">＋</button>
 
 
   <!-- ===========================
@@ -64,11 +91,11 @@
       <div id="loginForm" class="auth-form">
         <div class="auth-field">
           <span class="auth-icon">✉️</span>
-          <input type="email" id="loginEmail" placeholder="Email address">
+          <input type="email" id="loginEmail" placeholder="Email address" maxlength="254" autocomplete="email">
         </div>
         <div class="auth-field">
           <span class="auth-icon">🔒</span>
-          <input type="password" id="loginPassword" placeholder="Password">
+          <input type="password" id="loginPassword" placeholder="Password" maxlength="128" autocomplete="current-password">
         </div>
         <button id="loginBtn" class="auth-submit-btn">Login</button>
         <button type="button" id="forgotPasswordBtn" class="link-btn">Forgot Password?</button>
@@ -77,11 +104,11 @@
       <div id="signupForm" class="auth-form hidden">
         <div class="auth-field">
           <span class="auth-icon">✉️</span>
-          <input type="email" id="signupEmail" placeholder="Email address">
+          <input type="email" id="signupEmail" placeholder="Email address" maxlength="254" autocomplete="email">
         </div>
         <div class="auth-field">
           <span class="auth-icon">🔒</span>
-          <input type="password" id="signupPassword" placeholder="Password (min 6 characters)">
+          <input type="password" id="signupPassword" placeholder="Password (min 8 characters)" maxlength="128" autocomplete="new-password">
         </div>
         <button id="signupBtn" class="auth-submit-btn">Create Account</button>
       </div>
@@ -96,16 +123,35 @@
     <button id="toggleDarkMode">🌙 Dark Mode</button>
     <h1>💰 Expense Tracker 💰</h1>
 
+    <!-- Feature 15: Color Theme Picker -->
+    <div class="theme-picker-row" id="themePicker" aria-label="Choose color theme">
+      <span style="font-size:13px;font-weight:700;color:var(--text2);">🎨 Theme:</span>
+      <button class="theme-swatch active" data-theme="blue"   title="Blue (Default)"  aria-label="Blue theme"></button>
+      <button class="theme-swatch"        data-theme="purple" title="Purple"           aria-label="Purple theme"></button>
+      <button class="theme-swatch"        data-theme="green"  title="Green"            aria-label="Green theme"></button>
+      <button class="theme-swatch"        data-theme="rose"   title="Rose"             aria-label="Rose theme"></button>
+      <button class="theme-swatch"        data-theme="orange" title="Orange"           aria-label="Orange theme"></button>
+    </div>
+
     <!-- Shown only if old browser (localStorage) data is found on this device -->
     <button id="migrateBtn" class="migrate-btn hidden">⬆️ Import old data saved on this device</button>
 
+    <!-- Summary Card (skeleton shown until first data load) -->
+    <div id="summaryCard" class="summary-card">
+      <div class="summary-skeleton">
+        <div class="skel-block"></div>
+        <div class="skel-block"></div>
+        <div class="skel-block"></div>
+      </div>
+    </div>
+
     <!-- Add Expense Form -->
-    <div class="form">
-      <input type="text" id="item" placeholder="Item Name">
-      <input type="number" id="amount" placeholder="Amount">
+    <div class="form" id="addExpenseSection">
+      <input type="text" id="item" placeholder="Item Name" maxlength="200">
+      <input type="number" id="amount" placeholder="Amount" min="0" max="99999999">
       <select id="expenseCategory"></select>
       <input type="date" id="date">
-      <input type="text" id="expenseNote" placeholder="Note (optional)">
+      <input type="text" id="expenseNote" placeholder="Note (optional)" maxlength="500">
       <button onclick="addExpense()">Save Expense</button>
     </div>
 
@@ -113,7 +159,7 @@
     <div class="pinned-section">
       <div class="pinned-list" id="pinnedItemsList"></div>
       <div class="pinned-add">
-        <input type="text" id="newPinInput" placeholder="New pin text (e.g., Transport Cost)">
+        <input type="text" id="newPinInput" placeholder="New pin text (e.g., Transport Cost)" maxlength="100">
         <button type="button" id="addPinBtn">📌 Pin</button>
       </div>
     </div>
@@ -124,7 +170,7 @@
       <div class="dropdown-content" id="categoryDropdownContent">
         <div class="category-list" id="categoryManageList"></div>
         <div class="pinned-add">
-          <input type="text" id="newCategoryInput" placeholder="New category name">
+          <input type="text" id="newCategoryInput" placeholder="New category name" maxlength="60">
           <button type="button" id="addCategoryBtn">🏷️ Add Category</button>
         </div>
       </div>
@@ -135,7 +181,7 @@
       <button class="dropdown-btn" id="expenseDropdownBtn">All Expenses <span class="caret">▾</span></button>
       <div class="dropdown-content" id="expenseDropdownContent">
         <div class="month-nav" id="expenseMonthNav"></div>
-        <input type="text" id="expenseSearchInput" class="search-input" placeholder="🔍 Search by item name...">
+        <input type="text" id="expenseSearchInput" class="search-input" placeholder="🔍 Search by item name..." maxlength="200">
         <div class="filter-sort-row">
           <select id="expenseCategoryFilter"></select>
           <select id="expenseSortBy">
@@ -158,7 +204,7 @@
     </div>
 
     <!-- Monthly & Yearly Summary (Dropdown Menu) -->
-    <div class="dropdown">
+    <div class="dropdown" id="summaryDropdownSection">
       <button class="dropdown-btn" id="summaryDropdownBtn">Monthly & Yearly Summary <span class="caret">▾</span></button>
       <div class="dropdown-content" id="summaryDropdownContent">
         <div id="monthlyTables"></div>
@@ -170,24 +216,33 @@
     <button id="exportPdfBtn" class="export-btn">📄 Export All Data to PDF</button>
     <button id="exportExcelBtn" class="export-btn excel-btn">📊 Export All Data to Excel</button>
 
-    <!-- Charts -->
-    <h2>Expenses Charts</h2>
+    <!-- JSON Backup & Restore -->
+    <div class="backup-row">
+      <button id="exportJsonBtn" class="export-btn json-btn">💾 Backup All Data (JSON)</button>
+      <label class="export-btn restore-btn" id="restoreBtnLabel" title="Restore from a previously downloaded JSON backup">
+        📂 Restore from JSON Backup
+        <input type="file" id="restoreFileInput" accept=".json" style="display:none">
+      </label>
+    </div>
+
+    <!-- Expenses Charts -->
+    <h2 id="chartsSectionAnchor">Expenses Charts</h2>
     <div class="chart-wrapper">
       <canvas id="monthlyChart" class="chart"></canvas>
       <canvas id="yearlyChart" class="chart"></canvas>
       <canvas id="categoryChart" class="chart"></canvas>
     </div>
 
-    <h2>Bonus/Income Charts</h2>
+    <!-- Income vs Expense Comparison Chart -->
+    <h2>Income vs Expense</h2>
     <div class="chart-wrapper">
-      <canvas id="monthlyIncomeChart" class="chart"></canvas>
-      <canvas id="yearlyIncomeChart" class="chart"></canvas>
+      <canvas id="comparisonChart" class="chart" style="max-height:360px;"></canvas>
     </div>
 
     <!-- Bonus/Income Section -->
-    <h2>Bonus/Income Tracker</h2>
+    <h2 id="incomeSectionAnchor">Bonus/Income Tracker</h2>
     <form id="eidForm" class="form">
-      <input type="number" id="eidYear" placeholder="Year">
+      <input type="number" id="eidYear" placeholder="Year" min="2000" max="2100">
       <select id="eidMonth">
         <option value="">Select Month</option>
         <option value="January">January</option>
@@ -203,22 +258,44 @@
         <option value="November">November</option>
         <option value="December">December</option>
       </select>
-      <input type="number" id="eidDate" placeholder="Date">
-      <input type="text" id="eidGiver" placeholder="Giver Name">
-      <input type="number" id="eidAmount" placeholder="Amount">
+      <input type="number" id="eidDate" placeholder="Date" min="1" max="31">
+      <input type="text" id="eidGiver" placeholder="Giver Name" maxlength="150">
+      <select id="incomeCategory"></select>
+      <input type="number" id="eidAmount" placeholder="Amount" min="0" max="99999999">
       <button type="submit">Save Bonus</button>
     </form>
+
+    <!-- Manage Income Categories (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn category-btn" id="incomeCategoryDropdownBtn">🏷️ Manage Income Categories <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="incomeCategoryDropdownContent">
+        <div class="category-list" id="incomeCategoryManageList"></div>
+        <div class="pinned-add">
+          <input type="text" id="newIncomeCategoryInput" placeholder="New income category name" maxlength="60">
+          <button type="button" id="addIncomeCategoryBtn">🏷️ Add Category</button>
+        </div>
+      </div>
+    </div>
 
     <!-- All Bonus/Income (Dropdown Menu) -->
     <div class="dropdown">
       <button class="dropdown-btn" id="eidAllDropdownBtn">All Bonus/Income <span class="caret">▾</span></button>
       <div class="dropdown-content" id="eidAllDropdownContent">
         <div class="month-nav" id="eidMonthNav"></div>
+        <input type="text" id="eidSearchInput" class="search-input" placeholder="🔍 Search by giver or category..." maxlength="200">
+        <div class="filter-sort-row">
+          <select id="eidSortBy">
+            <option value="date-asc">Date (Oldest → Newest)</option>
+            <option value="date-desc">Date (Newest → Oldest)</option>
+            <option value="amount-asc">Amount (Choto → Boro)</option>
+            <option value="amount-desc">Amount (Boro → Choto)</option>
+          </select>
+        </div>
         <div class="expense-total" id="eidTotal"></div>
         <div class="table-wrapper">
           <table id="eidFlatTable">
             <thead>
-              <tr><th>Date</th><th>Giver</th><th>Amount</th><th>Action</th></tr>
+              <tr><th>Date</th><th>Giver</th><th>Category</th><th>Amount</th><th>Action</th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -261,19 +338,34 @@
         </div>
       </div>
     </div>
+
+    <!-- ===========================
+         Bonus/Income Charts (after Trash)
+    ============================ -->
+    <h2>Bonus/Income Charts</h2>
+    <div class="chart-wrapper">
+      <canvas id="monthlyIncomeChart" class="chart"></canvas>
+      <canvas id="yearlyIncomeChart" class="chart"></canvas>
+      <canvas id="incomeCategoryChart" class="chart"></canvas>
+    </div>
+    <div style="margin:10px 0 4px;text-align:center;">
+      <label for="incomeCategoryYearFilter" style="font-weight:700;font-size:16px;margin-right:10px;">Monthly by Category — Year:</label>
+      <select id="incomeCategoryYearFilter" style="padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:14px;">
+        <option value="all">All Years</option>
+      </select>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="incomeMonthlyByCategoryChart" class="chart" style="max-height:350px;"></canvas>
+    </div>
+
   </div>
 
-  <script src="script.js"></script>
   <script>
     if("serviceWorker" in navigator){
-      // Self-healing: clear out any old/broken service worker + caches
-      // from before (they may be stuck serving a stale 404), then
-      // register the corrected one fresh.
-      navigator.serviceWorker.getRegistrations().then(regs => {
-        regs.forEach(r => r.unregister());
-      });
-      caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-      navigator.serviceWorker.register("sw.js");
+      // Use a relative path so it works no matter what the repo/folder is called.
+      navigator.serviceWorker.register("./sw.js").catch(err =>
+        console.warn("SW registration failed:", err)
+      );
     }
   </script>
 </body>
