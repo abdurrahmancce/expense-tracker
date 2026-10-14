@@ -1328,22 +1328,23 @@ function renderSummaryCard(){
     <div class="summary-card-inner">
       <h3 class="summary-title">📊 ${monthLabel} Overview</h3>
       <div class="summary-stats">
-        <div class="summary-stat expense">
-          <span class="summary-icon">💸</span>
-          <div>
-            <div class="summary-label">Total Expense</div>
-            <div class="summary-amount">${fmt(monthExpense)}</div>
+        <div class="summary-top-row">
+          <div class="summary-stat expense">
+            <span class="summary-icon">💸</span>
+            <div>
+              <div class="summary-label">Total Expense</div>
+              <div class="summary-amount">${fmt(monthExpense)}</div>
+            </div>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-stat income">
+            <span class="summary-icon">💰</span>
+            <div>
+              <div class="summary-label">Total Income</div>
+              <div class="summary-amount">${fmt(monthIncome)}</div>
+            </div>
           </div>
         </div>
-        <div class="summary-divider"></div>
-        <div class="summary-stat income">
-          <span class="summary-icon">💰</span>
-          <div>
-            <div class="summary-label">Total Income</div>
-            <div class="summary-amount">${fmt(monthIncome)}</div>
-          </div>
-        </div>
-        <div class="summary-divider"></div>
         <div class="summary-stat net net-balance-stat">
           <span class="summary-icon">${net >= 0 ? "✅" : "⚠️"}</span>
           <div>
@@ -1390,6 +1391,7 @@ function renderComparisonChart(){
     return `${monthNames[m-1].slice(0,3)} ${y}`;
   });
 
+  const isMobile = window.innerWidth < 600;
   if(comparisonChart) comparisonChart.destroy();
   comparisonChart = new Chart(canvas, {
     type: "bar",
@@ -1416,27 +1418,45 @@ function renderComparisonChart(){
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         title: {
           display: true,
           text: "📈 Income vs Expense (Month by Month)",
-          font: { size: 15, weight: "bold" },
-          padding: { bottom: 12 }
+          font: { size: isMobile ? 12 : 15, weight: "bold" },
+          padding: { bottom: isMobile ? 6 : 12 }
         },
         tooltip: {
           callbacks: {
             label: ctx => ` ${ctx.dataset.label}: ৳ ${_nf.format(Number(ctx.parsed.y))}`
           }
         },
-        legend: { position: "top" }
+        legend: {
+          position: "top",
+          labels: {
+            boxWidth: isMobile ? 12 : 16,
+            font: { size: isMobile ? 11 : 13 },
+            padding: isMobile ? 8 : 16
+          }
+        }
       },
       scales: {
         y: {
           beginAtZero: true,
-          ticks: { callback: v => "৳ " + _nf.format(Number(v)) },
-          title: { display: true, text: "Amount (৳)" }
+          ticks: {
+            font: { size: isMobile ? 10 : 12 },
+            callback: v => isMobile ? "৳" + _nf.format(Number(v)) : "৳ " + _nf.format(Number(v))
+          },
+          title: { display: !isMobile, text: "Amount (৳)" }
         },
-        x: { title: { display: true, text: "Month" } }
+        x: {
+          title: { display: !isMobile, text: "Month" },
+          ticks: {
+            font: { size: isMobile ? 10 : 12 },
+            maxRotation: isMobile ? 60 : 45,
+            minRotation: isMobile ? 45 : 0
+          }
+        }
       }
     }
   });
@@ -2461,17 +2481,26 @@ function renderIncomeCharts(){
   if(incomeMonthlyByCategoryChart) incomeMonthlyByCategoryChart.destroy();
   const monthCatCanvas = document.getElementById("incomeMonthlyByCategoryChart");
   if(monthCatCanvas){
+    const isMobile = window.innerWidth < 600;
     incomeMonthlyByCategoryChart = new Chart(monthCatCanvas, {
       type: "bar",
       data: { labels: monthLabels, datasets },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
-          legend: { position: "bottom" },
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: isMobile ? 12 : 16,
+              font: { size: isMobile ? 11 : 13 },
+              padding: isMobile ? 8 : 16
+            }
+          },
           title: {
             display: true,
-            font: { size: 14, weight: "bold" },
-            padding: { bottom: 10 },
+            font: { size: isMobile ? 12 : 14, weight: "bold" },
+            padding: { bottom: 8 },
             text: yearFilter === "all"
               ? "📊 Monthly Income by Category (All Years)"
               : `📊 Monthly Income by Category — ${yearFilter}`
@@ -2483,12 +2512,23 @@ function renderIncomeCharts(){
           }
         },
         scales: {
-          x: { stacked: true, title: { display: true, text: "Month" } },
+          x: {
+            stacked: true,
+            title: { display: !isMobile, text: "Month" },
+            ticks: {
+              font: { size: isMobile ? 10 : 12 },
+              maxRotation: isMobile ? 60 : 45,
+              minRotation: isMobile ? 45 : 0
+            }
+          },
           y: {
             stacked: true,
             beginAtZero: true,
-            ticks: { callback: v => "৳ " + _nf.format(Number(v)) },
-            title: { display: true, text: "Amount (৳)" }
+            ticks: {
+              font: { size: isMobile ? 10 : 12 },
+              callback: v => isMobile ? "৳" + _nf.format(Number(v)) : "৳ " + _nf.format(Number(v))
+            },
+            title: { display: !isMobile, text: "Amount (৳)" }
           }
         }
       }
