@@ -946,18 +946,28 @@ body:has(#authScreen:not(.hidden)) {
 /* Mobile: Net Balance full-width centered */
 @media (max-width: 640px) {
   .summary-stats {
-    gap: 12px 8px;
+    flex-wrap: wrap;
+    gap: 0;
   }
-  .summary-stat {
-    min-width: 130px;
+  /* Expense & Income — দুই প্রান্তে */
+  .summary-stat.expense,
+  .summary-stat.income {
+    flex: 1;
+    min-width: 0;
   }
+  .summary-stat.expense { justify-content: flex-start; }
+  .summary-stat.income  { justify-content: flex-end; }
+  /* Net Balance — নিচে full-width center */
   .summary-stat.net-balance-stat {
     width: 100%;
+    flex: none;
     justify-content: center;
     border-top: 1px solid var(--border);
-    padding-top: 10px;
-    margin-top: 2px;
+    padding-top: 12px;
+    margin-top: 10px;
   }
+  /* divider mobile-এ লুকানো */
+  .summary-divider { display: none; }
 }
 
 .summary-icon {
@@ -993,18 +1003,6 @@ body:has(#authScreen:not(.hidden)) {
 }
 
 @media (max-width: 480px) {
-  .summary-divider { display: none; }
-  .summary-stats   {
-    justify-content: space-between;
-    gap: 0;
-  }
-  .summary-stat    {
-    flex: 1;
-    min-width: 0;
-    padding: 8px 6px;
-  }
-  .summary-stat:first-child { padding-left: 0; }
-  .summary-stat:last-child  { padding-right: 0; }
   .summary-amount  { font-size: 16px; }
 }
 
