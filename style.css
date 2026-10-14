@@ -994,8 +994,17 @@ body:has(#authScreen:not(.hidden)) {
 
 @media (max-width: 480px) {
   .summary-divider { display: none; }
-  .summary-stats   { justify-content: flex-start; gap: 14px; }
-  .summary-stat    { min-width: 0; }
+  .summary-stats   {
+    justify-content: space-between;
+    gap: 0;
+  }
+  .summary-stat    {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 6px;
+  }
+  .summary-stat:first-child { padding-left: 0; }
+  .summary-stat:last-child  { padding-right: 0; }
   .summary-amount  { font-size: 16px; }
 }
 
