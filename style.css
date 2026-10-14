@@ -1259,3 +1259,150 @@ body:has(#authScreen:not(.hidden)) {
   --primary-h: #c2410c;
 }
 /* blue is the default — no override needed */
+
+/* ============================================================
+   DEVELOPER FOOTER
+   ============================================================ */
+.dev-footer {
+  margin-top: 56px;
+  padding: 0 16px 40px;
+}
+
+.dev-footer-inner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 32px 28px;
+  background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 60%, #9333ea 100%);
+  box-shadow: 0 8px 40px rgba(99,60,200,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* animated shimmer orbs */
+.dev-footer-inner::before,
+.dev-footer-inner::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.dev-footer-inner::before {
+  width: 220px; height: 220px;
+  background: rgba(255,255,255,0.07);
+  top: -60px; right: -40px;
+}
+.dev-footer-inner::after {
+  width: 140px; height: 140px;
+  background: rgba(255,255,255,0.05);
+  bottom: -50px; left: 30px;
+}
+
+.dev-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.dev-footer-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: 2px solid rgba(255,255,255,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.dev-footer-texts { display: flex; flex-direction: column; gap: 3px; }
+
+.dev-footer-label {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.dev-footer-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.70);
+  font-weight: 500;
+}
+
+.dev-footer-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+
+.dev-footer-chip {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50px;
+  padding: 3px 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dev-footer-btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  padding: 12px 22px;
+  border-radius: 50px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.01em;
+}
+
+.dev-footer-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.24);
+  background: #f0f4ff;
+}
+
+.dev-footer-btn svg {
+  transition: transform 0.2s ease;
+}
+.dev-footer-btn:hover svg {
+  transform: translateX(3px);
+}
+
+@media (max-width: 520px) {
+  .dev-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 20px;
+    gap: 18px;
+  }
+  .dev-footer-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 14px;
+    padding: 14px 20px;
+  }
+}
