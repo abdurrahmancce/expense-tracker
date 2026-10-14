@@ -401,6 +401,23 @@ td button:last-of-type:hover { background: var(--danger-h); }
   max-height: 260px;
 }
 
+/* Monthly-by-Category bar chart — explicit wrapper height so maintainAspectRatio:false works */
+#monthCatWrapper {
+  height: 420px;
+}
+/* Income vs Expense comparison chart */
+#comparisonChartWrapper {
+  height: 420px;
+}
+@media (max-width: 600px) {
+  #monthCatWrapper {
+    height: 380px;
+  }
+  #comparisonChartWrapper {
+    height: 380px;
+  }
+}
+
 /* ============================================================
    AUTH SCREEN
    ============================================================ */
@@ -943,30 +960,30 @@ body:has(#authScreen:not(.hidden)) {
   min-width: 120px;
 }
 
-/* Mobile: Expense + Income দুই প্রান্তে, Net Balance নিচে */
+/* top row: expense & income পাশাপাশি */
+.summary-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+/* Net Balance সবসময় নিচে পূর্ণ-প্রস্থে */
+.summary-stat.net-balance-stat {
+  width: 100%;
+  justify-content: center;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 10px;
+}
+
 @media (max-width: 640px) {
-  .summary-stats {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    grid-template-rows: auto auto;
-    gap: 0;
-    align-items: center;
-  }
-  .summary-stat.expense      { grid-column: 1; grid-row: 1; justify-self: start; }
-  .summary-divider:first-of-type { grid-column: 2; grid-row: 1; }
-  .summary-stat.income       { grid-column: 3; grid-row: 1; justify-self: end; }
-  /* Net Balance — দ্বিতীয় divider লুকাও, Net Balance full row */
-  .summary-divider:last-of-type  { display: none; }
-  .summary-stat.net-balance-stat {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: center;
-    border-top: 1px solid var(--border);
-    padding-top: 12px;
-    margin-top: 10px;
-    width: 100%;
-    justify-content: center;
-  }
+  .summary-stats     { flex-direction: column; gap: 0; }
+  .summary-top-row   { justify-content: space-between; }
+  .summary-stat.expense { justify-content: flex-start; }
+  .summary-stat.income  { justify-content: flex-end; }
+  .summary-divider      { display: none; }
 }
 
 .summary-icon {
@@ -1002,7 +1019,7 @@ body:has(#authScreen:not(.hidden)) {
 }
 
 @media (max-width: 480px) {
-  .summary-amount  { font-size: 16px; }
+  .summary-amount { font-size: 16px; }
 }
 
 /* ============================================================
