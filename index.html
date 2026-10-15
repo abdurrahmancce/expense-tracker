@@ -228,9 +228,13 @@
 
     <!-- Expenses Charts -->
     <h2 id="chartsSectionAnchor">Expenses Charts</h2>
+    <div id="monthlyChartWrapper" style="width:100%;padding:0 4px;box-sizing:border-box;position:relative;height:320px;">
+      <canvas id="monthlyChart" style="width:100% !important;height:100% !important;"></canvas>
+    </div>
     <div class="chart-wrapper">
-      <canvas id="monthlyChart" class="chart"></canvas>
       <canvas id="yearlyChart" class="chart"></canvas>
+    </div>
+    <div id="categoryChartWrapper" class="chart-wrapper" style="width:100%;box-sizing:border-box;">
       <canvas id="categoryChart" class="chart"></canvas>
     </div>
 
@@ -344,9 +348,13 @@
          Bonus/Income Charts (after Trash)
     ============================ -->
     <h2>Bonus/Income Charts</h2>
+    <div id="monthlyIncomeChartWrapper" style="width:100%;padding:0 4px;box-sizing:border-box;position:relative;height:320px;">
+      <canvas id="monthlyIncomeChart" style="width:100% !important;height:100% !important;"></canvas>
+    </div>
     <div class="chart-wrapper">
-      <canvas id="monthlyIncomeChart" class="chart"></canvas>
       <canvas id="yearlyIncomeChart" class="chart"></canvas>
+    </div>
+    <div id="incomeCategoryChartWrapper" class="chart-wrapper" style="width:100%;box-sizing:border-box;">
       <canvas id="incomeCategoryChart" class="chart"></canvas>
     </div>
     <div style="margin:10px 0 4px;text-align:center;">
