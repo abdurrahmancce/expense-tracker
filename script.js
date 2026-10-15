@@ -410,6 +410,8 @@ let _salChartDebounce = null;
 function subscribeToExpenses(){
   return new Promise((resolve) => {
     if(unsubscribeExpenses) unsubscribeExpenses();
+    // Show skeleton immediately while waiting for Firestore
+    showExpenseSkeleton();
     let firstLoad = true;
     unsubscribeExpenses = userExpensesRef().onSnapshot(snapshot => {
       expenses = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -438,6 +440,8 @@ function subscribeToExpenses(){
 function subscribeToSalamis(){
   return new Promise((resolve) => {
     if(unsubscribeSalamis) unsubscribeSalamis();
+    // Show skeleton immediately
+    showIncomeSkeleton();
     let firstLoad = true;
     unsubscribeSalamis = userSalamisRef().onSnapshot(snapshot => {
       salamis = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -553,6 +557,11 @@ function applyDarkMode() {
 
 toggleBtn.addEventListener("click", async () => {
   isDark = !isDark;
+  // Spin animation
+  toggleBtn.classList.remove("toggling");
+  void toggleBtn.offsetWidth; // reflow to restart
+  toggleBtn.classList.add("toggling");
+  toggleBtn.addEventListener("animationend", () => toggleBtn.classList.remove("toggling"), { once: true });
   applyDarkMode();
   localStorage.setItem("darkMode_cache", String(isDark));
   await saveDarkMode();
@@ -1023,7 +1032,8 @@ document.getElementById("expenseSortBy").addEventListener("change", (e) => {
 });
 
 // Delegated click handlers for expense table, eid flat table & eid summary tables
-document.getElementById("expenseTable").addEventListener("click", (e) => {
+// Card list replaces old table — delegate clicks from #expenseCardList
+document.getElementById("expenseCardList").addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if(!btn) return;
   if(btn.dataset.editExp !== undefined) editExpense(Number(btn.dataset.editExp));
@@ -1182,13 +1192,59 @@ function renderExpenseMonthNav(){
   });
 }
 
+// ===========================
+// FEATURE: Skeleton card loader
+// ===========================
+function _skeletonCards(count = 4){
+  return `<div class="skeleton-cards">${
+    Array.from({length: count}, () =>
+      `<div class="skeleton-card">
+        <div class="skel-circle"></div>
+        <div class="skel-lines">
+          <div class="skel-line tall"></div>
+          <div class="skel-line short"></div>
+        </div>
+        <div class="skel-btn-group">
+          <div class="skel-btn"></div>
+          <div class="skel-btn"></div>
+        </div>
+      </div>`
+    ).join("")
+  }</div>`;
+}
+
+function showExpenseSkeleton(){
+  const el = document.getElementById("expenseCardList");
+  if(el) el.innerHTML = _skeletonCards(4);
+}
+function showIncomeSkeleton(){
+  const tbody = document.querySelector("#eidFlatTable tbody");
+  if(tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:0;border:none">
+    ${_skeletonCards(3)}</td></tr>`;
+}
+
 // FIXED: builds all rows into an array first, then sets innerHTML ONCE.
 // (Previously used repeated innerHTML += in a loop, which re-parses the
 // whole table every iteration and becomes extremely slow / appears to
 // "freeze" once there are hundreds of rows, e.g. when "All" is selected.)
+// Category emoji map for expense cards
+const _CAT_EMOJI = {
+  food:"🍔", transport:"🚗", shopping:"🛍️", health:"💊", education:"📚",
+  entertainment:"🎬", bills:"⚡", rent:"🏠", travel:"✈️", clothing:"👕",
+  gym:"💪", internet:"🌐", mobile:"📱", salary:"💼", gift:"🎁"
+};
+function _catEmoji(cat){
+  if(!cat) return "💸";
+  const k = cat.toLowerCase();
+  for(const [key, em] of Object.entries(_CAT_EMOJI)){
+    if(k.includes(key)) return em;
+  }
+  return "💸";
+}
+
 function renderExpenses(){
-  const tbody=document.querySelector("#expenseTable tbody");
-  const totalEl = document.getElementById("expenseTotal");
+  const cardList = document.getElementById("expenseCardList");
+  const totalEl  = document.getElementById("expenseTotal");
 
   const indexed = expenses.map((e,i)=>({ ...e, _i:i }));
 
@@ -1223,18 +1279,36 @@ function renderExpenses(){
   }
 
   let total = 0;
-  const rows = filtered.map(e=>{
+  const cards = filtered.map((e, idx)=>{
     total += e.amount;
-    return `<tr>
-      <td>${esc(e.item)}</td><td>${esc(e.category) || "—"}</td><td>${fmt(e.amount)}</td><td>${esc(e.date)}</td>
-      <td>${esc(e.note) || "—"}</td>
-      <td>
-        <button data-edit-exp="${e._i}">Edit</button>
-        <button data-del-exp="${e._i}">Delete</button>
-      </td>
-    </tr>`;
+    const emoji = _catEmoji(e.category);
+    const catBadge = e.category
+      ? `<span class="exp-card-cat">${esc(e.category)}</span>`
+      : "";
+    const noteBadge = e.note
+      ? `<span class="exp-card-note">📝 ${esc(e.note)}</span>`
+      : "";
+    return `<div class="expense-card" style="animation-delay:${Math.min(idx*0.04,0.4)}s">
+      <div class="exp-card-icon">${emoji}</div>
+      <div class="exp-card-body">
+        <div class="exp-card-top">
+          <span class="exp-card-name">${esc(e.item)}</span>
+          <span class="exp-card-amount">${fmt(e.amount)}</span>
+        </div>
+        <div class="exp-card-meta">
+          <span class="exp-card-date">📅 ${esc(e.date)}</span>
+          ${catBadge}
+          ${noteBadge}
+        </div>
+      </div>
+      <div class="exp-card-actions">
+        <button class="btn-edit" data-edit-exp="${e._i}">✏️ Edit</button>
+        <button class="btn-del"  data-del-exp="${e._i}">🗑️ Del</button>
+      </div>
+    </div>`;
   });
-  tbody.innerHTML = rows.join("");
+
+  if(cardList) cardList.innerHTML = cards.join("");
 
   const label = currentExpenseFilter === "all"
     ? "All Time"
@@ -1242,7 +1316,7 @@ function renderExpenses(){
         const [y,m] = currentExpenseFilter.split("-").map(Number);
         return `${monthNames[m]} ${y}`;
       })();
-  totalEl.textContent = `${label} Total: ${fmt(total)}`;
+  totalEl.textContent = `${label} Total: ${fmt(total)} (${filtered.length} entries)`;
 }
 
 // ===========================
@@ -2848,24 +2922,48 @@ function shareMonthlySummary(){
   ctx.roundRect(0.75, 0.75, W-1.5, H-1.5, 16);
   ctx.stroke();
 
-  // Share or download
+  // Show share modal with preview
   canvas.toBlob(async (blob) => {
     if(!blob){ showToast("Could not generate image", "error"); return; }
     const file = new File([blob], `summary-${monthLabel.replace(" ","-")}.png`, { type:"image/png" });
+    const previewUrl = URL.createObjectURL(blob);
 
-    if(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
+    // Build modal
+    const overlay = document.createElement("div");
+    overlay.className = "share-modal-overlay";
+    overlay.innerHTML = `
+      <div class="share-modal">
+        <p class="share-modal-title">📊 ${monthLabel} Summary Card</p>
+        <div class="share-modal-preview"><img src="${previewUrl}" alt="Summary Preview"></div>
+        <div class="share-modal-actions">
+          ${navigator.share && navigator.canShare && navigator.canShare({ files:[file] })
+            ? `<button class="share-modal-btn-share" id="_smShare">📤 Share</button>` : ""}
+          <button class="share-modal-btn-dl" id="_smDownload">⬇️ Download</button>
+          <button class="share-modal-btn-cancel" id="_smCancel">✕ Close</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    const close = () => { URL.revokeObjectURL(previewUrl); overlay.remove(); };
+    overlay.querySelector("#_smCancel").onclick = close;
+    overlay.addEventListener("click", e => { if(e.target === overlay) close(); });
+
+    const dlBtn = overlay.querySelector("#_smDownload");
+    if(dlBtn) dlBtn.onclick = () => { _downloadSummaryPng(blob, monthLabel); close(); };
+
+    const shareBtn = overlay.querySelector("#_smShare");
+    if(shareBtn) shareBtn.onclick = async () => {
       try {
         await navigator.share({
           title: `${monthLabel} Summary`,
           text: `My ${monthLabel} Summary:\n💸 Expense: ${fmt(monthExpense)}\n💰 Income: ${fmt(monthIncome)}\n📊 Net: ${(net>=0?"+":"")+fmt(net)}`,
           files: [file]
         });
+        close();
       } catch(err){
-        if(err.name !== "AbortError") _downloadSummaryPng(blob, monthLabel);
+        if(err.name !== "AbortError"){ _downloadSummaryPng(blob, monthLabel); close(); }
       }
-    } else {
-      _downloadSummaryPng(blob, monthLabel);
-    }
+    };
   }, "image/png");
 }
 
@@ -2933,3 +3031,105 @@ async function loadThemeFromFirestore(){
     }
   } catch(err){ console.warn("Theme load failed:", err); }
 }
+
+// ===========================
+// FEATURE 27: PWA INSTALL PROMPT
+// ===========================
+(function(){
+  let _deferredPrompt = null;
+  const banner    = document.getElementById("pwaInstallBanner");
+  const installBtn= document.getElementById("pwaInstallBtn");
+  const dismissBtn= document.getElementById("pwaInstallDismiss");
+
+  if(!banner || !installBtn || !dismissBtn) return;
+
+  // Don't show if dismissed within 3 days
+  const DISMISS_KEY = "pwa_install_dismissed";
+  function isDismissed(){
+    try {
+      const ts = localStorage.getItem(DISMISS_KEY);
+      if(!ts) return false;
+      return Date.now() - Number(ts) < 3 * 24 * 60 * 60 * 1000; // 3 days
+    } catch(e){ return false; }
+  }
+
+  function showBanner(){
+    if(isDismissed()) return;
+    banner.style.display = "block";
+    document.body.classList.add("pwa-install-active");
+  }
+
+  function hideBanner(){
+    banner.style.display = "none";
+    document.body.classList.remove("pwa-install-active");
+  }
+
+  // Capture the browser's beforeinstallprompt event
+  window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();
+    _deferredPrompt = e;
+    // Show banner after a short delay so it doesn't interrupt load
+    setTimeout(showBanner, 2500);
+  });
+
+  // After install
+  window.addEventListener("appinstalled", () => {
+    hideBanner();
+    showToast("✅ App installed! আপনার Home Screen-এ দেখুন।", "success");
+    _deferredPrompt = null;
+  });
+
+  installBtn.addEventListener("click", async () => {
+    if(!_deferredPrompt){ showToast("Install already triggered or not supported.", "error"); return; }
+    _deferredPrompt.prompt();
+    const { outcome } = await _deferredPrompt.userChoice;
+    if(outcome === "accepted"){
+      showToast("✅ Installing...", "success");
+    }
+    _deferredPrompt = null;
+    hideBanner();
+  });
+
+  dismissBtn.addEventListener("click", () => {
+    try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch(e){}
+    hideBanner();
+  });
+})();
+
+// ===========================
+// FEATURE 23: CHART PNG DOWNLOAD
+// ===========================
+(function(){
+  document.addEventListener("click", e => {
+    const btn = e.target.closest(".chart-download-btn");
+    if(!btn) return;
+    const canvasId = btn.dataset.chart;
+    if(!canvasId) return;
+    const canvas = document.getElementById(canvasId);
+    if(!canvas){ showToast("Chart not found!", "error"); return; }
+
+    // Try to get the chart's label from the nearest h2 or the button text area
+    let label = canvasId.replace(/Chart$/, "").replace(/([A-Z])/g, " $1").trim() || "chart";
+
+    // Add white/dark background before export (chart canvas is transparent)
+    const offscreen = document.createElement("canvas");
+    offscreen.width  = canvas.width;
+    offscreen.height = canvas.height;
+    const ctx = offscreen.getContext("2d");
+    const dark = document.body.classList.contains("dark-mode");
+    ctx.fillStyle = dark ? "#1a1d27" : "#ffffff";
+    ctx.fillRect(0, 0, offscreen.width, offscreen.height);
+    ctx.drawImage(canvas, 0, 0);
+
+    offscreen.toBlob(blob => {
+      if(!blob){ showToast("Could not export chart", "error"); return; }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${label.trim().replace(/\s+/g, "-").toLowerCase()}-${new Date().toISOString().slice(0,10)}.png`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      showToast("Chart downloaded! ✅", "success");
+    }, "image/png");
+  });
+})();
