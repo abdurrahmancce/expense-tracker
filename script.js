@@ -1404,7 +1404,9 @@ function renderComparisonChart(){
           backgroundColor: "rgba(220,38,38,0.75)",
           borderColor: "#dc2626",
           borderWidth: 1,
-          borderRadius: 5
+          borderRadius: 4,
+          barPercentage: 0.85,
+          categoryPercentage: 0.75
         },
         {
           label: "💰 Income",
@@ -1412,7 +1414,9 @@ function renderComparisonChart(){
           backgroundColor: "rgba(22,163,74,0.75)",
           borderColor: "#16a34a",
           borderWidth: 1,
-          borderRadius: 5
+          borderRadius: 4,
+          barPercentage: 0.85,
+          categoryPercentage: 0.75
         }
       ]
     },
@@ -1512,6 +1516,7 @@ function renderCharts(){
   });
 
   if(monthlyChart) monthlyChart.destroy();
+  const isMobBar = window.innerWidth < 600;
   monthlyChart = new Chart(document.getElementById("monthlyChart"), {
     type: "bar",
     data: {
@@ -1522,22 +1527,32 @@ function renderCharts(){
         backgroundColor: "rgba(54,162,235,0.8)",
         borderColor: "#36a2eb",
         borderWidth: 1,
-        borderRadius: 5
+        borderRadius: 4,
+        barPercentage: 0.85,
+        categoryPercentage: 0.8
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        title: { display: true, text: "📅 Monthly Expenses", font: { size: 14, weight: "bold" }, padding: { bottom: 10 } },
+        title: { display: true, text: "📅 Monthly Expenses", font: { size: isMobBar ? 12 : 14, weight: "bold" }, padding: { bottom: 8 } },
         tooltip: barTooltip,
         legend: { display: false }
       },
       scales: {
         y: {
           beginAtZero: true,
-          ticks: { callback: v => "৳ " + _nf.format(Number(v)) },
-          title: { display: true, text: "Amount (৳)" }
+          ticks: {
+            font: { size: isMobBar ? 10 : 12 },
+            callback: v => isMobBar ? "৳" + _nf.format(Number(v)) : "৳ " + _nf.format(Number(v))
+          },
+          title: { display: !isMobBar, text: "Amount (৳)" }
         },
-        x: { title: { display: true, text: "Month" } }
+        x: {
+          title: { display: !isMobBar, text: "Month" },
+          ticks: { font: { size: isMobBar ? 10 : 12 }, maxRotation: isMobBar ? 55 : 45, minRotation: isMobBar ? 40 : 0 }
+        }
       }
     }
   });
@@ -1569,6 +1584,7 @@ function renderCharts(){
   });
   const catKeys = Object.keys(categoryTotals).sort((a,b)=>categoryTotals[b]-categoryTotals[a]);
   if(categoryChart) categoryChart.destroy();
+  const isMobilePie = window.innerWidth < 600;
   categoryChart = new Chart(document.getElementById("categoryChart"), {
     type: "pie",
     data: {
@@ -1579,8 +1595,17 @@ function renderCharts(){
       }]
     },
     options: {
+      responsive: true,
       plugins: {
-        title: { display: true, text: "🏷️ Expenses by Category", font: { size: 14, weight: "bold" }, padding: { bottom: 10 } },
+        title: { display: true, text: "🏷️ Expenses by Category", font: { size: isMobilePie ? 13 : 14, weight: "bold" }, padding: { bottom: 8 } },
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: isMobilePie ? 12 : 14,
+            font: { size: isMobilePie ? 11 : 12 },
+            padding: isMobilePie ? 8 : 12
+          }
+        },
         tooltip: pieTooltip
       }
     }
@@ -2345,6 +2370,7 @@ function renderIncomeCharts(){
   });
 
   if(monthlyIncomeChart) monthlyIncomeChart.destroy();
+  const isMobIncBar = window.innerWidth < 600;
   monthlyIncomeChart = new Chart(document.getElementById("monthlyIncomeChart"), {
     type: "bar",
     data: {
@@ -2355,22 +2381,32 @@ function renderIncomeCharts(){
         backgroundColor: "rgba(40,167,69,0.85)",
         borderColor: "#28a745",
         borderWidth: 1,
-        borderRadius: 5
+        borderRadius: 4,
+        barPercentage: 0.85,
+        categoryPercentage: 0.8
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        title: { display: true, text: "📅 Monthly Bonus/Income", font: { size: 14, weight: "bold" }, padding: { bottom: 10 } },
+        title: { display: true, text: "📅 Monthly Bonus/Income", font: { size: isMobIncBar ? 12 : 14, weight: "bold" }, padding: { bottom: 8 } },
         tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ৳ ${_nf.format(Number(ctx.parsed.y))}` } },
         legend: { display: false }
       },
       scales: {
         y: {
           beginAtZero: true,
-          ticks: { callback: v => "৳ " + _nf.format(Number(v)) },
-          title: { display: true, text: "Amount (৳)" }
+          ticks: {
+            font: { size: isMobIncBar ? 10 : 12 },
+            callback: v => isMobIncBar ? "৳" + _nf.format(Number(v)) : "৳ " + _nf.format(Number(v))
+          },
+          title: { display: !isMobIncBar, text: "Amount (৳)" }
         },
-        x: { title: { display: true, text: "Month" } }
+        x: {
+          title: { display: !isMobIncBar, text: "Month" },
+          ticks: { font: { size: isMobIncBar ? 10 : 12 }, maxRotation: isMobIncBar ? 55 : 45, minRotation: isMobIncBar ? 40 : 0 }
+        }
       }
     }
   });
@@ -2409,6 +2445,7 @@ function renderIncomeCharts(){
   if(incomeCategoryChart) incomeCategoryChart.destroy();
   const incomeCatCanvas = document.getElementById("incomeCategoryChart");
   if(incomeCatCanvas){
+    const isMobileIncPie = window.innerWidth < 600;
     incomeCategoryChart = new Chart(incomeCatCanvas, {
       type: "pie",
       data: {
@@ -2419,9 +2456,17 @@ function renderIncomeCharts(){
         }]
       },
       options: {
+        responsive: true,
         plugins: {
-          legend: { position: "bottom" },
-          title: { display: true, text: "🏷️ Income by Category (All Time)", font: { size: 14, weight: "bold" }, padding: { bottom: 10 } },
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: isMobileIncPie ? 12 : 14,
+              font: { size: isMobileIncPie ? 11 : 12 },
+              padding: isMobileIncPie ? 8 : 12
+            }
+          },
+          title: { display: true, text: "🏷️ Income by Category (All Time)", font: { size: isMobileIncPie ? 13 : 14, weight: "bold" }, padding: { bottom: 8 } },
           tooltip: { callbacks: { label: (ctx) => {
             const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
             const pct = total ? ((ctx.parsed/total)*100).toFixed(1) : 0;
