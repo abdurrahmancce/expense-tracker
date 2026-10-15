@@ -401,7 +401,12 @@ td button:last-of-type:hover { background: var(--danger-h); }
   max-height: 260px;
 }
 
-/* Monthly-by-Category bar chart — explicit wrapper height so maintainAspectRatio:false works */
+/* Monthly bar charts */
+#monthlyChartWrapper,
+#monthlyIncomeChartWrapper {
+  height: 320px;
+}
+/* Monthly-by-Category bar chart */
 #monthCatWrapper {
   height: 420px;
 }
@@ -409,12 +414,33 @@ td button:last-of-type:hover { background: var(--danger-h); }
 #comparisonChartWrapper {
   height: 420px;
 }
+/* Pie charts — full width on mobile so they're easy to read */
+#categoryChartWrapper canvas,
+#incomeCategoryChartWrapper canvas {
+  max-width: 400px;
+  max-height: 340px;
+}
 @media (max-width: 600px) {
+  #monthlyChartWrapper,
+  #monthlyIncomeChartWrapper {
+    height: 340px;
+  }
   #monthCatWrapper {
-    height: 380px;
+    height: 400px;
   }
   #comparisonChartWrapper {
-    height: 380px;
+    height: 430px;
+  }
+  #categoryChartWrapper,
+  #incomeCategoryChartWrapper {
+    justify-content: center;
+    padding: 0 8px;
+  }
+  #categoryChartWrapper canvas,
+  #incomeCategoryChartWrapper canvas {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 380px !important;
   }
 }
 
