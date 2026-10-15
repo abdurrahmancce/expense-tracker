@@ -1,7 +1,7 @@
 // ─── Cache version ──────────────────────────────────────────────────────────
 // Bump this string any time you want all clients to pick up fresh copies.
-const CACHE_SHELL    = "expense-tracker-shell-v7";   // app shell (HTML/CSS/JS)
-const CACHE_CDN      = "expense-tracker-cdn-v7";     // third-party libraries
+const CACHE_SHELL    = "expense-tracker-shell-v8";   // app shell (HTML/CSS/JS)
+const CACHE_CDN      = "expense-tracker-cdn-v8";     // third-party libraries
 
 // App-shell files — cache-first, updated when the SW version bumps
 const SHELL_FILES = [
@@ -41,12 +41,19 @@ self.addEventListener("install", e => {
   self.skipWaiting();
 });
 
-// ─── Activate: purge old caches ─────────────────────────────────────────────
+// ─── Activate: purge old caches + notify all clients of update ───────────────
 self.addEventListener("activate", e => {
   const keep = new Set([CACHE_SHELL, CACHE_CDN]);
   e.waitUntil(
     caches.keys()
       .then(keys => Promise.all(keys.filter(k => !keep.has(k)).map(k => caches.delete(k))))
+      .then(async () => {
+        // Tell every open tab that a new version is live
+        const allClients = await self.clients.matchAll({ type: "window" });
+        allClients.forEach(client => {
+          client.postMessage({ type: "SW_UPDATED", version: CACHE_SHELL });
+        });
+      })
   );
   self.clients.claim();
 });
