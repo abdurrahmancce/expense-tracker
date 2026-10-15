@@ -23,7 +23,7 @@
   --shadow-lg:   0 8px 32px rgba(0,0,0,.14);
   --radius:      12px;
   --radius-sm:   8px;
-  --transition:  0.2s ease;
+  --transition:  0.28s cubic-bezier(0.4,0,0.2,1);
 }
 
 .dark-mode {
@@ -52,6 +52,50 @@ body {
   min-height: 100vh;
   transition: background var(--transition), color var(--transition);
   line-height: 1.5;
+}
+
+/* ============================================================
+   DARK MODE SMOOTH TRANSITION — all major surfaces
+   ============================================================ */
+/* Broad catch-all: anything that uses CSS vars animates with body */
+.app-wrapper, .container, .dropdown, .dropdown-content,
+.form, .form input, .form select, .form button,
+.table-wrapper, table, thead th, tbody tr, td,
+.month-nav button, .filter-sort-row select,
+.search-input, h1, h2, h3, h4, p,
+.expense-total, .summary-card-inner, .summary-share-btn,
+#bottomNav, .bnav-item, #networkStatus,
+.pinned-section, .pinned-chip, .category-chip,
+.trash-note, input, select, textarea,
+.export-btn, button, .auth-card {
+  transition:
+    background var(--transition),
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+/* Toggle button — special spin+scale animation on click */
+#toggleDarkMode {
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    transform 0.18s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+#toggleDarkMode:active {
+  transform: scale(0.88) rotate(-12deg);
+}
+/* Emoji icon smooth flip */
+#toggleDarkMode.toggling {
+  animation: toggleSpin 0.36s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes toggleSpin {
+  0%   { transform: scale(1) rotate(0deg); }
+  40%  { transform: scale(0.82) rotate(-18deg); }
+  70%  { transform: scale(1.1) rotate(8deg); }
+  100% { transform: scale(1) rotate(0deg); }
 }
 
 /* Main app content needs padding restored */
@@ -1081,6 +1125,69 @@ body:has(#authScreen:not(.hidden)) {
 }
 
 /* ============================================================
+   SKELETON / SHIMMER — expense & income card placeholders
+   ============================================================ */
+.skeleton-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.skeleton-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.skel-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+.skel-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skel-line {
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  will-change: background-position;
+}
+.skel-line.tall  { height: 14px; width: 60%; }
+.skel-line.short { height: 10px; width: 40%; }
+
+.skel-btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.skel-btn {
+  width: 52px;
+  height: 26px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* ============================================================
    PERFORMANCE: hint the browser about animated / scrolling layers
    ============================================================ */
 .chart { will-change: auto; }          /* reset after Chart.js renders */
@@ -1225,26 +1332,94 @@ body:has(#authScreen:not(.hidden)) {
    FEATURE 14: SHARE BUTTON on Summary Card
    ============================================================ */
 .summary-share-btn {
-  margin-top: 12px;
-  display: block;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
-  padding: 8px 0;
+  padding: 11px 0;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--primary), var(--purple));
   border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text2);
-  font-size: 13px;
-  font-weight: 600;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background var(--transition), color var(--transition), border-color var(--transition);
-  letter-spacing: .2px;
+  letter-spacing: .3px;
+  box-shadow: 0 4px 14px rgba(37,99,235,.35);
+  transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 .summary-share-btn:hover {
-  background: var(--primary);
-  color: #fff;
-  border-color: var(--primary);
+  opacity: 0.92;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(37,99,235,.45);
 }
+.summary-share-btn:active { transform: none; }
+
+/* Share confirmation modal */
+.share-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(4px);
+  z-index: 10001;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+.share-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 24px 32px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.28s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity:0; }
+  to   { transform: none; opacity:1; }
+}
+
+.share-modal-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.share-modal-preview {
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.share-modal-preview img { width: 100%; display: block; }
+
+.share-modal-actions {
+  display: flex;
+  gap: 10px;
+}
+.share-modal-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: opacity var(--transition), transform 0.15s;
+}
+.share-modal-actions button:hover { opacity: 0.88; transform: translateY(-1px); }
+.share-modal-btn-share  { background: linear-gradient(135deg, var(--primary), var(--purple)); color:#fff; }
+.share-modal-btn-dl     { background: var(--success); color:#fff; }
+.share-modal-btn-cancel { background: var(--surface2); color: var(--text); border: 1px solid var(--border) !important; }
 
 /* ============================================================
    FEATURE 15: THEME PICKER
@@ -1308,6 +1483,348 @@ body:has(#authScreen:not(.hidden)) {
   --primary-h: #c2410c;
 }
 /* blue is the default — no override needed */
+
+/* ============================================================
+   EXPENSE CARDS (replaces plain table rows)
+   ============================================================ */
+.expense-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.expense-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition), background var(--transition), border-color var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.expense-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--danger);
+  border-radius: 4px 0 0 4px;
+  transition: background var(--transition);
+}
+.expense-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.exp-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  transition: background var(--transition);
+}
+.dark-mode .exp-card-icon {
+  background: linear-gradient(135deg, #450a0a, #7f1d1d);
+}
+
+.exp-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.exp-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.exp-card-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.exp-card-amount {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--danger);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.exp-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.exp-card-date {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.exp-card-cat {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 20px;
+  background: #eff6ff;
+  color: var(--primary);
+  border: 1px solid #bfdbfe;
+}
+.dark-mode .exp-card-cat {
+  background: #1e3a5f;
+  color: #93c5fd;
+  border-color: #1d4ed8;
+}
+
+.exp-card-note {
+  font-size: 12px;
+  color: var(--text2);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 140px;
+}
+
+.exp-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.exp-card-actions button {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  color: #fff;
+  min-height: unset;
+  line-height: 1.4;
+}
+.exp-card-actions .btn-edit  { background: var(--primary); }
+.exp-card-actions .btn-edit:hover  { background: var(--primary-h); }
+.exp-card-actions .btn-del   { background: var(--danger); }
+.exp-card-actions .btn-del:hover   { background: var(--danger-h); }
+
+/* Card appear animation */
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+.expense-card {
+  animation: cardFadeIn 0.22s ease both;
+}
+
+/* ============================================================
+   PWA INSTALL BANNER
+   ============================================================ */
+#pwaInstallBanner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9500;
+  padding: 0 0 env(safe-area-inset-bottom);
+  animation: pwaSlideUp 0.38s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes pwaSlideUp {
+  from { transform: translateY(110%); opacity:0; }
+  to   { transform: none; opacity:1; }
+}
+
+.pwa-banner-inner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  padding: 16px 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 -8px 32px rgba(0,0,0,.18);
+  backdrop-filter: blur(8px);
+}
+
+.pwa-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-banner-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 4px 14px rgba(37,99,235,.4);
+  flex-shrink: 0;
+}
+
+.pwa-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pwa-banner-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pwa-banner-sub {
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.pwa-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pwa-btn-install {
+  padding: 10px 18px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--primary), var(--purple));
+  color: #fff;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37,99,235,.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+.pwa-btn-install:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37,99,235,.5);
+}
+
+.pwa-btn-dismiss {
+  padding: 8px 10px;
+  border-radius: 50%;
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pwa-btn-dismiss:hover { background: var(--border); color: var(--text); }
+
+@media (max-width: 640px) {
+  /* Push app content above install banner when visible */
+  .pwa-install-active .app-wrapper { padding-bottom: 120px !important; }
+}
+
+/* ============================================================
+   SW UPDATE BANNER
+   ============================================================ */
+#swUpdateBanner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10002;
+  background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+  color: #fff;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0,0,0,.3);
+  animation: slideDown 0.35s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity:0; }
+  to   { transform: none; opacity:1; }
+}
+
+#swUpdateBanner button {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(255,255,255,.5);
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  min-height: unset;
+}
+#swUpdateBanner button:first-of-type {
+  background: #fff;
+  color: #1d4ed8;
+  border-color: #fff;
+}
+#swUpdateBanner button:hover { opacity: 0.88; }
+
+/* ============================================================
+   CHART DOWNLOAD BUTTON
+   ============================================================ */
+.chart-download-btn {
+  display: block;
+  margin: 8px auto 4px;
+  padding: 7px 20px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  color: var(--text2);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition), transform 0.15s;
+  letter-spacing: .3px;
+}
+.chart-download-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+.chart-download-btn:active { transform: none; }
 
 /* ============================================================
    DEVELOPER FOOTER
