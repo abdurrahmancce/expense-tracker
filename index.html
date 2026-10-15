@@ -48,6 +48,30 @@
   <!-- Feature 12: Network status banner -->
   <div id="networkStatus"></div>
 
+  <!-- Feature 26: SW Update Banner -->
+  <div id="swUpdateBanner" style="display:none;">
+    <span>🎉 New version available!</span>
+    <button onclick="window.location.reload()">🔄 Reload to Update</button>
+    <button onclick="document.getElementById('swUpdateBanner').style.display='none'">✕</button>
+  </div>
+
+  <!-- Feature 27: PWA Install Prompt Banner -->
+  <div id="pwaInstallBanner" style="display:none;" aria-label="Install app banner">
+    <div class="pwa-banner-inner">
+      <div class="pwa-banner-left">
+        <div class="pwa-banner-icon">💰</div>
+        <div class="pwa-banner-text">
+          <span class="pwa-banner-title">Install Expense Tracker</span>
+          <span class="pwa-banner-sub">Add to home screen — works offline!</span>
+        </div>
+      </div>
+      <div class="pwa-banner-actions">
+        <button id="pwaInstallBtn" class="pwa-btn-install">⬇️ Install</button>
+        <button id="pwaInstallDismiss" class="pwa-btn-dismiss">✕</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Feature 3: Bottom Navigation Bar (mobile only) -->
   <nav id="bottomNav" aria-label="Bottom navigation">
     <div class="bnav-item active" data-bnav="expenses">
@@ -193,14 +217,8 @@
           </select>
         </div>
         <div class="expense-total" id="expenseTotal"></div>
-        <div class="table-wrapper">
-          <table id="expenseTable">
-            <thead>
-              <tr><th>Item</th><th>Category</th><th>Amount</th><th>Date</th><th>Note</th><th>Action</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <!-- Expense Cards (replaces table) -->
+        <div class="expense-card-list" id="expenseCardList"></div>
       </div>
     </div>
 
@@ -231,18 +249,24 @@
     <div id="monthlyChartWrapper" style="width:100%;padding:0 4px;box-sizing:border-box;position:relative;height:320px;">
       <canvas id="monthlyChart" style="width:100% !important;height:100% !important;"></canvas>
     </div>
+    <button class="chart-download-btn" data-chart="monthlyChart">⬇️ Download Chart (PNG)</button>
+
     <div class="chart-wrapper">
       <canvas id="yearlyChart" class="chart"></canvas>
     </div>
+    <button class="chart-download-btn" data-chart="yearlyChart">⬇️ Download Chart (PNG)</button>
+
     <div id="categoryChartWrapper" class="chart-wrapper" style="width:100%;box-sizing:border-box;">
       <canvas id="categoryChart" class="chart"></canvas>
     </div>
+    <button class="chart-download-btn" data-chart="categoryChart">⬇️ Download Chart (PNG)</button>
 
     <!-- Income vs Expense Comparison Chart -->
     <h2>Income vs Expense</h2>
     <div id="comparisonChartWrapper" style="width:100%;padding:0 4px;box-sizing:border-box;position:relative;height:420px;">
       <canvas id="comparisonChart" style="width:100% !important;height:100% !important;"></canvas>
     </div>
+    <button class="chart-download-btn" data-chart="comparisonChart">⬇️ Download Chart (PNG)</button>
 
     <!-- Bonus/Income Section -->
     <h2 id="incomeSectionAnchor">Bonus/Income Tracker</h2>
@@ -351,12 +375,18 @@
     <div id="monthlyIncomeChartWrapper" style="width:100%;padding:0 4px;box-sizing:border-box;position:relative;height:320px;">
       <canvas id="monthlyIncomeChart" style="width:100% !important;height:100% !important;"></canvas>
     </div>
+    <button class="chart-download-btn" data-chart="monthlyIncomeChart">⬇️ Download Chart (PNG)</button>
+
     <div class="chart-wrapper">
       <canvas id="yearlyIncomeChart" class="chart"></canvas>
     </div>
+    <button class="chart-download-btn" data-chart="yearlyIncomeChart">⬇️ Download Chart (PNG)</button>
+
     <div id="incomeCategoryChartWrapper" class="chart-wrapper" style="width:100%;box-sizing:border-box;">
       <canvas id="incomeCategoryChart" class="chart"></canvas>
     </div>
+    <button class="chart-download-btn" data-chart="incomeCategoryChart">⬇️ Download Chart (PNG)</button>
+
     <div style="margin:10px 0 4px;text-align:center;">
       <label for="incomeCategoryYearFilter" style="font-weight:700;font-size:16px;margin-right:10px;">Monthly by Category — Year:</label>
       <select id="incomeCategoryYearFilter" style="padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:14px;">
@@ -366,6 +396,7 @@
     <div id="monthCatWrapper" style="width:100%;padding:0 4px;box-sizing:border-box;position:relative;height:420px;">
       <canvas id="incomeMonthlyByCategoryChart" style="width:100% !important;height:100% !important;"></canvas>
     </div>
+    <button class="chart-download-btn" data-chart="incomeMonthlyByCategoryChart">⬇️ Download Chart (PNG)</button>
 
   </div>
 
@@ -399,6 +430,21 @@
       navigator.serviceWorker.register("./sw.js").catch(err =>
         console.warn("SW registration failed:", err)
       );
+
+      // ── Update detection: SW sends SW_UPDATED after activating ──────────────
+      navigator.serviceWorker.addEventListener("message", e => {
+        if(e.data && e.data.type === "SW_UPDATED"){
+          // Show a persistent update banner
+          const banner = document.getElementById("swUpdateBanner");
+          if(banner) banner.style.display = "flex";
+        }
+      });
+
+      // Also detect when a new SW takes over via controller change
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if(!refreshing){ refreshing = true; /* page will reload automatically */ }
+      });
     }
   </script>
 </body>
