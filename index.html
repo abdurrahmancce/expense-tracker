@@ -48,6 +48,31 @@
   <!-- Feature 12: Network status banner -->
   <div id="networkStatus"></div>
 
+  <!-- Currency Bar -->
+  <div id="currencyBar">
+    <label for="currencySelect">💱 Currency:</label>
+    <select id="currencySelect">
+      <option value="BDT" selected>🇧🇩 BDT (৳)</option>
+      <option value="USD">🇺🇸 USD ($)</option>
+      <option value="EUR">🇪🇺 EUR (€)</option>
+      <option value="GBP">🇬🇧 GBP (£)</option>
+      <option value="INR">🇮🇳 INR (₹)</option>
+      <option value="SAR">🇸🇦 SAR (﷼)</option>
+    </select>
+    <span id="currencyRate"></span>
+  </div>
+
+  <!-- Keyboard Shortcut Panel -->
+  <div id="kbShortcutPanel" role="dialog" aria-label="Keyboard shortcuts">
+    <h4>⌨️ Keyboard Shortcuts</h4>
+    <div class="kb-row"><span>New Expense</span><span class="kb-key">Alt + N</span></div>
+    <div class="kb-row"><span>Toggle Dark Mode</span><span class="kb-key">Alt + D</span></div>
+    <div class="kb-row"><span>Search Expenses</span><span class="kb-key">Alt + F</span></div>
+    <div class="kb-row"><span>Export PDF</span><span class="kb-key">Alt + P</span></div>
+    <div class="kb-row"><span>Show Shortcuts</span><span class="kb-key">Alt + ?</span></div>
+    <div class="kb-row"><span>Close this panel</span><span class="kb-key">Esc</span></div>
+  </div>
+
   <!-- Feature 26: SW Update Banner -->
   <div id="swUpdateBanner" style="display:none;">
     <span>🎉 New version available!</span>
