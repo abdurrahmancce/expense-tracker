@@ -80,8 +80,18 @@ function observeChartCanvases(){
 // ===========================
 // Number Formatting
 // ===========================
+// Currency state — updated by the currency bar
+// ===========================
+const _CURRENCY_SYMBOLS = { BDT:"৳", USD:"$", EUR:"€", GBP:"£", INR:"₹", SAR:"﷼" };
+let _activeCurrency  = "BDT";
+let _conversionRate  = 1;      // 1 BDT → X activeCurrency  (BDT base)
+
 const _nf = new Intl.NumberFormat("en-IN");
-function fmt(amount){ return "৳ " + _nf.format(Number(amount)); }
+function fmt(amount){
+  const converted = Number(amount) * _conversionRate;
+  const sym = _CURRENCY_SYMBOLS[_activeCurrency] || _activeCurrency + " ";
+  return sym + " " + _nf.format(+converted.toFixed(2));
+}
 
 // XSS-safe HTML escaping — regex lookup, no DOM allocation.
 const _ESC = {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};
@@ -1288,7 +1298,7 @@ function renderExpenses(){
     const noteBadge = e.note
       ? `<span class="exp-card-note">📝 ${esc(e.note)}</span>`
       : "";
-    return `<div class="expense-card" style="animation-delay:${Math.min(idx*0.04,0.4)}s">
+    return `<div class="expense-card" data-del-exp="${e._i}" style="animation-delay:${Math.min(idx*0.04,0.4)}s">
       <div class="exp-card-icon">${emoji}</div>
       <div class="exp-card-body">
         <div class="exp-card-top">
@@ -3131,5 +3141,228 @@ async function loadThemeFromFirestore(){
       setTimeout(() => URL.revokeObjectURL(url), 5000);
       showToast("Chart downloaded! ✅", "success");
     }, "image/png");
+  });
+})();
+
+// ===========================
+// FEATURE 28: SWIPE TO DELETE (mobile)
+// ===========================
+(function(){
+  let _swipeTarget = null;
+  let _swipeStartX = 0;
+  let _swipeCurX   = 0;
+  const THRESHOLD  = 90; // px to trigger delete
+
+  function _getCard(el){ return el.closest(".expense-card"); }
+
+  document.addEventListener("touchstart", e => {
+    const card = _getCard(e.target);
+    if(!card || !card.dataset.delExp) return;
+    _swipeTarget = card;
+    _swipeStartX = e.touches[0].clientX;
+    _swipeCurX   = _swipeStartX;
+  }, { passive: true });
+
+  document.addEventListener("touchmove", e => {
+    if(!_swipeTarget) return;
+    _swipeCurX = e.touches[0].clientX;
+    const dx = _swipeStartX - _swipeCurX; // positive = swipe left
+    if(dx < 0){ _swipeTarget = null; return; } // ignore rightward swipes
+    _swipeTarget.classList.add("swiping");
+    _swipeTarget.style.transform = `translateX(${-dx}px)`;
+  }, { passive: true });
+
+  document.addEventListener("touchend", () => {
+    if(!_swipeTarget) return;
+    const dx = _swipeStartX - _swipeCurX;
+    if(dx >= THRESHOLD){
+      // Confirm delete
+      const idx = _swipeTarget.dataset.delExp;
+      _swipeTarget.classList.add("swipe-confirm");
+      haptic([40]);
+      _swipeTarget.addEventListener("animationend", () => {
+        deleteExpense(idx);
+      }, { once: true });
+    } else {
+      // Snap back
+      _swipeTarget.style.transform = "";
+      _swipeTarget.classList.remove("swiping");
+    }
+    _swipeTarget = null;
+  });
+
+  // Inject the red-bg layer when cards are rendered
+  const _origRender = window.renderExpenses;
+  // We patch via MutationObserver on #expenseCardList instead
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll(".expense-card:not([data-swipe-init])").forEach(card => {
+      card.setAttribute("data-swipe-init","1");
+      // Find the del button to copy its index onto the card
+      const delBtn = card.querySelector("[data-del-exp]");
+      if(delBtn) card.dataset.delExp = delBtn.dataset.delExp;
+      // Inject swipe-delete-bg reveal layer
+      const bg = document.createElement("div");
+      bg.className = "swipe-delete-bg";
+      bg.innerHTML = "🗑️ Delete";
+      card.appendChild(bg);
+    });
+  });
+  const cardList = document.getElementById("expenseCardList");
+  if(cardList) observer.observe(cardList, { childList: true });
+})();
+
+// ===========================
+// FEATURE 29: HAPTIC FEEDBACK
+// ===========================
+function haptic(pattern){
+  try {
+    if(navigator.vibrate) navigator.vibrate(pattern || [30]);
+  } catch(e){}
+}
+
+// Attach haptic to key interactive elements
+document.addEventListener("click", e => {
+  const el = e.target.closest("button, .bnav-item, .month-btn, .exp-card-actions button");
+  if(!el) return;
+  // Short tap for most, stronger for delete
+  if(el.classList.contains("btn-del") || el.dataset.delExp){
+    haptic([15,30,50]);
+  } else {
+    haptic([20]);
+  }
+  // Visual pulse on mobile
+  el.classList.remove("haptic-pulse");
+  void el.offsetWidth;
+  el.classList.add("haptic-pulse");
+  el.addEventListener("animationend", () => el.classList.remove("haptic-pulse"), { once: true });
+}, { passive: true });
+
+// ===========================
+// FEATURE 30: KEYBOARD SHORTCUTS
+// ===========================
+(function(){
+  const panel = document.getElementById("kbShortcutPanel");
+  let panelVisible = false;
+
+  function showPanel(){
+    panelVisible = true;
+    if(panel) panel.classList.add("visible");
+    // Auto-hide after 4 seconds
+    clearTimeout(window._kbPanelTimer);
+    window._kbPanelTimer = setTimeout(hidePanel, 4000);
+  }
+  function hidePanel(){
+    panelVisible = false;
+    if(panel) panel.classList.remove("visible");
+  }
+
+  document.addEventListener("keydown", e => {
+    // Ignore when typing in an input
+    const tag = document.activeElement?.tagName;
+    if(tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+    if(e.altKey){
+      switch(e.key.toLowerCase()){
+        case "n":
+          e.preventDefault();
+          haptic([30]);
+          document.getElementById("itemInput")?.focus();
+          document.getElementById("itemInput")?.scrollIntoView({ behavior:"smooth", block:"center" });
+          showToast("⌨️ New expense — fill in the form!", "info");
+          break;
+        case "d":
+          e.preventDefault();
+          haptic([30]);
+          document.getElementById("toggleDarkMode")?.click();
+          break;
+        case "f":
+          e.preventDefault();
+          haptic([30]);
+          // Find whichever search box is visible
+          const searchEl = document.getElementById("eidSearchInput") || document.querySelector("input[type='search']");
+          searchEl?.focus();
+          searchEl?.scrollIntoView({ behavior:"smooth", block:"center" });
+          showToast("⌨️ Search focused!", "info");
+          break;
+        case "p":
+          e.preventDefault();
+          haptic([30]);
+          document.getElementById("exportPDFBtn")?.click();
+          showToast("⌨️ Exporting PDF…", "info");
+          break;
+        case "?":
+          e.preventDefault();
+          haptic([20,20,20]);
+          panelVisible ? hidePanel() : showPanel();
+          break;
+      }
+    }
+    if(e.key === "Escape" && panelVisible){
+      hidePanel();
+    }
+  });
+})();
+
+// ===========================
+// FEATURE 31: MULTI-CURRENCY
+// ===========================
+(function(){
+  const sel       = document.getElementById("currencySelect");
+  const rateEl    = document.getElementById("currencyRate");
+  if(!sel) return;
+
+  // BDT → target rates (fallback table — updated from API when possible)
+  const FALLBACK = { BDT:1, USD:0.0091, EUR:0.0084, GBP:0.0072, INR:0.76, SAR:0.034 };
+
+  async function fetchRate(to){
+    if(to === "BDT") return 1;
+    try {
+      // Free, no-auth API
+      const res = await fetch(`https://open.er-api.com/v6/latest/BDT`);
+      if(!res.ok) throw new Error("network");
+      const data = await res.json();
+      const rate = data.rates?.[to];
+      if(rate) return rate;
+    } catch(e){}
+    return FALLBACK[to] ?? 1;
+  }
+
+  async function changeCurrency(to){
+    _activeCurrency = to;
+    if(to === "BDT"){
+      _conversionRate = 1;
+      rateEl.textContent = "";
+    } else {
+      rateEl.textContent = "Loading…";
+      rateEl.classList.add("loading");
+      const rate = await fetchRate(to);
+      _conversionRate = rate;
+      rateEl.textContent = `1 BDT = ${rate.toFixed(4)} ${to}`;
+      rateEl.classList.remove("loading");
+    }
+    // Re-render everything that uses fmt()
+    renderExpenses();
+    renderMonthlyYearlyTables?.();
+    renderEidFlatTable?.();
+    renderIncomeMonthlyYearlyTables?.();
+    // Update stats
+    updateStats?.();
+  }
+
+  sel.addEventListener("change", () => {
+    haptic([25]);
+    changeCurrency(sel.value);
+  });
+
+  // Persist last-used currency
+  const saved = localStorage.getItem("activeCurrency_cache");
+  if(saved && FALLBACK[saved]){
+    sel.value = saved;
+    changeCurrency(saved);
+  }
+
+  // Save on change
+  sel.addEventListener("change", () => {
+    try { localStorage.setItem("activeCurrency_cache", sel.value); } catch(e){}
   });
 })();
