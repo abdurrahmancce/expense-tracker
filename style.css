@@ -1506,6 +1506,33 @@ body:has(#authScreen:not(.hidden)) {
   transition: box-shadow var(--transition), transform var(--transition), background var(--transition), border-color var(--transition);
   position: relative;
   overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ─── Swipe-to-delete: red reveal layer ──────────────────── */
+.expense-card .swipe-delete-bg {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 100%;
+  background: linear-gradient(90deg, transparent 40%, #ff3b30ee);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 22px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  border-radius: var(--radius);
+  font-size: 1.4rem;
+}
+.expense-card.swiping .swipe-delete-bg { opacity: 1; }
+.expense-card.swipe-confirm {
+  animation: swipeOut 0.3s ease forwards;
+}
+@keyframes swipeOut {
+  to { transform: translateX(-110%); opacity: 0; height: 0; padding: 0; margin: 0; }
 }
 .expense-card::before {
   content: '';
@@ -1972,3 +1999,93 @@ body:has(#authScreen:not(.hidden)) {
     padding: 14px 20px;
   }
 }
+
+/* ─── Currency Selector ─────────────────────────────────── */
+#currencyBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+#currencyBar label { font-weight: 600; color: var(--text); }
+#currencySelect {
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1.5px solid var(--primary);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+}
+#currencyRate {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+#currencyRate.loading { opacity: 0.5; }
+
+/* ─── Keyboard Shortcut Toast ───────────────────────────── */
+#kbShortcutPanel {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(30,30,40,0.96);
+  color: #fff;
+  border-radius: 16px;
+  padding: 18px 26px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s, transform 0.22s;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  min-width: 260px;
+  backdrop-filter: blur(8px);
+}
+#kbShortcutPanel.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+#kbShortcutPanel h4 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+.kb-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 5px 0;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.kb-row:last-child { border-bottom: none; }
+.kb-key {
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ─── Haptic ripple visual feedback ────────────────────── */
+@keyframes hapticRipple {
+  0%   { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--primary-rgb, 99,102,241), 0.4); }
+  70%  { transform: scale(1.03); box-shadow: 0 0 0 8px rgba(var(--primary-rgb, 99,102,241), 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--primary-rgb, 99,102,241), 0); }
+}
+.haptic-pulse { animation: hapticRipple 0.35s ease; }
