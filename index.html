@@ -122,32 +122,62 @@
   ============================ -->
   <script>document.body.classList.add("auth-screen-active");</script>
   <div id="authScreen" class="auth-screen">
-    <div class="auth-card">
-      <!-- Animated background blobs -->
-      <div class="auth-blob auth-blob-1"></div>
-      <div class="auth-blob auth-blob-2"></div>
+    <!-- Live particle canvas -->
+    <canvas id="authParticleCanvas" class="auth-particle-canvas"></canvas>
 
-      <div class="auth-logo">💰</div>
+    <!-- Animated gradient orbs -->
+    <div class="auth-orb auth-orb-1"></div>
+    <div class="auth-orb auth-orb-2"></div>
+    <div class="auth-orb auth-orb-3"></div>
+
+    <!-- Floating finance icons -->
+    <div class="auth-float-icons" aria-hidden="true">
+      <span class="afi" style="--d:0s;--x:8%;--s:1.1">💸</span>
+      <span class="afi" style="--d:1.2s;--x:18%;--s:0.8">📊</span>
+      <span class="afi" style="--d:2.5s;--x:78%;--s:1.0">💳</span>
+      <span class="afi" style="--d:0.7s;--x:88%;--s:0.9">📈</span>
+      <span class="afi" style="--d:3.1s;--x:50%;--s:0.7">🏦</span>
+      <span class="afi" style="--d:1.9s;--x:35%;--s:1.2">💵</span>
+      <span class="afi" style="--d:4.0s;--x:65%;--s:0.85">🪙</span>
+    </div>
+
+    <div class="auth-card">
+      <!-- Card shimmer sweep -->
+      <div class="auth-card-shine"></div>
+
+      <!-- Logo with pulse ring -->
+      <div class="auth-logo-wrap">
+        <div class="auth-logo-ring"></div>
+        <div class="auth-logo">💰</div>
+      </div>
+
       <h1 class="auth-title">Expense Tracker</h1>
-      <p class="auth-subtitle">Track your finances, anytime, anywhere</p>
+      <p class="auth-subtitle" id="authTypewriter"></p>
 
       <p id="authError" class="auth-error"></p>
 
       <div class="auth-tabs">
-        <button id="loginTab" class="auth-tab active">Login</button>
-        <button id="signupTab" class="auth-tab">Sign Up</button>
+        <div class="auth-tab-slider"></div>
+        <button id="loginTab" class="auth-tab active">🔑 Login</button>
+        <button id="signupTab" class="auth-tab">✨ Sign Up</button>
       </div>
 
       <div id="loginForm" class="auth-form">
         <div class="auth-field">
           <span class="auth-icon">✉️</span>
           <input type="email" id="loginEmail" placeholder="Email address" maxlength="254" autocomplete="email">
+          <span class="auth-field-line"></span>
         </div>
         <div class="auth-field">
           <span class="auth-icon">🔒</span>
           <input type="password" id="loginPassword" placeholder="Password" maxlength="128" autocomplete="current-password">
+          <span class="auth-field-line"></span>
         </div>
-        <button id="loginBtn" class="auth-submit-btn">Login</button>
+        <button id="loginBtn" class="auth-submit-btn">
+          <span class="auth-btn-text">Login</span>
+          <span class="auth-btn-icon">→</span>
+          <span class="auth-btn-ripple"></span>
+        </button>
         <button type="button" id="forgotPasswordBtn" class="link-btn">Forgot Password?</button>
       </div>
 
@@ -155,12 +185,25 @@
         <div class="auth-field">
           <span class="auth-icon">✉️</span>
           <input type="email" id="signupEmail" placeholder="Email address" maxlength="254" autocomplete="email">
+          <span class="auth-field-line"></span>
         </div>
         <div class="auth-field">
           <span class="auth-icon">🔒</span>
           <input type="password" id="signupPassword" placeholder="Password (min 8 characters)" maxlength="128" autocomplete="new-password">
+          <span class="auth-field-line"></span>
         </div>
-        <button id="signupBtn" class="auth-submit-btn">Create Account</button>
+        <button id="signupBtn" class="auth-submit-btn">
+          <span class="auth-btn-text">Create Account</span>
+          <span class="auth-btn-icon">✓</span>
+          <span class="auth-btn-ripple"></span>
+        </button>
+      </div>
+
+      <!-- Trust badges -->
+      <div class="auth-badges">
+        <span class="auth-badge">🔐 Encrypted</span>
+        <span class="auth-badge">☁️ Cloud Sync</span>
+        <span class="auth-badge">📱 PWA</span>
       </div>
     </div>
   </div>
@@ -285,6 +328,19 @@
       <canvas id="categoryChart" class="chart"></canvas>
     </div>
     <button class="chart-download-btn" data-chart="categoryChart">⬇️ Download Chart (PNG)</button>
+
+    <!-- Analytics Section: Top 5 + Heatmap -->
+    <div class="analytics-section" id="analyticsInsights">
+      <h3>🔍 Spending Insights</h3>
+      <div id="top5Section">
+        <h4 style="font-size:13px;margin:0 0 10px;color:var(--text-muted);">🏆 Top 5 Expensive Items</h4>
+        <ul class="top5-list" id="top5List"></ul>
+      </div>
+      <div style="margin-top:20px;">
+        <h4 style="font-size:13px;margin:0 0 10px;color:var(--text-muted);">📅 Spending by Day of Week</h4>
+        <div class="heatmap-grid" id="dowHeatmap"></div>
+      </div>
+    </div>
 
     <!-- Income vs Expense Comparison Chart -->
     <h2>Income vs Expense</h2>
@@ -423,6 +479,24 @@
     </div>
     <button class="chart-download-btn" data-chart="incomeMonthlyByCategoryChart">⬇️ Download Chart (PNG)</button>
 
+  </div>
+
+  <!-- Bill Splitter Section -->
+  <div class="dropdown">
+    <button class="dropdown-btn" id="splitDropdownBtn" style="background:linear-gradient(90deg,#7c3aed,#2563eb);color:#fff;">🤝 Bill Splitter <span class="caret">▾</span></button>
+    <div class="dropdown-content" id="splitDropdownContent">
+      <div class="split-form" id="splitForm">
+        <input type="text" id="splitTitle" placeholder="Bill name (e.g., Dinner, Trip)" maxlength="100">
+        <input type="number" id="splitTotal" placeholder="Total amount" min="0">
+        <div id="splitPeopleList"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="text" id="splitPersonName" placeholder="Add person name" maxlength="60" style="flex:1;">
+          <button type="button" id="splitAddPersonBtn">➕ Add</button>
+        </div>
+        <button type="button" id="splitCalcBtn" style="margin-top:10px;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;width:100%;">🧮 Calculate Split</button>
+      </div>
+      <div id="splitResult"></div>
+    </div>
   </div>
 
   <!-- ===========================
