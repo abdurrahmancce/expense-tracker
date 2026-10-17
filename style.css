@@ -1448,6 +1448,11 @@ body:has(#authScreen:not(.hidden)) {
   display: none !important;
 }
 
+/* FAB hidden on all screen sizes by default; shown only in mobile media query */
+#fabAdd {
+  display: none;
+}
+
 #bottomNav {
   display: none;
 }
@@ -1492,8 +1497,9 @@ body:has(#authScreen:not(.hidden)) {
   /* Push app content above bottom nav */
   .app-wrapper { padding-bottom: 72px !important; }
 
-  /* FAB: floating add button */
+  /* FAB: floating add button — shown only on mobile */
   #fabAdd {
+    display: flex;
     position: fixed;
     bottom: 72px;
     right: 18px;
@@ -1512,7 +1518,6 @@ body:has(#authScreen:not(.hidden)) {
     outline: none;
     transition: background var(--transition), transform 0.15s ease, box-shadow 0.15s ease;
     -webkit-tap-highlight-color: transparent;
-    display: flex;
     align-items: center;
     justify-content: center;
   }
