@@ -14,6 +14,10 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// ── Persistent login: keep user signed in across browser closes ──
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
+
+
 // Enable offline persistence so repeat visits load instantly from cache.
 // Must be called before any other Firestore operations.
 db.enablePersistence({ synchronizeTabs: true }).catch(err => {
@@ -209,32 +213,70 @@ function switchAuthTab(tab){
 // ===========================
 // Sign up / Login / Logout
 // ===========================
-document.getElementById("signupBtn").addEventListener("click", async () => {
+async function doSignup() {
   const email = document.getElementById("signupEmail").value.trim();
-  const pass = document.getElementById("signupPassword").value;
+  const pass  = document.getElementById("signupPassword").value;
+  const btn   = document.getElementById("signupBtn");
+  const btnText = btn.querySelector(".auth-btn-text");
+  const btnIcon = btn.querySelector(".auth-btn-icon");
   authError.textContent = "";
   authError.style.color = "";
   if(!email || !pass){ authError.textContent = "Please enter your email and password."; return; }
   if(pass.length < 8){ authError.textContent = "Password must be at least 8 characters."; return; }
+  btn.disabled = true;
+  if(btnText) btnText.textContent = "Creating account...";
+  if(btnIcon) btnIcon.textContent = "⏳";
   try {
     await auth.createUserWithEmailAndPassword(email, pass);
   } catch(err){
     authError.textContent = "Sign-up failed. Please check your details and try again.";
+    btn.disabled = false;
+    if(btnText) btnText.textContent = "Create Account";
+    if(btnIcon) btnIcon.textContent = "✓";
   }
+}
+
+document.getElementById("signupBtn").addEventListener("click", doSignup);
+document.getElementById("signupPassword").addEventListener("keydown", e => {
+  if(e.key === "Enter"){ e.preventDefault(); doSignup(); }
+});
+document.getElementById("signupEmail").addEventListener("keydown", e => {
+  if(e.key === "Enter"){ e.preventDefault(); document.getElementById("signupPassword").focus(); }
 });
 
-document.getElementById("loginBtn").addEventListener("click", async () => {
+async function doLogin() {
   const email = document.getElementById("loginEmail").value.trim();
-  const pass = document.getElementById("loginPassword").value;
+  const pass  = document.getElementById("loginPassword").value;
+  const btn   = document.getElementById("loginBtn");
+  const btnText = btn.querySelector(".auth-btn-text");
+  const btnIcon = btn.querySelector(".auth-btn-icon");
   authError.textContent = "";
   authError.style.color = "";
   if(!email || !pass){ authError.textContent = "Please enter your email and password."; return; }
+  // Loading state
+  btn.disabled = true;
+  if(btnText) btnText.textContent = "Signing in...";
+  if(btnIcon) btnIcon.textContent = "⏳";
   try {
     await auth.signInWithEmailAndPassword(email, pass);
+    // onAuthStateChanged will fire and hide the auth screen
   } catch(err){
-    // Use a generic message — don't expose whether the email exists
     authError.textContent = "Incorrect email or password. Please try again.";
+    btn.disabled = false;
+    if(btnText) btnText.textContent = "Login";
+    if(btnIcon) btnIcon.textContent = "→";
   }
+}
+
+document.getElementById("loginBtn").addEventListener("click", doLogin);
+
+// Enter key on password field triggers login
+document.getElementById("loginPassword").addEventListener("keydown", e => {
+  if(e.key === "Enter"){ e.preventDefault(); doLogin(); }
+});
+// Enter key on email field moves focus to password
+document.getElementById("loginEmail").addEventListener("keydown", e => {
+  if(e.key === "Enter"){ e.preventDefault(); document.getElementById("loginPassword").focus(); }
 });
 
 document.getElementById("forgotPasswordBtn").addEventListener("click", async () => {
@@ -433,6 +475,8 @@ function subscribeToExpenses(){
         renderExpenses();
         renderMonthlyYearlyTables();
         renderSummaryCard();
+        renderTop5();
+        renderDowHeatmap();
       }, 200);
       // Charts: deferred (600 ms) so rapid edits don't thrash canvas
       clearTimeout(_expChartDebounce);
@@ -1408,6 +1452,27 @@ function renderSummaryCard(){
   const netSign  = net >= 0 ? "+" : "";
   const monthLabel = `${monthNames[thisMonth]} ${thisYear}`;
 
+  // Savings rate
+  const savingsPct = monthIncome > 0 ? Math.max(0, Math.min(100, ((net / monthIncome) * 100))) : 0;
+  const ringR = 28, ringC = 35, ringCirc = 2 * Math.PI * ringR;
+  const ringOffset = ringCirc * (1 - savingsPct / 100);
+  const ringColor = savingsPct >= 20 ? "var(--success)" : savingsPct >= 5 ? "#f59e0b" : "var(--danger)";
+
+  // Month-over-month comparison
+  const prevDate  = new Date(thisYear, thisMonth - 1, 1);
+  const prevY = prevDate.getFullYear(), prevM = prevDate.getMonth();
+  const prevExpense = expenses
+    .filter(e => { const d = new Date(e.date); return d.getFullYear()===prevY && d.getMonth()===prevM; })
+    .reduce((s,e) => s + e.amount, 0);
+  let momHtml = "";
+  if(prevExpense > 0){
+    const diff = monthExpense - prevExpense;
+    const diffPct = ((diff / prevExpense) * 100).toFixed(1);
+    const momClass = diff > 0 ? "up" : diff < 0 ? "down" : "flat";
+    const momIcon  = diff > 0 ? "▲" : diff < 0 ? "▼" : "→";
+    momHtml = `<span class="mom-badge ${momClass}">${momIcon} ${Math.abs(diffPct)}% vs last month</span>`;
+  }
+
   card.innerHTML = `
     <div class="summary-card-inner">
       <h3 class="summary-title">📊 ${monthLabel} Overview</h3>
@@ -1418,6 +1483,7 @@ function renderSummaryCard(){
             <div>
               <div class="summary-label">Total Expense</div>
               <div class="summary-amount">${fmt(monthExpense)}</div>
+              ${momHtml}
             </div>
           </div>
           <div class="summary-divider"></div>
@@ -1434,6 +1500,25 @@ function renderSummaryCard(){
           <div>
             <div class="summary-label">Net Balance</div>
             <div class="summary-amount" style="color:${netColor}">${netSign}${fmt(net)}</div>
+          </div>
+        </div>
+        <div class="savings-section">
+          <div class="savings-ring-wrap">
+            <svg width="70" height="70" viewBox="0 0 70 70">
+              <circle class="savings-ring-bg" cx="${ringC}" cy="${ringC}" r="${ringR}"/>
+              <circle class="savings-ring-fg" cx="${ringC}" cy="${ringC}" r="${ringR}"
+                stroke="${ringColor}"
+                stroke-dasharray="${ringCirc}"
+                stroke-dashoffset="${ringOffset}"/>
+            </svg>
+            <div class="savings-ring-pct">${savingsPct.toFixed(0)}%</div>
+          </div>
+          <div class="savings-details">
+            <h4>💰 Savings Rate</h4>
+            <div class="savings-amount ${net >= 0 ? 'positive' : 'negative'}">${netSign}${fmt(net)}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">
+              ${monthIncome > 0 ? `Saved ${savingsPct.toFixed(1)}% of income` : "No income recorded"}
+            </div>
           </div>
         </div>
       </div>
@@ -2816,7 +2901,7 @@ function renderEidTables(){
 // ===========================
 // FEATURE 14: SHARE MONTHLY SUMMARY (Canvas → PNG → Web Share)
 // ===========================
-function shareMonthlySummary(){
+function shareMonthlySummary_OLD_REPLACED(){
   const now = new Date();
   const thisYear = now.getFullYear();
   const thisMonth = now.getMonth();
@@ -3365,4 +3450,506 @@ document.addEventListener("click", e => {
   sel.addEventListener("change", () => {
     try { localStorage.setItem("activeCurrency_cache", sel.value); } catch(e){}
   });
+})();
+// ===========================
+// FEATURE 32: TOP 5 EXPENSIVE ITEMS
+// ===========================
+function renderTop5(){
+  const el = document.getElementById("top5List");
+  if(!el) return;
+
+  // Aggregate by item name (current month filter if set, else all time)
+  const now = new Date();
+  const source = currentExpenseFilter === "all"
+    ? expenses
+    : expenses.filter(e => {
+        const [y,m] = currentExpenseFilter.split("-").map(Number);
+        const d = new Date(e.date);
+        return d.getFullYear()===y && (d.getMonth()+1)===m;
+      });
+
+  const totals = {};
+  source.forEach(e => {
+    totals[e.item] = (totals[e.item]||0) + e.amount;
+  });
+  const sorted = Object.entries(totals).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(!sorted.length){ el.innerHTML = `<li style="color:var(--text-muted);font-size:13px;">No data yet</li>`; return; }
+  const max = sorted[0][1];
+  el.innerHTML = sorted.map(([name, amt], i) => `
+    <li class="top5-item">
+      <span class="top5-rank">${i+1}</span>
+      <span class="top5-name">${esc(name)}</span>
+      <div class="top5-bar-wrap"><div class="top5-bar" style="width:${(amt/max*100).toFixed(1)}%"></div></div>
+      <span class="top5-amt">${fmt(amt)}</span>
+    </li>
+  `).join("");
+}
+
+// ===========================
+// FEATURE 33: DAY-OF-WEEK HEATMAP
+// ===========================
+function renderDowHeatmap(){
+  const el = document.getElementById("dowHeatmap");
+  if(!el) return;
+
+  const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const totals = [0,0,0,0,0,0,0];
+
+  expenses.forEach(e => {
+    const dow = new Date(e.date).getDay();
+    totals[dow] += e.amount;
+  });
+  const max = Math.max(...totals, 1);
+
+  el.innerHTML = days.map((day, i) => {
+    const h = Math.round((totals[i] / max) * 44);
+    const pct = totals[i] > 0 ? Math.round(totals[i]/max*100) : 0;
+    const barColor = pct > 70 ? "var(--danger)" : pct > 40 ? "#f59e0b" : "var(--primary)";
+    return `
+      <div class="heatmap-day">
+        <div class="hd-label">${day}</div>
+        <div class="hd-bar-wrap">
+          <div class="hd-bar" style="height:${h}px;background:${barColor};"></div>
+        </div>
+        <div class="hd-amt">${totals[i]>0 ? fmt(totals[i]) : "—"}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+// ===========================
+// FEATURE 34: DRAG TO REORDER CATEGORIES
+// ===========================
+(function(){
+  let _dragSrc = null;
+
+  function initCategoryDrag(){
+    const list = document.getElementById("categoryManageList");
+    if(!list) return;
+
+    list.querySelectorAll(".category-item").forEach(item => {
+      if(item.dataset.dragInit) return;
+      item.dataset.dragInit = "1";
+      item.setAttribute("draggable", "true");
+
+      // Add drag handle if not present
+      if(!item.querySelector(".drag-handle")){
+        const handle = document.createElement("span");
+        handle.className = "drag-handle";
+        handle.textContent = "⠿";
+        item.prepend(handle);
+      }
+
+      item.addEventListener("dragstart", e => {
+        _dragSrc = item;
+        e.dataTransfer.effectAllowed = "move";
+        setTimeout(() => item.style.opacity = "0.4", 0);
+      });
+      item.addEventListener("dragend", () => {
+        item.style.opacity = "";
+        list.querySelectorAll(".category-item").forEach(i => i.classList.remove("drag-over"));
+        _saveNewCategoryOrder(list);
+      });
+      item.addEventListener("dragover", e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        if(item !== _dragSrc) item.classList.add("drag-over");
+      });
+      item.addEventListener("dragleave", () => item.classList.remove("drag-over"));
+      item.addEventListener("drop", e => {
+        e.preventDefault();
+        if(!_dragSrc || _dragSrc === item) return;
+        const items = [...list.children];
+        const srcIdx = items.indexOf(_dragSrc);
+        const tgtIdx = items.indexOf(item);
+        if(srcIdx < tgtIdx) item.after(_dragSrc);
+        else item.before(_dragSrc);
+        item.classList.remove("drag-over");
+      });
+    });
+  }
+
+  function _saveNewCategoryOrder(list){
+    const order = [...list.querySelectorAll(".category-item")].map(i => i.dataset.cat || i.textContent.trim().replace("⠿","").trim());
+    try { localStorage.setItem("categoryOrder_cache", JSON.stringify(order)); } catch(e){}
+    showToast("✅ Category order saved!", "success");
+  }
+
+  // Re-init whenever category list changes (MutationObserver)
+  const catList = document.getElementById("categoryManageList");
+  if(catList){
+    new MutationObserver(initCategoryDrag).observe(catList, { childList: true, subtree: true });
+    initCategoryDrag();
+  }
+})();
+
+// ===========================
+// FEATURE 35: BEAUTIFUL SHARE CARD + WHATSAPP/TELEGRAM
+// ===========================
+async function shareMonthlySummary(){
+  const canvas = document.getElementById("summaryCanvas");
+  if(!canvas){ showToast("Summary canvas not found", "error"); return; }
+
+  // Build the share image using an offscreen canvas
+  const W = 600, H = 340;
+  const off = document.createElement("canvas");
+  off.width = W; off.height = H;
+  const ctx = off.getContext("2d");
+
+  const dark = document.body.classList.contains("dark-mode");
+  const bg1 = dark ? "#1e1b4b" : "#4f46e5";
+  const bg2 = dark ? "#312e81" : "#7c3aed";
+
+  // Gradient background
+  const grad = ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0, bg1); grad.addColorStop(1, bg2);
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.roundRect(0,0,W,H,18);
+  ctx.fill();
+
+  // Watermark pattern (subtle circles)
+  ctx.globalAlpha = 0.06;
+  ctx.fillStyle = "#fff";
+  for(let i=0;i<6;i++){
+    ctx.beginPath();
+    ctx.arc(W-60+i*20, 60+i*30, 80, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // Grab current month data from DOM
+  const now = new Date();
+  const monthLabel = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+  const monthExpense = expenses.filter(e=>{ const d=new Date(e.date); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth(); }).reduce((s,e)=>s+e.amount,0);
+  const monthIncome  = salamis.filter(s=>{ const mi=monthNames.indexOf(s.month); return Number(s.year)===now.getFullYear()&&mi===now.getMonth(); }).reduce((s,i)=>s+i.amount,0);
+  const net = monthIncome - monthExpense;
+  const savePct = monthIncome>0 ? Math.max(0,Math.min(100,(net/monthIncome*100))).toFixed(1) : "—";
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 28px system-ui, sans-serif";
+  ctx.fillText("💰 Expense Tracker", 30, 52);
+
+  ctx.font = "16px system-ui, sans-serif";
+  ctx.globalAlpha = 0.7;
+  ctx.fillText(`📊 ${monthLabel} Summary`, 30, 82);
+  ctx.globalAlpha = 1;
+
+  // Divider
+  ctx.fillStyle = "rgba(255,255,255,0.2)";
+  ctx.fillRect(30, 96, W-60, 1);
+
+  // Stats row
+  const stats = [
+    { label:"Total Expense", val: fmt(monthExpense), icon:"💸" },
+    { label:"Total Income",  val: fmt(monthIncome),  icon:"💰" },
+    { label:"Net Balance",   val: (net>=0?"+":"")+fmt(net), icon: net>=0?"✅":"⚠️" },
+    { label:"Savings Rate",  val: savePct+"%", icon:"📈" },
+  ];
+  stats.forEach((s,i)=>{
+    const x = 30 + i * 140;
+    ctx.font = "22px system-ui";
+    ctx.fillText(s.icon, x, 148);
+    ctx.font = "bold 16px system-ui, sans-serif";
+    ctx.fillStyle = "#fff";
+    ctx.fillText(s.val, x, 172);
+    ctx.font = "11px system-ui, sans-serif";
+    ctx.globalAlpha = 0.6;
+    ctx.fillText(s.label, x, 190);
+    ctx.globalAlpha = 1;
+  });
+
+  // Top 3 categories
+  const catTotals = {};
+  expenses.filter(e=>{ const d=new Date(e.date); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth(); })
+    .forEach(e=>{ catTotals[e.category||"Uncategorized"]=(catTotals[e.category||"Uncategorized"]||0)+e.amount; });
+  const top3 = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).slice(0,3);
+
+  ctx.fillStyle = "rgba(255,255,255,0.1)";
+  ctx.beginPath(); ctx.roundRect(30,210,W-60,90,12); ctx.fill();
+
+  ctx.font = "bold 13px system-ui, sans-serif";
+  ctx.fillStyle = "#fff";
+  ctx.globalAlpha = 0.7;
+  ctx.fillText("TOP CATEGORIES", 46, 232);
+  ctx.globalAlpha = 1;
+
+  const maxCat = top3[0]?.[1] || 1;
+  top3.forEach(([cat,amt],i)=>{
+    const y = 248 + i*18;
+    ctx.font = "12px system-ui";
+    ctx.fillStyle = "#fff";
+    ctx.fillText(`${i+1}. ${cat}`, 46, y);
+    // mini bar
+    const bw = Math.round(amt/maxCat * 140);
+    ctx.fillStyle = "rgba(255,255,255,0.3)";
+    ctx.fillRect(200, y-10, 140, 8);
+    ctx.fillStyle = "#a5b4fc";
+    ctx.fillRect(200, y-10, bw, 8);
+    ctx.font = "11px system-ui";
+    ctx.fillStyle = "#fff";
+    ctx.globalAlpha = 0.8;
+    ctx.fillText(fmt(amt), 350, y);
+    ctx.globalAlpha = 1;
+  });
+
+  // Footer
+  ctx.font = "11px system-ui";
+  ctx.globalAlpha = 0.45;
+  ctx.fillStyle = "#fff";
+  ctx.fillText("Made with Expense Tracker • abdurrahmancce.github.io/Expense-Tracker", 30, H-14);
+  ctx.globalAlpha = 1;
+
+  // Convert to blob
+  off.toBlob(async blob => {
+    if(!blob){ showToast("Image generation failed", "error"); return; }
+    const url = URL.createObjectURL(blob);
+
+    // Build modal
+    const overlay = document.createElement("div");
+    overlay.className = "share-modal-overlay";
+    overlay.innerHTML = `
+      <div class="share-modal">
+        <img src="${url}" class="share-card-preview" alt="Monthly Summary Card" style="width:100%;max-width:520px;display:block;margin:0 auto;">
+        <div class="share-modal-actions">
+          <button class="share-btn-wa" id="_waBtn">📲 WhatsApp</button>
+          <button class="share-btn-tg" id="_tgBtn">✈️ Telegram</button>
+          <button class="share-btn-dl" id="_dlBtn">⬇️ Download</button>
+          ${navigator.share ? '<button class="share-btn-dl" id="_nativeShareBtn" style="background:#22c55e;">📤 Share</button>' : ""}
+          <button class="share-btn-cls" id="_shareClose">✕ Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const file = new File([blob], `summary-${monthLabel.replace(" ","-")}.png`, { type:"image/png" });
+
+    overlay.querySelector("#_dlBtn").onclick = () => {
+      const a=document.createElement("a"); a.href=url;
+      a.download=`expense-summary-${monthLabel.replace(" ","-")}.png`;
+      a.click();
+      showToast("Downloaded! ✅","success");
+    };
+
+    overlay.querySelector("#_waBtn").onclick = () => {
+      // WhatsApp share via web.whatsapp.com (opens chat)
+      const text = encodeURIComponent(`📊 ${monthLabel} Summary\n💸 Expense: ${fmt(monthExpense)}\n💰 Income: ${fmt(monthIncome)}\n✅ Net: ${(net>=0?"+":"")+fmt(net)}\n📈 Savings: ${savePct}%`);
+      window.open(`https://wa.me/?text=${text}`, "_blank");
+      showToast("WhatsApp opened — share the downloaded image!", "info");
+    };
+
+    overlay.querySelector("#_tgBtn").onclick = () => {
+      const text = encodeURIComponent(`📊 ${monthLabel} Summary\n💸 Expense: ${fmt(monthExpense)}\n💰 Income: ${fmt(monthIncome)}\n✅ Net: ${(net>=0?"+":"")+fmt(net)}\n📈 Savings: ${savePct}%`);
+      window.open(`https://t.me/share/url?url=${encodeURIComponent("https://abdurrahmancce.github.io/Expense-Tracker/")}&text=${text}`, "_blank");
+      showToast("Telegram opened!", "info");
+    };
+
+    const nativeBtn = overlay.querySelector("#_nativeShareBtn");
+    if(nativeBtn) nativeBtn.onclick = async () => {
+      try {
+        if(navigator.canShare?.({ files:[file] })){
+          await navigator.share({ files:[file], title:"Monthly Summary", text:`${monthLabel} Expense Summary` });
+        } else {
+          await navigator.share({ title:"Monthly Summary", text:`${monthLabel} Expense Summary`, url:"https://abdurrahmancce.github.io/Expense-Tracker/" });
+        }
+      } catch(e){ if(e.name !== "AbortError") showToast("Share failed","error"); }
+    };
+
+    const close = () => { URL.revokeObjectURL(url); overlay.remove(); };
+    overlay.querySelector("#_shareClose").onclick = close;
+    overlay.addEventListener("click", e => { if(e.target===overlay) close(); });
+  }, "image/png");
+}
+
+// ===========================
+// FEATURE 36: BILL SPLITTER
+// ===========================
+(function(){
+  const titleEl  = document.getElementById("splitTitle");
+  const totalEl  = document.getElementById("splitTotal");
+  const nameEl   = document.getElementById("splitPersonName");
+  const addBtn   = document.getElementById("splitAddPersonBtn");
+  const calcBtn  = document.getElementById("splitCalcBtn");
+  const peopleEl = document.getElementById("splitPeopleList");
+  const resultEl = document.getElementById("splitResult");
+  const dropBtn  = document.getElementById("splitDropdownBtn");
+  const dropContent = document.getElementById("splitDropdownContent");
+
+  if(!addBtn) return;
+
+  // Dropdown toggle
+  if(dropBtn && dropContent){
+    dropBtn.addEventListener("click", () => {
+      const open = dropContent.classList.contains("active");
+      dropContent.classList.toggle("active", !open);
+      dropBtn.querySelector(".caret").textContent = open ? "▾" : "▴";
+    });
+  }
+
+  let _people = [];
+
+  function renderPeople(){
+    peopleEl.innerHTML = _people.map((p,i) => `
+      <div class="split-person-chip">
+        👤 ${esc(p)}
+        <button data-remove="${i}" title="Remove">✕</button>
+      </div>
+    `).join("");
+    peopleEl.querySelectorAll("[data-remove]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        _people.splice(Number(btn.dataset.remove), 1);
+        renderPeople();
+      });
+    });
+  }
+
+  addBtn.addEventListener("click", () => {
+    const name = nameEl.value.trim();
+    if(!name){ showToast("Enter a person's name", "error"); return; }
+    if(_people.includes(name)){ showToast("Already added!", "error"); return; }
+    _people.push(name);
+    nameEl.value = "";
+    renderPeople();
+    haptic([20]);
+  });
+
+  nameEl.addEventListener("keydown", e => { if(e.key==="Enter"){ e.preventDefault(); addBtn.click(); } });
+
+  calcBtn.addEventListener("click", () => {
+    const title = titleEl.value.trim() || "Bill";
+    const total = parseFloat(totalEl.value);
+    if(!total || total <= 0){ showToast("Enter a valid total amount", "error"); return; }
+    if(_people.length < 2){ showToast("Add at least 2 people to split", "error"); return; }
+    haptic([30]);
+
+    const share = total / _people.length;
+    resultEl.innerHTML = `
+      <div class="split-result-card">
+        <h4>🤝 ${esc(title)} — ${fmt(total)} ÷ ${_people.length} people</h4>
+        ${_people.map(p => `
+          <div class="split-row">
+            <span class="split-name">👤 ${esc(p)}</span>
+            <span class="split-share">${fmt(share)}</span>
+          </div>
+        `).join("")}
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="this.closest('.split-result-card').querySelector('.split-copy-btn')?.click()" 
+            class="split-copy-btn" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:700;"
+            onclick="_copySplitResult('${esc(title)}', ${total}, ${JSON.stringify(_people)})">📋 Copy</button>
+          <button style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:700;"
+            onclick="_shareSplitWA('${esc(title)}', ${total}, ${JSON.stringify(_people)})">📲 WhatsApp</button>
+        </div>
+      </div>
+    `;
+    showToast(`Split: each pays ${fmt(share)} 💰`, "success");
+  });
+})();
+
+function _copySplitResult(title, total, people){
+  const share = total / people.length;
+  const text = `🤝 ${title} Split\nTotal: ${fmt(total)}\n` + people.map(p=>`👤 ${p}: ${fmt(share)}`).join("\n");
+  navigator.clipboard?.writeText(text).then(()=>showToast("Copied! ✅","success")).catch(()=>showToast("Copy failed","error"));
+}
+
+function _shareSplitWA(title, total, people){
+  const share = total / people.length;
+  const text = `🤝 *${title} Split*\nTotal: ${fmt(total)}\n` + people.map(p=>`👤 ${p}: ${fmt(share)}`).join("\n");
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+}
+
+// ===========================
+// FEATURE 37: AUTH SCREEN LIVE ANIMATIONS
+// ===========================
+(function(){
+  // ---- Particle canvas ----
+  const canvas = document.getElementById("authParticleCanvas");
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+  let W, H, particles = [];
+
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  class Particle {
+    constructor(){
+      this.reset(true);
+    }
+    reset(init){
+      this.x = Math.random() * W;
+      this.y = init ? Math.random() * H : H + 10;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedY = -(Math.random() * 0.4 + 0.1);
+      this.speedX = (Math.random() - 0.5) * 0.2;
+      this.opacity = Math.random() * 0.5 + 0.1;
+      const colors = ["#6366f1","#a78bfa","#38bdf8","#818cf8","#e0e7ff"];
+      this.color = colors[Math.floor(Math.random()*colors.length)];
+    }
+    update(){
+      this.y += this.speedY;
+      this.x += this.speedX;
+      if(this.y < -10) this.reset(false);
+    }
+    draw(){
+      ctx.save();
+      ctx.globalAlpha = this.opacity;
+      ctx.fillStyle = this.color;
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  for(let i=0; i<90; i++) particles.push(new Particle());
+
+  function animParticles(){
+    if(!document.getElementById("authScreen") || document.getElementById("authScreen").classList.contains("hidden")){
+      return; // stop when auth screen hidden
+    }
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animParticles);
+  }
+  animParticles();
+
+  // ---- Typewriter subtitle ----
+  const subtitleEl = document.getElementById("authTypewriter");
+  if(subtitleEl){
+    const phrases = [
+      "Track your finances, anytime.",
+      "Stay on top of every taka.",
+      "Smart budgeting made simple.",
+      "Your money, your control."
+    ];
+    let pi=0, ci=0, deleting=false, pauseTimer=0;
+    function typeWriter(){
+      const phrase = phrases[pi];
+      if(deleting){
+        subtitleEl.textContent = phrase.substring(0, ci--);
+        if(ci < 0){ deleting=false; pi=(pi+1)%phrases.length; ci=0; pauseTimer=12; }
+      } else {
+        subtitleEl.textContent = phrase.substring(0, ci++);
+        if(ci > phrase.length){ deleting=true; pauseTimer=40; }
+      }
+      if(pauseTimer-- > 0){ setTimeout(typeWriter, 80); return; }
+      setTimeout(typeWriter, deleting ? 45 : 75);
+    }
+    setTimeout(typeWriter, 800);
+  }
+
+  // ---- Tab slider ----
+  const loginTab  = document.getElementById("loginTab");
+  const signupTab = document.getElementById("signupTab");
+  const tabsEl    = loginTab?.closest(".auth-tabs");
+
+  if(loginTab && signupTab && tabsEl){
+    signupTab.addEventListener("click",  () => tabsEl.classList.add("signup-active"));
+    loginTab.addEventListener("click",   () => tabsEl.classList.remove("signup-active"));
+  }
 })();
