@@ -958,6 +958,28 @@ async function loadIncomeCategories(){
     incomeCategories = fetched;
   }
 
+  // 4. Migration: remove legacy categories, add missing ones
+  const LEGACY_REMOVE = ["Ibrahim Bhaiya", "Family"];
+  const REQUIRED_CATS = ["Business", "Tuition", "Gift", "Bonus", "Job", "Other"];
+  const toRemove = incomeCategories.filter(c => LEGACY_REMOVE.includes(c.name));
+  const existingNames = incomeCategories.map(c => c.name);
+  const toAdd = REQUIRED_CATS.filter(name => !existingNames.includes(name));
+
+  if(toRemove.length > 0 || toAdd.length > 0){
+    try {
+      const migBatch = db.batch();
+      toRemove.forEach(c => migBatch.delete(userIncomeCategoriesRef().doc(c.id)));
+      const addedCats = toAdd.map(name => {
+        const ref = userIncomeCategoriesRef().doc();
+        migBatch.set(ref, { name });
+        return { id: ref.id, name };
+      });
+      await migBatch.commit();
+      const removeIds = new Set(toRemove.map(c => c.id));
+      incomeCategories = incomeCategories.filter(c => !removeIds.has(c.id)).concat(addedCats);
+    } catch(err){ console.error("Income category migration failed:", err); }
+  }
+
   // 3. Update cache with fresh data
   try { localStorage.setItem(cacheKey, JSON.stringify(incomeCategories)); } catch(e){}
 }
