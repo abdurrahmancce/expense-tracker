@@ -1730,29 +1730,6 @@ body:has(#authScreen:not(.hidden)) {
   -webkit-user-select: none;
 }
 
-/* ─── Swipe-to-delete: red reveal layer ──────────────────── */
-.expense-card .swipe-delete-bg {
-  position: absolute;
-  right: 0; top: 0; bottom: 0;
-  width: 100%;
-  background: linear-gradient(90deg, transparent 40%, #ff3b30ee);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 22px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  border-radius: var(--radius);
-  font-size: 1.4rem;
-}
-.expense-card.swiping .swipe-delete-bg { opacity: 1; }
-.expense-card.swipe-confirm {
-  animation: swipeOut 0.3s ease forwards;
-}
-@keyframes swipeOut {
-  to { transform: translateX(-110%); opacity: 0; height: 0; padding: 0; margin: 0; }
-}
 .expense-card::before {
   content: '';
   position: absolute;
