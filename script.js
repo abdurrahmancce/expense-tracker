@@ -96,6 +96,14 @@ function fmt(amount){
   const sym = _CURRENCY_SYMBOLS[_activeCurrency] || _activeCurrency + " ";
   return sym + " " + _nf.format(+converted.toFixed(2));
 }
+// PDF-safe formatter — jsPDF default font cannot render Unicode symbols (৳ ₹ ﷼)
+// so we use the plain ISO currency code instead (BDT, USD, EUR …)
+const _PDF_CURRENCY_LABELS = { BDT:"BDT", USD:"USD", EUR:"EUR", GBP:"GBP", INR:"INR", SAR:"SAR" };
+function fmtPdf(amount){
+  const converted = Number(amount) * _conversionRate;
+  const label = _PDF_CURRENCY_LABELS[_activeCurrency] || _activeCurrency;
+  return label + " " + _nf.format(+converted.toFixed(2));
+}
 
 // XSS-safe HTML escaping — regex lookup, no DOM allocation.
 const _ESC = {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};
@@ -1174,34 +1182,45 @@ setupDropdown("incomeCategoryDropdownBtn", "incomeCategoryDropdownContent");
 // ===========================
 // Expense Functions
 // ===========================
+let _addExpenseLock = false;
 async function addExpense(){
+  if(_addExpenseLock) return;
   const item=document.getElementById("item").value;
   const amount=parseFloat(document.getElementById("amount").value);
   const category=document.getElementById("expenseCategory").value;
   const date=document.getElementById("date").value;
   if(!item || !amount || !date){ showToast("Please fill in all fields!", "error"); return; }
 
+  _addExpenseLock = true;
+  const saveBtn = document.querySelector("button[onclick='addExpense()']");
+  if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = "Saving…"; }
+
   const note=document.getElementById("expenseNote").value.trim();
 
   const entry = {item,amount,category,date,note};
   const wasEditing = editingExpenseIndex !== -1;
 
-  if(editingExpenseIndex === -1){
-    await userExpensesRef().add(entry);
-    // onSnapshot will automatically update the expenses array and re-render
-  } else {
-    const id = expenses[editingExpenseIndex].id;
-    await userExpensesRef().doc(id).set(entry);
-    editingExpenseIndex = -1;
-    // onSnapshot will handle re-render
+  try {
+    if(editingExpenseIndex === -1){
+      await userExpensesRef().add(entry);
+    } else {
+      const id = expenses[editingExpenseIndex].id;
+      await userExpensesRef().doc(id).set(entry);
+      editingExpenseIndex = -1;
+    }
+    document.getElementById("item").value="";
+    document.getElementById("amount").value="";
+    document.getElementById("expenseCategory").value="";
+    document.getElementById("date").value="";
+    document.getElementById("expenseNote").value="";
+    showToast(wasEditing ? "Expense updated!" : "Expense saved!", "success");
+  } catch(err){
+    showToast("Failed to save expense. Please try again.", "error");
+    console.error("addExpense error:", err);
+  } finally {
+    _addExpenseLock = false;
+    if(saveBtn){ saveBtn.disabled = false; saveBtn.textContent = "Save Expense"; }
   }
-
-  document.getElementById("item").value="";
-  document.getElementById("amount").value="";
-  document.getElementById("expenseCategory").value="";
-  document.getElementById("date").value="";
-  document.getElementById("expenseNote").value="";
-  showToast(wasEditing ? "Expense updated!" : "Expense saved!", "success");
 }
 
 function editExpense(i){
@@ -2096,9 +2115,9 @@ function exportAllDataToPDF(){
     startY: 58,
     head: [["", "Amount"]],
     body: [
-      ["Total Expenses",          fmt(totalExpenses)],
-      ["Total Bonus/Income",      fmt(totalIncome)],
-      ["Net (Income − Expenses)", fmt(totalIncome - totalExpenses)],
+      ["Total Expenses",          fmtPdf(totalExpenses)],
+      ["Total Bonus/Income",      fmtPdf(totalIncome)],
+      ["Net (Income - Expenses)", fmtPdf(totalIncome - totalExpenses)],
     ],
     styles: { fontSize: 10 },
     headStyles: { fillColor: [37,99,235] },
@@ -2109,7 +2128,7 @@ function exportAllDataToPDF(){
   // Category breakdown
   const catTotals = {};
   expenses.forEach(e=>{ const c=e.category||"Uncategorized"; catTotals[c]=(catTotals[c]||0)+e.amount; });
-  const catRows = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).map(([c,v])=>[c, fmt(v), `${totalExpenses?((v/totalExpenses)*100).toFixed(1):0}%`]);
+  const catRows = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).map(([c,v])=>[c, fmtPdf(v), `${totalExpenses?((v/totalExpenses)*100).toFixed(1):0}%`]);
 
   let y = doc.lastAutoTable.finalY + 10;
   doc.setFontSize(12); doc.setFont(undefined,"bold");
@@ -2161,13 +2180,13 @@ function exportAllDataToPDF(){
       doc.rect(14,y-4,182,8,"F");
       doc.setTextColor(37,99,235);
       doc.text(`${mNames[mo]} ${year}`, 16, y+1);
-      doc.text(`Total: ${fmt(monthTotal)}`, 196, y+1, {align:"right"});
+      doc.text(`Total: ${fmtPdf(monthTotal)}`, 196, y+1, {align:"right"});
       doc.setTextColor(30,30,30); y+=8;
 
       doc.autoTable({
         startY: y,
         head: [["Item","Category","Amount","Date","Note"]],
-        body: data.map(e=>[e.item, e.category||"—", fmt(e.amount), e.date, e.note||"—"]),
+        body: data.map(e=>[e.item, e.category||"—", fmtPdf(e.amount), e.date, e.note||"—"]),
         styles: { fontSize: 7.5 },
         headStyles: { fillColor: [99,102,241] },
         margin: { left:14, right:14 },
@@ -2180,7 +2199,7 @@ function exportAllDataToPDF(){
     doc.setFillColor(37,99,235);
     doc.rect(14,y-4,182,9,"F");
     doc.setTextColor(255,255,255); doc.setFont(undefined,"bold"); doc.setFontSize(10);
-    doc.text(`Year ${year}  —  Total Expenses: ${fmt(yearTotal)}`, 16, y+2);
+    doc.text(`Year ${year}  —  Total Expenses: ${fmtPdf(yearTotal)}`, 16, y+2);
     doc.setTextColor(30,30,30); y+=14;
   });
 
@@ -2220,13 +2239,13 @@ function exportAllDataToPDF(){
       doc.setTextColor(22,163,74);
       doc.setFontSize(10); doc.setFont(undefined,"bold");
       doc.text(`${month} ${year}`, 16, y+1);
-      doc.text(`Total: ${fmt(monthTotal)}`, 196, y+1, {align:"right"});
+      doc.text(`Total: ${fmtPdf(monthTotal)}`, 196, y+1, {align:"right"});
       doc.setTextColor(30,30,30); y+=8;
 
       doc.autoTable({
         startY: y,
         head: [["Date","Giver","Category","Amount"]],
-        body: data.map(s=>[s.date, s.giver, s.incomeCategory||"—", fmt(s.amount)]),
+        body: data.map(s=>[s.date, s.giver, s.incomeCategory||"—", fmtPdf(s.amount)]),
         styles: { fontSize: 7.5 },
         headStyles: { fillColor: [22,163,74] },
         margin: { left:14, right:14 },
@@ -2239,7 +2258,7 @@ function exportAllDataToPDF(){
     doc.setFillColor(22,163,74);
     doc.rect(14,y-4,182,9,"F");
     doc.setTextColor(255,255,255); doc.setFont(undefined,"bold"); doc.setFontSize(10);
-    doc.text(`Year ${year}  —  Total Income: ${fmt(yearTotal)}`, 16, y+2);
+    doc.text(`Year ${year}  —  Total Income: ${fmtPdf(yearTotal)}`, 16, y+2);
     doc.setTextColor(30,30,30); y+=14;
   });
 
@@ -2372,8 +2391,11 @@ function exportAllDataToExcel(){
 const eidForm=document.getElementById("eidForm");
 const eidTables=document.getElementById("eidTables");
 
+let _addBonusLock = false;
 eidForm.addEventListener("submit", async e=>{
   e.preventDefault();
+  if(_addBonusLock) return;
+
   const year=document.getElementById("eidYear").value;
   const month=document.getElementById("eidMonth").value;
   const date=document.getElementById("eidDate").value;
@@ -2382,21 +2404,30 @@ eidForm.addEventListener("submit", async e=>{
   const incomeCategory=document.getElementById("incomeCategory") ? document.getElementById("incomeCategory").value : "";
   if(!year||!month||!date||!giver||!amount){ showToast("Please fill in all fields!", "error"); return; }
 
+  _addBonusLock = true;
+  const saveBtn = eidForm.querySelector("button[type='submit']");
+  if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = "Saving…"; }
+
   const entry = {year,month,date,giver,amount,incomeCategory};
   const wasEditing = editingEidIndex !== -1;
 
-  if(editingEidIndex === -1){
-    await userSalamisRef().add(entry);
-    // onSnapshot will automatically update the salamis array and re-render
-  } else {
-    const id = salamis[editingEidIndex].id;
-    await userSalamisRef().doc(id).set(entry);
-    editingEidIndex = -1;
-    // onSnapshot will handle re-render
+  try {
+    if(editingEidIndex === -1){
+      await userSalamisRef().add(entry);
+    } else {
+      const id = salamis[editingEidIndex].id;
+      await userSalamisRef().doc(id).set(entry);
+      editingEidIndex = -1;
+    }
+    eidForm.reset();
+    showToast(wasEditing ? "Bonus/Income updated!" : "Bonus/Income saved!", "success");
+  } catch(err){
+    showToast("Failed to save entry. Please try again.", "error");
+    console.error("addBonus error:", err);
+  } finally {
+    _addBonusLock = false;
+    if(saveBtn){ saveBtn.disabled = false; saveBtn.textContent = "Save Bonus"; }
   }
-
-  eidForm.reset();
-  showToast(wasEditing ? "Bonus/Income updated!" : "Bonus/Income saved!", "success");
 });
 
 function editEidEntry(i){
