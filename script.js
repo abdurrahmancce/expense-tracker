@@ -3192,7 +3192,7 @@ async function loadThemeFromFirestore(){
   // After install
   window.addEventListener("appinstalled", () => {
     hideBanner();
-    showToast("✅ App installed! আপনার Home Screen-এ দেখুন।", "success");
+    showToast("✅ App installed! Check your Home Screen.", "success");
     _deferredPrompt = null;
   });
 
