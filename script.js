@@ -159,7 +159,7 @@ const DEFAULT_CATEGORIES = ["Food","Transport","Tuition","Medical","Donation","F
 
 // Locally cached income categories
 let incomeCategories = [];
-const DEFAULT_INCOME_CATEGORIES = ["Ibrahim Bhaiya","Tuition","Family","Business","Bonus","Gift","Other"];
+const DEFAULT_INCOME_CATEGORIES = ["Business","Tuition","Gift","Bonus","Job","Other"];
 
 // Income category chart instances
 let incomeCategoryChart, incomeMonthlyByCategoryChart;
@@ -622,7 +622,7 @@ toggleBtn.addEventListener("click", async () => {
 });
 
 // ===========================
-// Trash (soft-delete with 7-day auto-purge)
+// Trash (soft-delete with 30-day auto-purge)
 // ===========================
 async function loadTrash(deferPurge){
   const [expSnap, salSnap] = await Promise.all([
@@ -633,13 +633,13 @@ async function loadTrash(deferPurge){
   trashedSalamis = salSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-// Called at idle time — deletes trash entries older than 7 days
+// Called at idle time — deletes trash entries older than 30 days
 async function purgeExpiredTrash(){
   if(!currentUser) return;
-  const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+  const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
   const now = Date.now();
-  const expiredExp = trashedExpenses.filter(t => now - new Date(t.deletedAt).getTime() > sevenDaysMs);
-  const expiredSal = trashedSalamis.filter(t => now - new Date(t.deletedAt).getTime() > sevenDaysMs);
+  const expiredExp = trashedExpenses.filter(t => now - new Date(t.deletedAt).getTime() > thirtyDaysMs);
+  const expiredSal = trashedSalamis.filter(t => now - new Date(t.deletedAt).getTime() > thirtyDaysMs);
 
   if(expiredExp.length || expiredSal.length){
     const batch = db.batch();
@@ -1194,7 +1194,7 @@ function editExpense(i){
 
 async function deleteExpense(i){
   const e = expenses[i];
-  const confirmMsg = `Move this expense to trash?\n\n${e.item} — ${fmt(e.amount)} (${e.date})\n\nYou can restore it within 7 days.`;
+  const confirmMsg = `Move this expense to trash?\n\n${e.item} — ${fmt(e.amount)} (${e.date})\n\nYou can restore it within 30 days.`;
   if(!confirm(confirmMsg)) return;
 
   const { id, ...entry } = e;
@@ -2391,7 +2391,7 @@ function editEidEntry(i){
 
 async function deleteEidEntry(i){
   const s = salamis[i];
-  const confirmMsg = `Move this Bonus/Income entry to trash?\n\n${s.giver} — ${fmt(s.amount)} (${s.month} ${s.date}, ${s.year})\n\nYou can restore it within 7 days.`;
+  const confirmMsg = `Move this Bonus/Income entry to trash?\n\n${s.giver} — ${fmt(s.amount)} (${s.month} ${s.date}, ${s.year})\n\nYou can restore it within 30 days.`;
   if(!confirm(confirmMsg)) return;
 
   const { id, ...entry } = s;
