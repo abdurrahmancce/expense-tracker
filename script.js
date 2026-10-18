@@ -3229,72 +3229,7 @@ async function loadThemeFromFirestore(){
   });
 })();
 
-// ===========================
-// FEATURE 28: SWIPE TO DELETE (mobile)
-// ===========================
-(function(){
-  let _swipeTarget = null;
-  let _swipeStartX = 0;
-  let _swipeCurX   = 0;
-  const THRESHOLD  = 90; // px to trigger delete
-
-  function _getCard(el){ return el.closest(".expense-card"); }
-
-  document.addEventListener("touchstart", e => {
-    const card = _getCard(e.target);
-    if(!card || !card.dataset.delExp) return;
-    _swipeTarget = card;
-    _swipeStartX = e.touches[0].clientX;
-    _swipeCurX   = _swipeStartX;
-  }, { passive: true });
-
-  document.addEventListener("touchmove", e => {
-    if(!_swipeTarget) return;
-    _swipeCurX = e.touches[0].clientX;
-    const dx = _swipeStartX - _swipeCurX; // positive = swipe left
-    if(dx < 0){ _swipeTarget = null; return; } // ignore rightward swipes
-    _swipeTarget.classList.add("swiping");
-    _swipeTarget.style.transform = `translateX(${-dx}px)`;
-  }, { passive: true });
-
-  document.addEventListener("touchend", () => {
-    if(!_swipeTarget) return;
-    const dx = _swipeStartX - _swipeCurX;
-    if(dx >= THRESHOLD){
-      // Confirm delete
-      const idx = _swipeTarget.dataset.delExp;
-      _swipeTarget.classList.add("swipe-confirm");
-      haptic([40]);
-      _swipeTarget.addEventListener("animationend", () => {
-        deleteExpense(idx);
-      }, { once: true });
-    } else {
-      // Snap back
-      _swipeTarget.style.transform = "";
-      _swipeTarget.classList.remove("swiping");
-    }
-    _swipeTarget = null;
-  });
-
-  // Inject the red-bg layer when cards are rendered
-  const _origRender = window.renderExpenses;
-  // We patch via MutationObserver on #expenseCardList instead
-  const observer = new MutationObserver(() => {
-    document.querySelectorAll(".expense-card:not([data-swipe-init])").forEach(card => {
-      card.setAttribute("data-swipe-init","1");
-      // Find the del button to copy its index onto the card
-      const delBtn = card.querySelector("[data-del-exp]");
-      if(delBtn) card.dataset.delExp = delBtn.dataset.delExp;
-      // Inject swipe-delete-bg reveal layer
-      const bg = document.createElement("div");
-      bg.className = "swipe-delete-bg";
-      bg.innerHTML = "🗑️ Delete";
-      card.appendChild(bg);
-    });
-  });
-  const cardList = document.getElementById("expenseCardList");
-  if(cardList) observer.observe(cardList, { childList: true });
-})();
+// FEATURE 28: Swipe-to-delete removed — Edit/Delete buttons handle deletion.
 
 // ===========================
 // FEATURE 29: HAPTIC FEEDBACK
@@ -3587,130 +3522,229 @@ function renderDowHeatmap(){
 // FEATURE 35: BEAUTIFUL SHARE CARD + WHATSAPP/TELEGRAM
 // ===========================
 async function shareMonthlySummary(){
-  // Build the share image using an offscreen canvas
-  const W = 600, H = 340;
-  const off = document.createElement("canvas");
-  // Polyfill roundRect for older browsers
+  // ── Polyfill roundRect ──
   if(!CanvasRenderingContext2D.prototype.roundRect){
     CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){
+      r = Array.isArray(r) ? r[0] : r;
       r = Math.min(r, w/2, h/2);
       this.moveTo(x+r,y); this.lineTo(x+w-r,y);
-      this.quadraticCurveTo(x+w,y,x+w,y+r);
-      this.lineTo(x+w,y+h-r);
-      this.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-      this.lineTo(x+r,y+h);
-      this.quadraticCurveTo(x,y+h,x,y+h-r);
-      this.lineTo(x,y+r);
-      this.quadraticCurveTo(x,y,x+r,y);
-      this.closePath();
+      this.quadraticCurveTo(x+w,y,x+w,y+r); this.lineTo(x+w,y+h-r);
+      this.quadraticCurveTo(x+w,y+h,x+w-r,y+h); this.lineTo(x+r,y+h);
+      this.quadraticCurveTo(x,y+h,x,y+h-r); this.lineTo(x,y+r);
+      this.quadraticCurveTo(x,y,x+r,y); this.closePath();
     };
   }
-  off.width = W; off.height = H;
+
+  // ── Canvas: 800×480 @ 2× DPR for crisp PNG ──
+  const W = 800, H = 480, DPR = 2;
+  const off = document.createElement("canvas");
+  off.width = W * DPR; off.height = H * DPR;
   const ctx = off.getContext("2d");
+  ctx.scale(DPR, DPR);
 
-  const dark = document.body.classList.contains("dark-mode");
-  const bg1 = dark ? "#1e1b4b" : "#4f46e5";
-  const bg2 = dark ? "#312e81" : "#7c3aed";
-
-  // Gradient background
-  const grad = ctx.createLinearGradient(0,0,W,H);
-  grad.addColorStop(0, bg1); grad.addColorStop(1, bg2);
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.roundRect(0,0,W,H,18);
-  ctx.fill();
-
-  // Watermark pattern (subtle circles)
-  ctx.globalAlpha = 0.06;
-  ctx.fillStyle = "#fff";
-  for(let i=0;i<6;i++){
-    ctx.beginPath();
-    ctx.arc(W-60+i*20, 60+i*30, 80, 0, Math.PI*2);
-    ctx.fill();
+  // ── Helpers ──
+  const P = 28; // base padding
+  function rr(x,y,w,h,r){ ctx.beginPath(); ctx.roundRect(x,y,w,h,r); }
+  function fill(color){ ctx.fillStyle=color; ctx.fill(); }
+  function txt(t,x,y,font,color,alpha,align){
+    ctx.save();
+    ctx.globalAlpha = alpha??1;
+    ctx.fillStyle   = color;
+    ctx.font        = font;
+    ctx.textAlign   = align??"left";
+    ctx.fillText(t, x, y);
+    ctx.restore();
   }
-  ctx.globalAlpha = 1;
 
-  // Grab current month data from DOM
+  // ── Data ──
   const now = new Date();
-  const monthLabel = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
-  const monthExpense = expenses.filter(e=>{ const d=new Date(e.date); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth(); }).reduce((s,e)=>s+e.amount,0);
-  const monthIncome  = salamis.filter(s=>{ const mi=monthNames.indexOf(s.month); return Number(s.year)===now.getFullYear()&&mi===now.getMonth(); }).reduce((s,i)=>s+i.amount,0);
-  const net = monthIncome - monthExpense;
-  const savePct = monthIncome>0 ? Math.max(0,Math.min(100,(net/monthIncome*100))).toFixed(1) : "—";
+  const monthLabel   = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+  const curY = now.getFullYear(), curM = now.getMonth();
+  const monthExpenses = expenses.filter(e=>{
+    const d=new Date(e.date); return d.getFullYear()===curY && d.getMonth()===curM;
+  });
+  const monthExpense = monthExpenses.reduce((s,e)=>s+e.amount, 0);
+  const monthIncome  = salamis.filter(s=>{
+    return Number(s.year)===curY && monthNames.indexOf(s.month)===curM;
+  }).reduce((s,i)=>s+i.amount, 0);
+  const net        = monthIncome - monthExpense;
+  const savePct    = monthIncome > 0 ? Math.max(0, Math.min(100, net/monthIncome*100)) : 0;
+  const savePctStr = monthIncome > 0 ? savePct.toFixed(1)+"%" : "—";
+  const dateStr    = now.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 
-  ctx.fillStyle = "#fff";
-  ctx.font = "bold 28px system-ui, sans-serif";
-  ctx.fillText("💰 Expense Tracker", 30, 52);
+  // ════════════════════════════════
+  // BACKGROUND
+  // ════════════════════════════════
+  const bg = ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,   "#0a0a1a");
+  bg.addColorStop(0.45,"#0f0c2e");
+  bg.addColorStop(1,   "#111827");
+  rr(0,0,W,H,24); fill(bg);
 
-  ctx.font = "16px system-ui, sans-serif";
-  ctx.globalAlpha = 0.7;
-  ctx.fillText(`📊 ${monthLabel} Summary`, 30, 82);
-  ctx.globalAlpha = 1;
+  // Subtle noise texture overlay
+  ctx.save(); ctx.globalAlpha=0.025;
+  for(let i=0;i<1200;i++){
+    const nx=Math.random()*W, ny=Math.random()*H;
+    ctx.fillStyle=`hsl(${Math.random()*360},60%,80%)`;
+    ctx.fillRect(nx,ny,1,1);
+  }
+  ctx.restore();
 
-  // Divider
-  ctx.fillStyle = "rgba(255,255,255,0.2)";
-  ctx.fillRect(30, 96, W-60, 1);
+  // Glow orbs
+  function orb(x,y,r,c){
+    const g=ctx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,c); g.addColorStop(1,"transparent");
+    ctx.save(); ctx.globalAlpha=0.15; ctx.fillStyle=g;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); ctx.restore();
+  }
+  orb(W*0.85, H*0.15, 200, "#6366f1");
+  orb(W*0.10, H*0.85, 160, "#0ea5e9");
+  orb(W*0.50, H*0.50, 240, "#7c3aed");
 
-  // Stats row
-  const stats = [
-    { label:"Total Expense", val: fmt(monthExpense), icon:"💸" },
-    { label:"Total Income",  val: fmt(monthIncome),  icon:"💰" },
-    { label:"Net Balance",   val: (net>=0?"+":"")+fmt(net), icon: net>=0?"✅":"⚠️" },
-    { label:"Savings Rate",  val: savePct+"%", icon:"📈" },
+  // ════════════════════════════════
+  // HEADER  (y: 0–76)
+  // ════════════════════════════════
+  const hg = ctx.createLinearGradient(0,0,W,0);
+  hg.addColorStop(0,"rgba(99,102,241,0.40)");
+  hg.addColorStop(1,"rgba(139,92,246,0.18)");
+  rr(0,0,W,76,0); fill(hg);
+  ctx.fillStyle="rgba(255,255,255,0.08)"; ctx.fillRect(0,76,W,1);
+
+  // Logo box
+  const lg=ctx.createLinearGradient(P,14,P+46,60);
+  lg.addColorStop(0,"#fbbf24"); lg.addColorStop(1,"#f59e0b");
+  rr(P,14,46,46,10); fill(lg);
+  txt("💰", P+2, 53, "30px system-ui", "#fff");
+
+  txt("Expense Tracker",  P+56, 34, "bold 24px system-ui,sans-serif", "#fff");
+  txt(`${monthLabel}  ·  Monthly Report`, P+57, 58, "13px system-ui,sans-serif", "#a5b4fc", 0.85);
+
+  // Date badge
+  rr(W-P-112,20,108,36,8);
+  ctx.fillStyle="rgba(255,255,255,0.07)"; ctx.fill();
+  txt(dateStr, W-P-58, 43, "bold 12px system-ui,sans-serif", "#c7d2fe", 0.9, "center");
+
+  // ════════════════════════════════
+  // STAT BOXES  (y: 90–202)
+  // ════════════════════════════════
+  const stats=[
+    {lbl:"Total Expense", val:fmt(monthExpense),              icon:"💸", c1:"#ef4444",c2:"#dc2626"},
+    {lbl:"Total Income",  val:fmt(monthIncome),               icon:"💰", c1:"#22c55e",c2:"#16a34a"},
+    {lbl:"Net Balance",   val:(net>=0?"+":"")+fmt(net),        icon:net>=0?"✅":"⚠️", c1:net>=0?"#10b981":"#f97316",c2:net>=0?"#059669":"#ea580c"},
+    {lbl:"Savings Rate",  val:savePctStr,                     icon:"🎯", c1:"#818cf8",c2:"#6366f1"},
   ];
+  const BY=90, BH=108, gap=12;
+  const BW=(W - P*2 - gap*3)/4;
   stats.forEach((s,i)=>{
-    const x = 30 + i * 140;
-    ctx.font = "22px system-ui";
-    ctx.fillText(s.icon, x, 148);
-    ctx.font = "bold 16px system-ui, sans-serif";
-    ctx.fillStyle = "#fff";
-    ctx.fillText(s.val, x, 172);
-    ctx.font = "11px system-ui, sans-serif";
-    ctx.globalAlpha = 0.6;
-    ctx.fillText(s.label, x, 190);
-    ctx.globalAlpha = 1;
+    const bx=P+i*(BW+gap), by=BY;
+    // card bg
+    const cbg=ctx.createLinearGradient(bx,by,bx,by+BH);
+    cbg.addColorStop(0,"rgba(255,255,255,0.10)");
+    cbg.addColorStop(1,"rgba(255,255,255,0.03)");
+    rr(bx,by,BW,BH,14); fill(cbg);
+    // border glow top strip
+    const sg=ctx.createLinearGradient(bx,by,bx+BW,by);
+    sg.addColorStop(0,s.c1); sg.addColorStop(1,s.c2);
+    rr(bx,by,BW,4,2); fill(sg);
+    // icon
+    ctx.font="24px system-ui"; ctx.textAlign="center";
+    ctx.fillText(s.icon, bx+BW/2, by+38);
+    // value — big bold
+    txt(s.val, bx+BW/2, by+70, "bold 18px system-ui,sans-serif", "#fff", 1, "center");
+    // label — small muted
+    txt(s.lbl, bx+BW/2, by+90, "11px system-ui,sans-serif", "#94a3b8", 0.9, "center");
   });
 
-  // Top 3 categories
-  const catTotals = {};
-  expenses.filter(e=>{ const d=new Date(e.date); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth(); })
-    .forEach(e=>{ catTotals[e.category||"Uncategorized"]=(catTotals[e.category||"Uncategorized"]||0)+e.amount; });
-  const top3 = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  // ════════════════════════════════
+  // SAVINGS PROGRESS BAR  (y: 212–244)
+  // ════════════════════════════════
+  const spY=212, spH=24;
+  // track
+  rr(P,spY,W-P*2,spH,spH/2); fill("rgba(255,255,255,0.07)");
+  // fill
+  if(savePct>0){
+    const sw=Math.round((W-P*2)*savePct/100);
+    const sg=ctx.createLinearGradient(P,0,P+sw,0);
+    sg.addColorStop(0, savePct>=40?"#22c55e":savePct>=15?"#6366f1":"#f97316");
+    sg.addColorStop(1, savePct>=40?"#4ade80":savePct>=15?"#a5b4fc":"#fbbf24");
+    rr(P,spY,sw,spH,spH/2); fill(sg);
+  }
+  // label inside bar
+  txt(`💾  Savings: ${savePctStr}`, P+14, spY+17, "bold 12px system-ui,sans-serif", "#fff", 0.92);
 
-  ctx.fillStyle = "rgba(255,255,255,0.1)";
-  ctx.beginPath(); ctx.roundRect(30,210,W-60,90,12); ctx.fill();
+  // ════════════════════════════════
+  // TOP CATEGORIES PANEL  (y: 254–440)
+  // ════════════════════════════════
+  const catTotals={};
+  monthExpenses.forEach(e=>{
+    const c=e.category||"Other"; catTotals[c]=(catTotals[c]||0)+e.amount;
+  });
+  const top3=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const maxCat=top3[0]?.[1]||1;
 
-  ctx.font = "bold 13px system-ui, sans-serif";
-  ctx.fillStyle = "#fff";
-  ctx.globalAlpha = 0.7;
-  ctx.fillText("TOP CATEGORIES", 46, 232);
-  ctx.globalAlpha = 1;
+  // Panel background
+  const panelY=254, panelH = top3.length ? top3.length*58+52 : 80;
+  rr(P,panelY,W-P*2,panelH,16);
+  const pbg=ctx.createLinearGradient(P,panelY,P,panelY+panelH);
+  pbg.addColorStop(0,"rgba(255,255,255,0.07)");
+  pbg.addColorStop(1,"rgba(255,255,255,0.02)");
+  fill(pbg);
+  // top accent border
+  rr(P,panelY,W-P*2,3,1);
+  const pab=ctx.createLinearGradient(P,0,W-P,0);
+  pab.addColorStop(0,"#6366f1"); pab.addColorStop(0.5,"#8b5cf6"); pab.addColorStop(1,"#0ea5e9");
+  fill(pab);
 
-  const maxCat = top3[0]?.[1] || 1;
+  txt("🏆  TOP SPENDING CATEGORIES", P+16, panelY+28, "bold 13px system-ui,sans-serif", "#a5b4fc");
+
+  const rankC=[["#fbbf24","#92400e"],["#cbd5e1","#475569"],["#c47835","#78350f"]];
+  const barC =[["#6366f1","#8b5cf6"],["#0ea5e9","#38bdf8"],["#10b981","#34d399"]];
+
   top3.forEach(([cat,amt],i)=>{
-    const y = 248 + i*18;
-    ctx.font = "12px system-ui";
-    ctx.fillStyle = "#fff";
-    ctx.fillText(`${i+1}. ${cat}`, 46, y);
-    // mini bar
-    const bw = Math.round(amt/maxCat * 140);
-    ctx.fillStyle = "rgba(255,255,255,0.3)";
-    ctx.fillRect(200, y-10, 140, 8);
-    ctx.fillStyle = "#a5b4fc";
-    ctx.fillRect(200, y-10, bw, 8);
-    ctx.font = "11px system-ui";
-    ctx.fillStyle = "#fff";
-    ctx.globalAlpha = 0.8;
-    ctx.fillText(fmt(amt), 350, y);
-    ctx.globalAlpha = 1;
+    const ry = panelY + 44 + i*58;
+    const pct = (amt/maxCat*100).toFixed(0);
+
+    // Rank medal circle
+    rr(P+14, ry+2, 28, 28, 14);
+    const mc=ctx.createLinearGradient(P+14,ry+2,P+42,ry+30);
+    mc.addColorStop(0,rankC[i][0]); mc.addColorStop(1,rankC[i][1]);
+    fill(mc);
+    txt(`${i+1}`, P+28, ry+21, "bold 13px system-ui,sans-serif", "#fff", 1, "center");
+
+    // Category name
+    const catName = cat.length>30 ? cat.slice(0,30)+"…" : cat;
+    txt(catName, P+50, ry+12, "bold 14px system-ui,sans-serif", "#f1f5f9");
+
+    // Amount + percentage
+    txt(fmt(amt), P+50, ry+30, "13px system-ui,sans-serif", "#94a3b8", 0.85);
+    txt(`${pct}%`, W-P-14, ry+12, "bold 13px system-ui,sans-serif", "#e2e8f0", 0.9, "right");
+
+    // Bar track
+    const trackX=P+50, trackW=W-P*2-74, trackH=6, trackY=ry+36;
+    rr(trackX,trackY,trackW,trackH,3); fill("rgba(255,255,255,0.09)");
+    // Bar fill
+    const fw=Math.max(6, Math.round(amt/maxCat*trackW));
+    const bg2=ctx.createLinearGradient(trackX,0,trackX+fw,0);
+    bg2.addColorStop(0,barC[i][0]); bg2.addColorStop(1,barC[i][1]);
+    rr(trackX,trackY,fw,trackH,3); fill(bg2);
   });
 
-  // Footer
-  ctx.font = "11px system-ui";
-  ctx.globalAlpha = 0.45;
-  ctx.fillStyle = "#fff";
-  ctx.fillText("Made with Expense Tracker • abdurrahmancce.github.io/Expense-Tracker", 30, H-14);
-  ctx.globalAlpha = 1;
+  if(top3.length===0){
+    txt("No expenses recorded this month.", P+16, panelY+56, "14px system-ui,sans-serif", "#94a3b8", 0.7);
+  }
+
+  // ════════════════════════════════
+  // FOOTER  (last 30px)
+  // ════════════════════════════════
+  const fY = H - 18;
+  // divider
+  ctx.save(); ctx.globalAlpha=0.12;
+  ctx.fillStyle="#fff"; ctx.fillRect(P, fY-14, W-P*2, 1); ctx.restore();
+
+  txt("abdurrahmancce.github.io/Expense-Tracker", W/2, fY, "11px system-ui,sans-serif", "#818cf8", 0.65, "center");
+  // ET badge
+  rr(W-P-52, fY-22, 50, 22, 6); fill("rgba(99,102,241,0.22)");
+  txt("ET", W-P-27, fY-6, "bold 11px system-ui,sans-serif", "#a5b4fc", 0.85, "center");
 
   // Convert to blob
   off.toBlob(async blob => {
