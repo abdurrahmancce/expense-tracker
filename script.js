@@ -3823,12 +3823,13 @@ async function shareMonthlySummary(){
 
   if(!addBtn) return;
 
-  // Dropdown toggle
+  // Dropdown toggle — uses "open" class to match CSS
   if(dropBtn && dropContent){
     dropBtn.addEventListener("click", () => {
-      const open = dropContent.classList.contains("active");
-      dropContent.classList.toggle("active", !open);
-      dropBtn.querySelector(".caret").textContent = open ? "▾" : "▴";
+      const open = dropContent.classList.contains("open");
+      dropContent.classList.toggle("open", !open);
+      const caret = dropBtn.querySelector(".caret");
+      if(caret) caret.textContent = open ? "▾" : "▴";
     });
   }
 
@@ -3866,41 +3867,198 @@ async function shareMonthlySummary(){
     const total = parseFloat(totalEl.value);
     if(!total || total <= 0){ showToast("Enter a valid total amount", "error"); return; }
     if(_people.length < 2){ showToast("Add at least 2 people to split", "error"); return; }
-    haptic([30]);
+    if(typeof haptic === "function") haptic([30]);
 
     const share = total / _people.length;
+    const peopleCopy = [..._people];
+
+    // Result summary HTML
     resultEl.innerHTML = `
       <div class="split-result-card">
         <h4>🤝 ${esc(title)} — ${fmt(total)} ÷ ${_people.length} people</h4>
-        ${_people.map(p => `
+        ${peopleCopy.map(p => `
           <div class="split-row">
             <span class="split-name">👤 ${esc(p)}</span>
             <span class="split-share">${fmt(share)}</span>
           </div>
         `).join("")}
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button onclick="this.closest('.split-result-card').querySelector('.split-copy-btn')?.click()" 
-            class="split-copy-btn" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:700;"
-            onclick="_copySplitResult('${esc(title)}', ${total}, ${JSON.stringify(_people)})">📋 Copy</button>
-          <button style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:700;"
-            onclick="_shareSplitWA('${esc(title)}', ${total}, ${JSON.stringify(_people)})">📲 WhatsApp</button>
+        <div style="margin-top:14px;">
+          <button id="_splitCardBtn" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:10px 24px;cursor:pointer;font-size:14px;font-weight:700;">🖼️ Share Card</button>
         </div>
       </div>
     `;
+
+    // Share Card (PNG)
+    resultEl.querySelector("#_splitCardBtn").addEventListener("click", () => {
+      _generateSplitCard(title, total, peopleCopy, share);
+    });
+
     showToast(`Split: each pays ${fmt(share)} 💰`, "success");
   });
 })();
 
-function _copySplitResult(title, total, people){
-  const share = total / people.length;
-  const text = `🤝 ${title} Split\nTotal: ${fmt(total)}\n` + people.map(p=>`👤 ${p}: ${fmt(share)}`).join("\n");
-  navigator.clipboard?.writeText(text).then(()=>showToast("Copied! ✅","success")).catch(()=>showToast("Copy failed","error"));
-}
+function _generateSplitCard(title, total, people, share){
+  // roundRect polyfill
+  if(!CanvasRenderingContext2D.prototype.roundRect){
+    CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){
+      r = Math.min(r, w/2, h/2);
+      this.moveTo(x+r,y); this.lineTo(x+w-r,y);
+      this.quadraticCurveTo(x+w,y,x+w,y+r); this.lineTo(x+w,y+h-r);
+      this.quadraticCurveTo(x+w,y+h,x+w-r,y+h); this.lineTo(x+r,y+h);
+      this.quadraticCurveTo(x,y+h,x,y+h-r); this.lineTo(x,y+r);
+      this.quadraticCurveTo(x,y,x+r,y); this.closePath();
+    };
+  }
 
-function _shareSplitWA(title, total, people){
-  const share = total / people.length;
-  const text = `🤝 *${title} Split*\nTotal: ${fmt(total)}\n` + people.map(p=>`👤 ${p}: ${fmt(share)}`).join("\n");
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  const DPR = 2;
+  const W = 480;
+  const ROW_H = 52;
+  const HEADER_H = 130;
+  const FOOTER_H = 54;
+  const H = HEADER_H + people.length * ROW_H + FOOTER_H;
+
+  const off = document.createElement("canvas");
+  off.width = W * DPR; off.height = H * DPR;
+  const ctx = off.getContext("2d");
+  ctx.scale(DPR, DPR);
+
+  function rr(x,y,w,h,r){ ctx.beginPath(); ctx.roundRect(x,y,w,h,r); }
+  function fill(c){ ctx.fillStyle=c; ctx.fill(); }
+  function txt(t,x,y,font,color,alpha,align){
+    ctx.save(); ctx.globalAlpha=alpha??1; ctx.fillStyle=color;
+    ctx.font=font; ctx.textAlign=align??"left"; ctx.fillText(t,x,y); ctx.restore();
+  }
+
+  // ── Background ──
+  const bg = ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,"#0f0c29"); bg.addColorStop(1,"#24243e");
+  rr(0,0,W,H,20); fill(bg);
+
+  // Orb decoration
+  const orb = ctx.createRadialGradient(W*0.8,30,0,W*0.8,30,160);
+  orb.addColorStop(0,"rgba(99,102,241,0.22)"); orb.addColorStop(1,"transparent");
+  ctx.save(); ctx.fillStyle=orb; ctx.beginPath(); ctx.arc(W*0.8,30,160,0,Math.PI*2); ctx.fill(); ctx.restore();
+
+  // ── Header ──
+  const hg = ctx.createLinearGradient(0,0,W,0);
+  hg.addColorStop(0,"rgba(99,102,241,0.45)"); hg.addColorStop(1,"rgba(139,92,246,0.2)");
+  rr(0,0,W,HEADER_H,0); fill(hg);
+  ctx.fillStyle="rgba(255,255,255,0.07)"; ctx.fillRect(0,HEADER_H,W,1);
+
+  // Logo box
+  const lg = ctx.createLinearGradient(20,16,64,60);
+  lg.addColorStop(0,"#fbbf24"); lg.addColorStop(1,"#f59e0b");
+  rr(20,18,44,44,10); fill(lg);
+  ctx.font="28px system-ui"; ctx.textAlign="center"; ctx.fillText("🤝",42,50);
+
+  txt(title, 76, 38, "bold 20px system-ui,sans-serif", "#fff");
+  txt("Bill Split", 76, 60, "13px system-ui,sans-serif", "#a5b4fc", 0.85);
+
+  // Total + per-person pill row
+  const pillData = [
+    { label:"Total", val:fmt(total), c1:"#6366f1", c2:"#8b5cf6" },
+    { label:"Each Pays", val:fmt(share), c1:"#10b981", c2:"#34d399" },
+    { label:"People", val:`${people.length}`, c1:"#f59e0b", c2:"#fbbf24" },
+  ];
+  const pillW = (W - 40 - 12) / 3;
+  pillData.forEach((p,i)=>{
+    const px = 20 + i*(pillW+6), py = 76;
+    const pg = ctx.createLinearGradient(px,py,px+pillW,py);
+    pg.addColorStop(0,p.c1); pg.addColorStop(1,p.c2);
+    rr(px,py,pillW,38,10); fill(pg);
+    txt(p.val, px+pillW/2, py+16, "bold 13px system-ui,sans-serif", "#fff", 1, "center");
+    txt(p.label, px+pillW/2, py+30, "10px system-ui,sans-serif", "#fff", 0.75, "center");
+  });
+
+  // ── People rows ──
+  people.forEach((name,i)=>{
+    const ry = HEADER_H + i * ROW_H;
+    const even = i%2===0;
+    ctx.fillStyle = even ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)";
+    ctx.fillRect(0, ry, W, ROW_H);
+
+    // Avatar circle
+    const colors = ["#6366f1","#0ea5e9","#22c55e","#f59e0b","#ec4899","#8b5cf6"];
+    const ac = ctx.createRadialGradient(36,ry+26,0,36,ry+26,16);
+    ac.addColorStop(0, colors[i%colors.length]);
+    ac.addColorStop(1, colors[(i+1)%colors.length]);
+    ctx.beginPath(); ctx.arc(36,ry+26,16,0,Math.PI*2); ctx.fillStyle=ac; ctx.fill();
+    txt(name[0]?.toUpperCase()||"?", 36, ry+31, "bold 14px system-ui,sans-serif", "#fff", 1, "center");
+
+    // Name
+    const dispName = name.length>22 ? name.slice(0,22)+"…" : name;
+    txt(dispName, 62, ry+30, "14px system-ui,sans-serif", "#e2e8f0");
+
+    // Amount badge
+    const amtW = ctx.measureText(fmt(share)).width + 28;
+    const abg = ctx.createLinearGradient(W-20-amtW, ry+12, W-20, ry+12);
+    abg.addColorStop(0,"rgba(16,185,129,0.2)"); abg.addColorStop(1,"rgba(52,211,153,0.15)");
+    rr(W-20-amtW, ry+12, amtW, 28, 8); fill(abg);
+    txt(fmt(share), W-20-amtW/2, ry+31, "bold 13px system-ui,sans-serif", "#34d399", 1, "center");
+
+    // Divider
+    if(i < people.length-1){
+      ctx.save(); ctx.globalAlpha=0.08; ctx.fillStyle="#fff"; ctx.fillRect(56,ry+ROW_H-1,W-76,1); ctx.restore();
+    }
+  });
+
+  // ── Footer ──
+  const footY = HEADER_H + people.length * ROW_H;
+  const fg = ctx.createLinearGradient(0,footY,W,footY);
+  fg.addColorStop(0,"rgba(99,102,241,0.18)"); fg.addColorStop(1,"rgba(139,92,246,0.08)");
+  ctx.fillStyle=fg; ctx.fillRect(0,footY,W,FOOTER_H);
+  ctx.fillStyle="rgba(255,255,255,0.07)"; ctx.fillRect(0,footY,W,1);
+
+  const dateStr = new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+  txt("💰 Expense Tracker", 20, footY+22, "bold 12px system-ui,sans-serif", "#a5b4fc", 0.85);
+  txt(dateStr, 20, footY+40, "11px system-ui,sans-serif", "#94a3b8", 0.7);
+  txt("abdurrahmancce.github.io", W-20, footY+31, "11px system-ui,sans-serif", "#6366f1", 0.6, "right");
+
+  // ── Generate blob → modal ──
+  off.toBlob(blob => {
+    if(!blob){ showToast("Card generation failed","error"); return; }
+    const url = URL.createObjectURL(blob);
+    const fileName = `split-${title.replace(/\s+/g,"-")}.png`;
+
+    const overlay = document.createElement("div");
+    overlay.className = "share-modal-overlay";
+    overlay.innerHTML = `
+      <div class="share-modal">
+        <p style="font-weight:700;font-size:15px;margin:0 0 12px;text-align:center;">🖼️ Split Card</p>
+        <img src="${url}" style="width:100%;max-width:400px;display:block;margin:0 auto;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.35);" alt="Split Card">
+        <div class="share-modal-actions" style="margin-top:14px;">
+          <button id="_scDl" class="share-btn-dl">⬇️ Download</button>
+          <button id="_scWA" class="share-btn-wa">📲 WhatsApp</button>
+          ${navigator.share ? '<button id="_scNative" class="share-btn-dl" style="background:#22c55e;">📤 Share</button>' : ""}
+          <button id="_scClose" class="share-btn-cls">✕ Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector("#_scDl").onclick = () => {
+      const a = document.createElement("a"); a.href=url; a.download=fileName; a.click();
+      showToast("Downloaded! ✅","success");
+    };
+    overlay.querySelector("#_scWA").onclick = () => {
+      const text = `🤝 *${title} Split*\nTotal: ${fmt(total)}\nEach: ${fmt(share)}\n` + people.map(p=>`👤 ${p}: ${fmt(share)}`).join("\n");
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    };
+    const nBtn = overlay.querySelector("#_scNative");
+    if(nBtn) nBtn.onclick = async () => {
+      const file = new File([blob], fileName, {type:"image/png"});
+      try {
+        if(navigator.canShare?.({files:[file]})){
+          await navigator.share({files:[file], title:"Bill Split", text:`${title} — each pays ${fmt(share)}`});
+        } else {
+          await navigator.share({title:"Bill Split", text:`${title} — each pays ${fmt(share)}`});
+        }
+      } catch(e){ if(e.name!=="AbortError") showToast("Share failed","error"); }
+    };
+    const close = () => { URL.revokeObjectURL(url); overlay.remove(); };
+    overlay.querySelector("#_scClose").onclick = close;
+    overlay.addEventListener("click", e=>{ if(e.target===overlay) close(); });
+  }, "image/png");
 }
 
 // ===========================
