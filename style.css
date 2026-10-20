@@ -160,32 +160,20 @@ h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin: 20px 0 8px; 
 h4 { font-size: 0.9rem; font-weight: 600; color: var(--text2); margin: 16px 0 8px; }
 
 /* ============================================================
-   HEADER BUTTONS
+   HEADER BUTTONS — now rendered inside .app-header as .header-icon-btn
+   Legacy selectors kept so JS-toggled classes still apply
    ============================================================ */
 #toggleDarkMode, .logout-btn, #logoutBtn {
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  border: none;
+  /* base reset — visual style comes from .header-icon-btn */
   cursor: pointer;
   transition: all var(--transition);
 }
-
-#toggleDarkMode {
-  float: right;
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-#toggleDarkMode:hover { background: var(--border); }
-
 .logout-btn, #logoutBtn {
-  float: left;
   background: var(--danger);
   color: #fff;
+  border-color: var(--danger) !important;
 }
-.logout-btn:hover, #logoutBtn:hover { background: var(--danger-h); }
+.logout-btn:hover, #logoutBtn:hover { background: var(--danger-h); border-color: var(--danger-h) !important; }
 
 /* ============================================================
    FORM
@@ -2196,35 +2184,215 @@ body:has(#authScreen:not(.hidden)) {
   }
 }
 
-/* ─── Currency Selector ─────────────────────────────────── */
-#currencyBar {
+/* ─── App Header ─────────────────────────────────────────── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 8px rgba(0,0,0,.08);
+}
+.app-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.app-header-icon { font-size: 22px; flex-shrink: 0; }
+.app-header-title h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  white-space: nowrap;
+}
+.app-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.header-control-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  padding: 4px 10px;
+}
+.header-theme-group { gap: 6px; padding: 4px 8px; }
+.header-control-label { font-size: 14px; }
+.header-select {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  padding: 0 2px;
+}
+.header-rate {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header-rate.loading { opacity: 0.5; }
+.header-icon-btn {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  flex-shrink: 0;
+}
+.header-icon-btn:hover { background: var(--surface); border-color: var(--primary); transform: scale(1.08); }
+.header-logout-btn { font-size: 15px; }
+
+/* Legacy currency bar — hidden, kept for JS compat */
+#currencyBar { display: none !important; }
+
+/* ─── Professional Header Picker (Currency & Theme) ─────────── */
+.hdr-picker-wrap {
+  position: relative;
+}
+.hdr-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 11px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+.hdr-pill-btn:hover {
+  background: var(--surface);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+.hdr-pill-btn[aria-expanded="true"] {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+.hdr-pill-icon { font-size: 14px; }
+.hdr-pill-caret { font-size: 10px; color: var(--text-muted); transition: transform 0.2s; }
+.hdr-pill-btn[aria-expanded="true"] .hdr-pill-caret { transform: rotate(180deg); }
+
+.hdr-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  z-index: 500;
+  overflow: hidden;
+  animation: hdrDropIn 0.15s ease;
+}
+.hdr-dropdown.open { display: block; }
+@keyframes hdrDropIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+.hdr-dropdown-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 10px 14px 6px;
+}
+.hdr-drop-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 16px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-  color: var(--text-muted);
-  flex-wrap: wrap;
-}
-#currencyBar label { font-weight: 600; color: var(--text); }
-#currencySelect {
-  padding: 4px 10px;
-  border-radius: 20px;
-  border: 1.5px solid var(--primary);
-  background: var(--bg);
+  width: 100%;
+  padding: 9px 14px;
+  border: none;
+  background: transparent;
   color: var(--text);
   font-size: 13px;
   cursor: pointer;
-  outline: none;
+  text-align: left;
+  transition: background 0.12s;
 }
-#currencyRate {
-  font-size: 12px;
+.hdr-drop-item:hover { background: var(--bg); }
+.hdr-drop-item.active {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+  font-weight: 700;
+}
+.hdr-drop-sym {
+  font-size: 16px;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.hdr-drop-name { flex: 1; }
+.hdr-drop-rate {
+  font-size: 11px;
   color: var(--text-muted);
-  margin-left: 4px;
+  padding: 6px 14px 10px;
+  border-top: 1px solid var(--border);
 }
-#currencyRate.loading { opacity: 0.5; }
+
+/* Theme items */
+.hdr-theme-dropdown { min-width: 160px; }
+.hdr-theme-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+.hdr-theme-item:hover { background: var(--bg); }
+.hdr-theme-item.active {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+  font-weight: 700;
+}
+.hdr-theme-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid rgba(0,0,0,.12);
+}
+
+/* ─── Keyboard Shortcut Toast ─────────────────────────────── */
 
 /* ─── Keyboard Shortcut Toast ───────────────────────────── */
 #kbShortcutPanel {
