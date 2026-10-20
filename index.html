@@ -48,16 +48,15 @@
   <!-- Feature 12: Network status banner -->
   <div id="networkStatus"></div>
 
-  <!-- Currency Bar -->
-  <div id="currencyBar">
-    <label for="currencySelect">💱 Currency:</label>
+  <!-- Currency Bar (hidden — merged into app header) -->
+  <div id="currencyBar" style="display:none;">
     <select id="currencySelect">
-      <option value="BDT" selected>🇧🇩 BDT (৳)</option>
-      <option value="USD">🇺🇸 USD ($)</option>
-      <option value="EUR">🇪🇺 EUR (€)</option>
-      <option value="GBP">🇬🇧 GBP (£)</option>
-      <option value="INR">🇮🇳 INR (₹)</option>
-      <option value="SAR">🇸🇦 SAR (﷼)</option>
+      <option value="BDT" selected>BDT</option>
+      <option value="USD">USD</option>
+      <option value="EUR">EUR</option>
+      <option value="GBP">GBP</option>
+      <option value="INR">INR</option>
+      <option value="SAR">SAR</option>
     </select>
     <span id="currencyRate"></span>
   </div>
@@ -212,19 +211,73 @@
        MAIN APP (hidden until logged in)
   ============================ -->
   <div class="app-wrapper hidden" id="appScreen">
-    <button id="logoutBtn" class="logout-btn">🚪 Logout</button>
-    <button id="toggleDarkMode">🌙 Dark Mode</button>
-    <h1>💰 Expense Tracker 💰</h1>
 
-    <!-- Feature 15: Color Theme Picker -->
-    <div class="theme-picker-row" id="themePicker" aria-label="Choose color theme">
-      <span style="font-size:13px;font-weight:700;color:var(--text2);">🎨 Theme:</span>
-      <button class="theme-swatch active" data-theme="blue"   title="Blue (Default)"  aria-label="Blue theme"></button>
-      <button class="theme-swatch"        data-theme="purple" title="Purple"           aria-label="Purple theme"></button>
-      <button class="theme-swatch"        data-theme="green"  title="Green"            aria-label="Green theme"></button>
-      <button class="theme-swatch"        data-theme="rose"   title="Rose"             aria-label="Rose theme"></button>
-      <button class="theme-swatch"        data-theme="orange" title="Orange"           aria-label="Orange theme"></button>
-    </div>
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="app-header-title">
+        <span class="app-header-icon">💰</span>
+        <h1>Expense Tracker</h1>
+      </div>
+      <div class="app-header-controls">
+
+        <!-- Currency picker button -->
+        <div class="hdr-picker-wrap" id="currencyPickerWrap">
+          <button class="hdr-pill-btn" id="currencyPickerBtn" aria-haspopup="true" aria-expanded="false" title="Switch currency">
+            <span class="hdr-pill-icon">💱</span>
+            <span id="currencyPickerLabel">BDT</span>
+            <span class="hdr-pill-caret">▾</span>
+          </button>
+          <div class="hdr-dropdown" id="currencyDropdown" role="listbox" aria-label="Currency">
+            <div class="hdr-dropdown-title">Currency</div>
+            <button class="hdr-drop-item active" data-currency="BDT" role="option"><span class="hdr-drop-sym">৳</span><span class="hdr-drop-name">BDT — Bangladeshi Taka</span></button>
+            <button class="hdr-drop-item" data-currency="USD" role="option"><span class="hdr-drop-sym">$</span><span class="hdr-drop-name">USD — US Dollar</span></button>
+            <button class="hdr-drop-item" data-currency="EUR" role="option"><span class="hdr-drop-sym">€</span><span class="hdr-drop-name">EUR — Euro</span></button>
+            <button class="hdr-drop-item" data-currency="GBP" role="option"><span class="hdr-drop-sym">£</span><span class="hdr-drop-name">GBP — British Pound</span></button>
+            <button class="hdr-drop-item" data-currency="INR" role="option"><span class="hdr-drop-sym">₹</span><span class="hdr-drop-name">INR — Indian Rupee</span></button>
+            <button class="hdr-drop-item" data-currency="SAR" role="option"><span class="hdr-drop-sym">﷼</span><span class="hdr-drop-name">SAR — Saudi Riyal</span></button>
+            <div class="hdr-drop-rate" id="currencyRateHeader"></div>
+          </div>
+        </div>
+
+        <!-- Theme picker button -->
+        <div class="hdr-picker-wrap" id="themePickerWrap">
+          <button class="hdr-pill-btn" id="themePickerBtn" aria-haspopup="true" aria-expanded="false" title="Change theme">
+            <span class="hdr-pill-icon">🎨</span>
+            <span id="themePickerLabel">Theme</span>
+            <span class="hdr-pill-caret">▾</span>
+          </button>
+          <div class="hdr-dropdown hdr-theme-dropdown" id="themeDropdown" role="listbox" aria-label="Color theme">
+            <div class="hdr-dropdown-title">Color Theme</div>
+            <button class="hdr-theme-item active" data-theme="blue"   role="option"><span class="hdr-theme-dot" style="background:#2563eb"></span>Blue</button>
+            <button class="hdr-theme-item"        data-theme="purple" role="option"><span class="hdr-theme-dot" style="background:#7c3aed"></span>Purple</button>
+            <button class="hdr-theme-item"        data-theme="green"  role="option"><span class="hdr-theme-dot" style="background:#16a34a"></span>Green</button>
+            <button class="hdr-theme-item"        data-theme="rose"   role="option"><span class="hdr-theme-dot" style="background:#e11d48"></span>Rose</button>
+            <button class="hdr-theme-item"        data-theme="orange" role="option"><span class="hdr-theme-dot" style="background:#ea580c"></span>Orange</button>
+          </div>
+        </div>
+
+        <!-- Dark mode + Logout -->
+        <button id="toggleDarkMode" class="header-icon-btn" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+        <button id="logoutBtn" class="header-icon-btn header-logout-btn" title="Logout" aria-label="Logout">🚪</button>
+
+        <!-- Legacy hidden selects kept for JS compatibility -->
+        <select id="currencySelectHeader" style="display:none">
+          <option value="BDT" selected>BDT</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="INR">INR</option>
+          <option value="SAR">SAR</option>
+        </select>
+        <div id="themePicker" style="display:none">
+          <button class="theme-swatch active" data-theme="blue"></button>
+          <button class="theme-swatch" data-theme="purple"></button>
+          <button class="theme-swatch" data-theme="green"></button>
+          <button class="theme-swatch" data-theme="rose"></button>
+          <button class="theme-swatch" data-theme="orange"></button>
+        </div>
+      </div>
+    </header>
 
     <!-- Shown only if old browser (localStorage) data is found on this device -->
     <button id="migrateBtn" class="migrate-btn hidden">⬆️ Import old data saved on this device</button>
@@ -241,7 +294,7 @@
     <!-- Add Expense Form -->
     <div class="form" id="addExpenseSection">
       <input type="text" id="item" placeholder="Item Name" maxlength="200">
-      <input type="number" id="amount" placeholder="Amount" min="0" max="99999999">
+      <input type="number" id="amount" placeholder="Amount" min="0.01" max="99999999" step="any">
       <select id="expenseCategory"></select>
       <input type="date" id="date">
       <input type="text" id="expenseNote" placeholder="Note (optional)" maxlength="500">
@@ -371,7 +424,7 @@
       <input type="number" id="eidDate" placeholder="Date" min="1" max="31">
       <input type="text" id="eidGiver" placeholder="Giver Name" maxlength="150">
       <select id="incomeCategory"></select>
-      <input type="number" id="eidAmount" placeholder="Amount" min="0" max="99999999">
+      <input type="number" id="eidAmount" placeholder="Amount" min="0.01" max="99999999" step="any">
       <button type="submit">Save Bonus</button>
     </form>
 
