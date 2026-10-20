@@ -319,6 +319,41 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 // ===========================
+// Auto-logout after 10 s in background (security / conflict prevention)
+// If the app is backgrounded for more than 10 seconds, sign the user out.
+// Returning within 10 s — no action needed.
+// ===========================
+(function(){
+  const BACKGROUND_LIMIT_MS = 10 * 1000; // 10 seconds
+  let _hiddenAt = null;
+  let _bgTimer  = null;
+
+  document.addEventListener("visibilitychange", () => {
+    if(document.hidden){
+      // App went to background — start the timer
+      _hiddenAt = Date.now();
+      _bgTimer  = setTimeout(() => {
+        // Still hidden after 10 s — sign out to prevent stale/conflict state
+        if(document.hidden && currentUser){
+          auth.signOut();
+        }
+      }, BACKGROUND_LIMIT_MS);
+    } else {
+      // App came back to foreground
+      if(_bgTimer){
+        clearTimeout(_bgTimer);
+        _bgTimer = null;
+      }
+      // If the user was away for more than the limit, sign out immediately
+      if(_hiddenAt && currentUser && Date.now() - _hiddenAt > BACKGROUND_LIMIT_MS){
+        auth.signOut();
+      }
+      _hiddenAt = null;
+    }
+  });
+})();
+
+// ===========================
 // Auth State Listener - drives the whole app
 // ===========================
 auth.onAuthStateChanged(async (user) => {
@@ -1185,11 +1220,14 @@ setupDropdown("incomeCategoryDropdownBtn", "incomeCategoryDropdownContent");
 let _addExpenseLock = false;
 async function addExpense(){
   if(_addExpenseLock) return;
-  const item=document.getElementById("item").value;
+  const item=document.getElementById("item").value.trim();
   const amount=parseFloat(document.getElementById("amount").value);
   const category=document.getElementById("expenseCategory").value;
   const date=document.getElementById("date").value;
-  if(!item || !amount || !date){ showToast("Please fill in all fields!", "error"); return; }
+  if(!item){        showToast("Item Name is required.", "error"); document.getElementById("item").focus(); return; }
+  if(!amount || isNaN(amount)){ showToast("Amount is required.", "error"); document.getElementById("amount").focus(); return; }
+  if(amount <= 0){  showToast("Amount must be a positive number.", "error"); document.getElementById("amount").focus(); return; }
+  if(!date){        showToast("Date is required.", "error"); document.getElementById("date").focus(); return; }
 
   _addExpenseLock = true;
   const saveBtn = document.querySelector("button[onclick='addExpense()']");
@@ -1197,7 +1235,7 @@ async function addExpense(){
 
   const note=document.getElementById("expenseNote").value.trim();
 
-  const entry = {item,amount,category,date,note};
+  const entry = {item, amount: Math.abs(amount), category, date, note};
   const wasEditing = editingExpenseIndex !== -1;
 
   try {
@@ -2396,19 +2434,22 @@ eidForm.addEventListener("submit", async e=>{
   e.preventDefault();
   if(_addBonusLock) return;
 
-  const year=document.getElementById("eidYear").value;
+  const year=document.getElementById("eidYear").value.trim();
   const month=document.getElementById("eidMonth").value;
-  const date=document.getElementById("eidDate").value;
-  const giver=document.getElementById("eidGiver").value;
+  const date=document.getElementById("eidDate").value.trim();
+  const giver=document.getElementById("eidGiver").value.trim();
   const amount=parseFloat(document.getElementById("eidAmount").value);
   const incomeCategory=document.getElementById("incomeCategory") ? document.getElementById("incomeCategory").value : "";
-  if(!year||!month||!date||!giver||!amount){ showToast("Please fill in all fields!", "error"); return; }
+  if(!giver){              showToast("Giver Name is required.", "error"); document.getElementById("eidGiver").focus(); return; }
+  if(!amount||isNaN(amount)){ showToast("Amount is required.", "error"); document.getElementById("eidAmount").focus(); return; }
+  if(amount <= 0){         showToast("Amount must be a positive number.", "error"); document.getElementById("eidAmount").focus(); return; }
+  if(!year||!month||!date){ showToast("Please fill in all date fields.", "error"); return; }
 
   _addBonusLock = true;
   const saveBtn = eidForm.querySelector("button[type='submit']");
   if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = "Saving…"; }
 
-  const entry = {year,month,date,giver,amount,incomeCategory};
+  const entry = {year, month, date, giver, amount: Math.abs(amount), incomeCategory};
   const wasEditing = editingEidIndex !== -1;
 
   try {
@@ -3135,10 +3176,20 @@ let _currentTheme = "blue";
 function applyTheme(theme){
   _currentTheme = theme || "blue";
   document.documentElement.dataset.theme = _currentTheme;
-  // Update swatch active state
+  // Update legacy swatch active state
   document.querySelectorAll(".theme-swatch").forEach(sw => {
     sw.classList.toggle("active", sw.dataset.theme === _currentTheme);
   });
+  // Update new dropdown active state
+  document.querySelectorAll(".hdr-theme-item[data-theme]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.theme === _currentTheme);
+  });
+  // Update pill label
+  const pillLabel = document.getElementById("themePickerLabel");
+  if(pillLabel){
+    const names = { blue:"Blue", purple:"Purple", green:"Green", rose:"Rose", orange:"Orange" };
+    pillLabel.textContent = names[_currentTheme] || _currentTheme;
+  }
 }
 
 async function saveTheme(theme){
@@ -3148,7 +3199,7 @@ async function saveTheme(theme){
   } catch(err){ console.warn("Theme save failed:", err); }
 }
 
-// Wire up theme swatches
+// Wire up theme swatches (legacy hidden ones)
 (function(){
   document.querySelectorAll(".theme-swatch").forEach(sw => {
     sw.addEventListener("click", async () => {
@@ -3157,6 +3208,39 @@ async function saveTheme(theme){
       localStorage.setItem("theme_cache_" + (currentUser ? currentUser.uid : ""), theme);
       await saveTheme(theme);
     });
+  });
+
+  // New pill button dropdown for theme
+  const themeBtn  = document.getElementById("themePickerBtn");
+  const themeDrop = document.getElementById("themeDropdown");
+  if(themeBtn && themeDrop){
+    themeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = themeDrop.classList.toggle("open");
+      themeBtn.setAttribute("aria-expanded", isOpen);
+      // Close currency dropdown if open
+      document.getElementById("currencyDropdown")?.classList.remove("open");
+      document.getElementById("currencyPickerBtn")?.setAttribute("aria-expanded","false");
+    });
+    themeDrop.querySelectorAll(".hdr-theme-item[data-theme]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        haptic([25]);
+        const theme = btn.dataset.theme;
+        applyTheme(theme);
+        localStorage.setItem("theme_cache_" + (currentUser ? currentUser.uid : ""), theme);
+        await saveTheme(theme);
+        themeDrop.classList.remove("open");
+        themeBtn.setAttribute("aria-expanded","false");
+      });
+    });
+  }
+
+  // Close dropdowns when clicking outside
+  document.addEventListener("click", () => {
+    document.getElementById("currencyDropdown")?.classList.remove("open");
+    document.getElementById("currencyPickerBtn")?.setAttribute("aria-expanded","false");
+    document.getElementById("themeDropdown")?.classList.remove("open");
+    document.getElementById("themePickerBtn")?.setAttribute("aria-expanded","false");
   });
 })();
 
@@ -3380,9 +3464,15 @@ document.addEventListener("click", e => {
 // FEATURE 31: MULTI-CURRENCY
 // ===========================
 (function(){
-  const sel       = document.getElementById("currencySelect");
-  const rateEl    = document.getElementById("currencyRate");
+  // Primary select is now in the app header; the legacy hidden one stays for compat
+  const sel       = document.getElementById("currencySelectHeader") ||
+                    document.getElementById("currencySelect");
+  const rateEl    = document.getElementById("currencyRateHeader") ||
+                    document.getElementById("currencyRate");
   if(!sel) return;
+
+  // Keep legacy hidden select in sync (other code may read it)
+  const legacySel = document.getElementById("currencySelect");
 
   // BDT → target rates (fallback table — updated from API when possible)
   const FALLBACK = { BDT:1, USD:0.0091, EUR:0.0084, GBP:0.0072, INR:0.76, SAR:0.034 };
@@ -3390,7 +3480,6 @@ document.addEventListener("click", e => {
   async function fetchRate(to){
     if(to === "BDT") return 1;
     try {
-      // Free, no-auth API
       const res = await fetch(`https://open.er-api.com/v6/latest/BDT`);
       if(!res.ok) throw new Error("network");
       const data = await res.json();
@@ -3402,42 +3491,73 @@ document.addEventListener("click", e => {
 
   async function changeCurrency(to){
     _activeCurrency = to;
+    // Sync hidden selects
+    if(sel) sel.value = to;
+    if(legacySel && legacySel !== sel) legacySel.value = to;
+
+    // Update new pill button label
+    const pillLabel = document.getElementById("currencyPickerLabel");
+    if(pillLabel) pillLabel.textContent = to;
+
+    // Update active state on new dropdown items
+    document.querySelectorAll(".hdr-drop-item[data-currency]").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.currency === to);
+    });
+
+    const rateDisplay = document.getElementById("currencyRateHeader");
     if(to === "BDT"){
       _conversionRate = 1;
-      rateEl.textContent = "";
+      if(rateDisplay) rateDisplay.textContent = "";
     } else {
-      rateEl.textContent = "Loading…";
-      rateEl.classList.add("loading");
+      if(rateDisplay){ rateDisplay.textContent = "Fetching rate…"; }
       const rate = await fetchRate(to);
       _conversionRate = rate;
-      rateEl.textContent = `1 BDT = ${rate.toFixed(4)} ${to}`;
-      rateEl.classList.remove("loading");
+      if(rateDisplay) rateDisplay.textContent = `1 BDT = ${rate.toFixed(4)} ${to}`;
     }
     // Re-render everything that uses fmt()
     renderExpenses();
     renderMonthlyYearlyTables?.();
     renderEidFlatTable?.();
     renderIncomeMonthlyYearlyTables?.();
-    // Update stats
     updateStats?.();
   }
 
-  sel.addEventListener("change", () => {
+  // Legacy hidden select change (kept for backwards compat)
+  if(sel) sel.addEventListener("change", () => {
     haptic([25]);
+    try { localStorage.setItem("activeCurrency_cache", sel.value); } catch(e){}
     changeCurrency(sel.value);
   });
 
-  // Persist last-used currency
-  const saved = localStorage.getItem("activeCurrency_cache");
-  if(saved && FALLBACK[saved]){
-    sel.value = saved;
-    changeCurrency(saved);
+  // New pill button dropdown for currency
+  const currBtn  = document.getElementById("currencyPickerBtn");
+  const currDrop = document.getElementById("currencyDropdown");
+  if(currBtn && currDrop){
+    currBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = currDrop.classList.toggle("open");
+      currBtn.setAttribute("aria-expanded", isOpen);
+      // Close theme dropdown if open
+      document.getElementById("themeDropdown")?.classList.remove("open");
+      document.getElementById("themePickerBtn")?.setAttribute("aria-expanded","false");
+    });
+    currDrop.querySelectorAll(".hdr-drop-item[data-currency]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        haptic([25]);
+        const to = btn.dataset.currency;
+        try { localStorage.setItem("activeCurrency_cache", to); } catch(e){}
+        changeCurrency(to);
+        currDrop.classList.remove("open");
+        currBtn.setAttribute("aria-expanded","false");
+      });
+    });
   }
 
-  // Save on change
-  sel.addEventListener("change", () => {
-    try { localStorage.setItem("activeCurrency_cache", sel.value); } catch(e){}
-  });
+  // Restore last-used currency on load
+  const saved = localStorage.getItem("activeCurrency_cache");
+  if(saved && FALLBACK[saved]){
+    changeCurrency(saved);
+  }
 })();
 // ===========================
 // FEATURE 32: TOP 5 EXPENSIVE ITEMS
