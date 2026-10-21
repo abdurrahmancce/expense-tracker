@@ -76,26 +76,83 @@ body {
     box-shadow var(--transition);
 }
 
-/* Toggle button — special spin+scale animation on click */
-#toggleDarkMode {
-  transition:
-    background var(--transition),
-    color var(--transition),
-    border-color var(--transition),
-    transform 0.18s cubic-bezier(0.34,1.56,0.64,1) !important;
+/* ── Auth pending: hide login screen until Firebase resolves session ── */
+.auth-screen.auth-pending {
+  visibility: hidden;
+  pointer-events: none;
 }
-#toggleDarkMode:active {
-  transform: scale(0.88) rotate(-12deg);
+
+/* ── Dark-mode toggle switch ── */
+.dm-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
 }
-/* Emoji icon smooth flip */
-#toggleDarkMode.toggling {
-  animation: toggleSpin 0.36s cubic-bezier(0.34,1.56,0.64,1);
+.dm-icon {
+  font-size: 15px;
+  line-height: 1;
+  transition: opacity 0.25s, transform 0.3s;
+  user-select: none;
 }
-@keyframes toggleSpin {
-  0%   { transform: scale(1) rotate(0deg); }
-  40%  { transform: scale(0.82) rotate(-18deg); }
-  70%  { transform: scale(1.1) rotate(8deg); }
-  100% { transform: scale(1) rotate(0deg); }
+.dm-sun  { opacity: 1; }
+.dm-moon { opacity: 0.35; }
+.dark-mode .dm-sun  { opacity: 0.35; }
+.dark-mode .dm-moon { opacity: 1; }
+
+/* The pill track */
+.dm-toggle-btn {
+  position: relative;
+  width: 46px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  cursor: pointer;
+  outline: none;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.25s ease;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.4), 0 0 0 0px transparent;
+  flex-shrink: 0;
+}
+.dm-toggle-btn:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 40%, transparent);
+}
+.dm-toggle-btn:hover {
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.4), 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+/* Lit state */
+.dm-toggle-btn.dm-on {
+  background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
+  border-color: rgba(250,204,21,0.45);
+}
+
+/* The thumb */
+.dm-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1),
+              background 0.25s ease,
+              box-shadow 0.25s ease;
+}
+.dm-toggle-btn.dm-on .dm-thumb {
+  transform: translateX(22px);
+  background: #fff9e6;
+  box-shadow: 0 1px 6px rgba(245,158,11,0.55);
+}
+/* Bounce feedback on click */
+.dm-toggle-btn.dm-toggling .dm-thumb {
+  animation: dmThumbBounce 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes dmThumbBounce {
+  0%   { transform: translateX(var(--dm-from, 0px)) scaleX(1.0); }
+  40%  { transform: translateX(var(--dm-mid,  10px)) scaleX(1.25); }
+  100% { transform: translateX(var(--dm-to,  22px)) scaleX(1.0); }
 }
 
 /* Main app content needs padding restored */
@@ -163,11 +220,11 @@ h4 { font-size: 0.9rem; font-weight: 600; color: var(--text2); margin: 16px 0 8p
    HEADER BUTTONS — now rendered inside .app-header as .header-icon-btn
    Legacy selectors kept so JS-toggled classes still apply
    ============================================================ */
-#toggleDarkMode, .logout-btn, #logoutBtn {
-  /* base reset — visual style comes from .header-icon-btn */
+.logout-btn, #logoutBtn {
   cursor: pointer;
   transition: all var(--transition);
 }
+/* #toggleDarkMode is now a toggle switch — see .dm-toggle-btn above */
 .logout-btn, #logoutBtn {
   background: var(--danger);
   color: #fff;
