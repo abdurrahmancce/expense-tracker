@@ -82,77 +82,69 @@ body {
   pointer-events: none;
 }
 
-/* ── Dark-mode toggle switch ── */
-.dm-toggle-wrap {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-shrink: 0;
-}
-.dm-icon {
-  font-size: 15px;
-  line-height: 1;
-  transition: opacity 0.25s, transform 0.3s;
-  user-select: none;
-}
-.dm-sun  { opacity: 1; }
-.dm-moon { opacity: 0.35; }
-.dark-mode .dm-sun  { opacity: 0.35; }
-.dark-mode .dm-moon { opacity: 1; }
-
-/* The pill track */
+/* ── Dark-mode toggle switch — clean pill, no emoji ── */
 .dm-toggle-btn {
   position: relative;
-  width: 46px;
+  width: 44px;
   height: 24px;
   border-radius: 999px;
-  border: 1.5px solid rgba(255,255,255,0.18);
-  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  border: none;
+  /* Light mode: soft grey track */
+  background: #cbd5e1;
   cursor: pointer;
   outline: none;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.25s ease;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.4), 0 0 0 0px transparent;
   flex-shrink: 0;
+  transition: background 0.3s ease, box-shadow 0.25s ease;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+  padding: 0;
 }
 .dm-toggle-btn:focus-visible {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 40%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 35%, transparent);
 }
 .dm-toggle-btn:hover {
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.4), 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.15),
+              0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
 }
-/* Lit state */
+/* Active / dark state: accent-coloured track */
 .dm-toggle-btn.dm-on {
-  background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
-  border-color: rgba(250,204,21,0.45);
+  background: var(--primary);
 }
 
-/* The thumb */
+/* Thumb */
 .dm-thumb {
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 3px;
+  left: 3px;
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #e2e8f0;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.35);
-  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1),
-              background 0.25s ease,
-              box-shadow 0.25s ease;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  transition: transform 0.26s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .dm-toggle-btn.dm-on .dm-thumb {
-  transform: translateX(22px);
-  background: #fff9e6;
-  box-shadow: 0 1px 6px rgba(245,158,11,0.55);
+  transform: translateX(20px);
+  box-shadow: 0 1px 5px rgba(0,0,0,0.22);
 }
-/* Bounce feedback on click */
-.dm-toggle-btn.dm-toggling .dm-thumb {
-  animation: dmThumbBounce 0.3s cubic-bezier(0.34,1.56,0.64,1);
+
+/* Small icon inside thumb: crescent → sun */
+.dm-thumb-icon {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  /* Light mode: dark dot (representing night / moon) */
+  background: #94a3b8;
+  transition: background 0.2s, box-shadow 0.2s;
 }
-@keyframes dmThumbBounce {
-  0%   { transform: translateX(var(--dm-from, 0px)) scaleX(1.0); }
-  40%  { transform: translateX(var(--dm-mid,  10px)) scaleX(1.25); }
-  100% { transform: translateX(var(--dm-to,  22px)) scaleX(1.0); }
+.dm-toggle-btn.dm-on .dm-thumb-icon {
+  /* Dark mode: bright yellow dot (representing sun / day) */
+  background: #f59e0b;
+  box-shadow: 0 0 4px 1px rgba(245,158,11,0.5);
 }
 
 /* Main app content needs padding restored */
@@ -2251,10 +2243,7 @@ body:has(#authScreen:not(.hidden)) {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 1px 8px rgba(0,0,0,.08);
+  /* Not sticky — scrolls with content */
 }
 .app-header-title {
   display: flex;
