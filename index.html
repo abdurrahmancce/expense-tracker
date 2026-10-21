@@ -119,8 +119,12 @@
   <!-- ===========================
        LOGIN / SIGNUP SCREEN
   ============================ -->
-  <script>document.body.classList.add("auth-screen-active");</script>
-  <div id="authScreen" class="auth-screen">
+  <!-- auth-screen hidden by default; shown only if Firebase confirms no session -->
+  <script>
+    // Hide everything until Firebase resolves auth state — prevents login screen flash on refresh
+    document.documentElement.style.setProperty('--auth-init', '1');
+  </script>
+  <div id="authScreen" class="auth-screen auth-pending">
     <!-- Live particle canvas -->
     <canvas id="authParticleCanvas" class="auth-particle-canvas"></canvas>
 
@@ -256,8 +260,14 @@
           </div>
         </div>
 
-        <!-- Dark mode + Logout -->
-        <button id="toggleDarkMode" class="header-icon-btn" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+        <!-- Dark mode toggle switch -->
+        <div class="dm-toggle-wrap" title="Toggle dark mode">
+          <span class="dm-icon dm-sun">☀️</span>
+          <button id="toggleDarkMode" class="dm-toggle-btn" role="switch" aria-checked="false" aria-label="Toggle dark mode">
+            <span class="dm-thumb"></span>
+          </button>
+          <span class="dm-icon dm-moon">🌙</span>
+        </div>
         <button id="logoutBtn" class="header-icon-btn header-logout-btn" title="Logout" aria-label="Logout">🚪</button>
 
         <!-- Legacy hidden selects kept for JS compatibility -->
