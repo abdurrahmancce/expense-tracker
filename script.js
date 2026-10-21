@@ -321,10 +321,10 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 // ===========================
 // Auto-logout after 10 s in background (security / conflict prevention)
 // If the app is backgrounded for more than 10 seconds, sign the user out.
-// Returning within 10 s — no action needed.
+// Returning within 20 s — no action needed.
 // ===========================
 (function(){
-  const BACKGROUND_LIMIT_MS = 10 * 1000; // 10 seconds
+  const BACKGROUND_LIMIT_MS = 20 * 1000; // 20 seconds
   let _hiddenAt = null;
   let _bgTimer  = null;
 
@@ -344,7 +344,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
         clearTimeout(_bgTimer);
         _bgTimer = null;
       }
-      // If the user was away for more than the limit, sign out immediately
+      // If the user was away for more than 20 s, sign out immediately
       if(_hiddenAt && currentUser && Date.now() - _hiddenAt > BACKGROUND_LIMIT_MS){
         auth.signOut();
       }
@@ -357,6 +357,10 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 // Auth State Listener - drives the whole app
 // ===========================
 auth.onAuthStateChanged(async (user) => {
+  // Remove the "pending" class on authScreen — Firebase has now resolved auth state
+  const authScreenEl = document.getElementById("authScreen");
+  if(authScreenEl) authScreenEl.classList.remove("auth-pending");
+
   if(user){
     currentUser = user;
     authScreen.classList.add("hidden");
@@ -423,6 +427,7 @@ auth.onAuthStateChanged(async (user) => {
     appScreen.classList.add("hidden");
     authScreen.classList.remove("hidden");
     document.body.classList.add("auth-screen-active");
+    hideLoading();
   }
 });
 
@@ -645,24 +650,29 @@ let isDark = false;
 function applyDarkMode() {
   if (isDark) {
     document.body.classList.add("dark-mode");
-    toggleBtn.textContent = "☀️ Light Mode";
+    if(toggleBtn){
+      toggleBtn.setAttribute("aria-checked", "true");
+      toggleBtn.classList.add("dm-on");
+    }
   } else {
     document.body.classList.remove("dark-mode");
-    toggleBtn.textContent = "🌙 Dark Mode";
+    if(toggleBtn){
+      toggleBtn.setAttribute("aria-checked", "false");
+      toggleBtn.classList.remove("dm-on");
+    }
   }
 }
 
-toggleBtn.addEventListener("click", async () => {
-  isDark = !isDark;
-  // Spin animation
-  toggleBtn.classList.remove("toggling");
-  void toggleBtn.offsetWidth; // reflow to restart
-  toggleBtn.classList.add("toggling");
-  toggleBtn.addEventListener("animationend", () => toggleBtn.classList.remove("toggling"), { once: true });
-  applyDarkMode();
-  localStorage.setItem("darkMode_cache", String(isDark));
-  await saveDarkMode();
-});
+if(toggleBtn){
+  toggleBtn.addEventListener("click", async () => {
+    isDark = !isDark;
+    toggleBtn.classList.add("dm-toggling");
+    toggleBtn.addEventListener("transitionend", () => toggleBtn.classList.remove("dm-toggling"), { once: true });
+    applyDarkMode();
+    localStorage.setItem("darkMode_cache", String(isDark));
+    await saveDarkMode();
+  });
+}
 
 // ===========================
 // Trash (soft-delete with 30-day auto-purge)
