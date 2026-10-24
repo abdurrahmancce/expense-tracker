@@ -2349,15 +2349,18 @@ body:has(#authScreen:not(.hidden)) {
 
 .hdr-dropdown {
   display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
+  position: fixed;
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%);
   min-width: 220px;
+  max-width: calc(100vw - 24px);
+  width: 260px;
   background: var(--surface);
   border: 1.5px solid var(--border);
   border-radius: 14px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.18);
-  z-index: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,.25);
+  z-index: 1000;
   overflow: hidden;
   animation: hdrDropIn 0.15s ease;
 }
