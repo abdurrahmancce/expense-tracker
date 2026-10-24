@@ -1,7 +1,7 @@
 // ─── Cache version ──────────────────────────────────────────────────────────
 // Bump this string any time you want all clients to pick up fresh copies.
-const CACHE_SHELL    = "expense-tracker-shell-v11";  // app shell (HTML/CSS/JS)
-const CACHE_CDN      = "expense-tracker-cdn-v11";    // third-party libraries
+const CACHE_SHELL    = "expense-tracker-shell-v12";  // app shell (HTML/CSS/JS)
+const CACHE_CDN      = "expense-tracker-cdn-v12";    // third-party libraries
 
 // App-shell files — cache-first, updated when the SW version bumps
 const SHELL_FILES = [
