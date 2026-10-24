@@ -3228,6 +3228,11 @@ async function saveTheme(theme){
       e.stopPropagation();
       const isOpen = themeDrop.classList.toggle("open");
       themeBtn.setAttribute("aria-expanded", isOpen);
+      if(isOpen){
+        // Position dropdown below the button
+        const rect = themeBtn.getBoundingClientRect();
+        themeDrop.style.top = (rect.bottom + 8) + "px";
+      }
       // Close currency dropdown if open
       document.getElementById("currencyDropdown")?.classList.remove("open");
       document.getElementById("currencyPickerBtn")?.setAttribute("aria-expanded","false");
@@ -3547,6 +3552,11 @@ document.addEventListener("click", e => {
       e.stopPropagation();
       const isOpen = currDrop.classList.toggle("open");
       currBtn.setAttribute("aria-expanded", isOpen);
+      if(isOpen){
+        // Position dropdown below the button
+        const rect = currBtn.getBoundingClientRect();
+        currDrop.style.top = (rect.bottom + 8) + "px";
+      }
       // Close theme dropdown if open
       document.getElementById("themeDropdown")?.classList.remove("open");
       document.getElementById("themePickerBtn")?.setAttribute("aria-expanded","false");
