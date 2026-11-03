@@ -1,7 +1,8 @@
 ﻿# Backup files
 *.xlsx
 *.pdf
-*.json
+expenses_backup*.json
+expense-tracker-backup*.json
 
 # Screenshots
 Screenshot*
@@ -9,5 +10,7 @@ Screenshot*
 # Extra HTML tools (not part of the app)
 Expense_Tracker_Recovery.html
 dedupe.html
-restore.html
 developer.html
+
+# VS Code
+.vscode/
