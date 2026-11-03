@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Expense Tracker Recovery</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:850px;margin:30px auto;padding:20px}
+textarea{width:100%;height:300px;font-family:monospace}
+button{padding:12px 20px;font-size:16px;cursor:pointer}
+.ok{color:green}.err{color:red}
+</style>
+</head>
+<body>
+<h2>Expense Tracker - Local Storage Recovery</h2>
+<p>Open this file from the SAME Chrome profile where your Expense Tracker is logged in.
+Paste your copied <b>expense JSON array</b> below, then click Restore.</p>
+<textarea id="data" placeholder='Paste the array beginning with [{"item":...}]'></textarea>
+<br><br>
+<button onclick="restore()">Restore expenses</button>
+<p id="msg"></p>
+<script>
+function restore(){
+  const msg=document.getElementById('msg');
+  try{
+    const raw=document.getElementById('data').value.trim();
+    const data=JSON.parse(raw);
+    if(!Array.isArray(data)) throw new Error("Data must be a JSON array.");
+    for(const x of data){
+      if(!x || typeof x.item!=="string" || x.amount===undefined || !x.date)
+        throw new Error("Invalid expense record found.");
+    }
+    localStorage.setItem("expenses", JSON.stringify(data));
+    const saved=JSON.parse(localStorage.getItem("expenses")||"[]");
+    msg.className="ok";
+    msg.textContent=`SUCCESS: ${saved.length} expense records restored. Now close this file, return to Expense Tracker, and refresh once.`;
+  }catch(e){
+    msg.className="err";
+    msg.textContent="ERROR: "+e.message;
+  }
+}
+</script>
+</body>
+</html>

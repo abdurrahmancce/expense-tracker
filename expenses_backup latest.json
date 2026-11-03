@@ -1,0 +1,4291 @@
+{
+  "_meta": {
+    "exportedAt": "2026-10-18T08:58:02.151Z",
+    "exportedBy": "akash.abdur.2002@gmail.com",
+    "uid": "sqlDRqJXVkXueL2HphwwUQHYt9K2",
+    "appVersion": "expense-tracker-v7",
+    "totalExpenses": 555,
+    "totalIncome": 49
+  },
+  "expenses": [
+    {
+      "item": "Baba",
+      "amount": 220,
+      "category": "",
+      "date": "2026-08-28",
+      "note": ""
+    },
+    {
+      "item": "University to Feni ",
+      "amount": 50,
+      "category": "",
+      "date": "2026-06-09",
+      "note": ""
+    },
+    {
+      "item": "Cycle",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-24",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya",
+      "amount": 80,
+      "category": "",
+      "date": "2026-08-26",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-23",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "",
+      "date": "2026-09-07",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-27",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-09",
+      "note": ""
+    },
+    {
+      "item": "Achar",
+      "amount": 20,
+      "category": "",
+      "date": "2025-11-17",
+      "note": ""
+    },
+    {
+      "item": "Tissue",
+      "amount": 45,
+      "category": "",
+      "date": "2025-11-26",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-19",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta",
+      "amount": 30,
+      "category": "",
+      "date": "2026-08-04",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge",
+      "amount": 103,
+      "category": "",
+      "date": "2026-05-31",
+      "note": ""
+    },
+    {
+      "item": "Hall meal cost for last  days",
+      "amount": 1500,
+      "category": "",
+      "date": "2025-11-16",
+      "note": ""
+    },
+    {
+      "item": "September 1st 15 Days Hall Meal Cost",
+      "amount": 2000,
+      "category": "",
+      "date": "2026-09-01",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 60,
+      "category": "",
+      "date": "2026-08-27",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-27",
+      "note": ""
+    },
+    {
+      "item": "Market",
+      "amount": 70,
+      "category": "Market",
+      "date": "2026-10-14",
+      "note": ""
+    },
+    {
+      "item": "IIUC to Badi + Feni",
+      "amount": 400,
+      "category": "",
+      "date": "2026-06-28",
+      "note": ""
+    },
+    {
+      "item": "University to Home",
+      "amount": 200,
+      "category": "",
+      "date": "2025-12-15",
+      "note": ""
+    },
+    {
+      "item": "Lab report ",
+      "amount": 40,
+      "category": "",
+      "date": "2025-11-12",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta",
+      "amount": 55,
+      "category": "",
+      "date": "2026-09-01",
+      "note": ""
+    },
+    {
+      "item": "Hall meal cost for last 15 days",
+      "amount": 1500,
+      "category": "",
+      "date": "2026-06-18",
+      "note": ""
+    },
+    {
+      "item": "Footware",
+      "amount": 800,
+      "category": "",
+      "date": "2026-03-29",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "Tuition Transport Cost",
+      "date": "2026-09-30",
+      "note": ""
+    },
+    {
+      "item": "Kumira Ghat",
+      "amount": 30,
+      "category": "",
+      "date": "2026-09-17",
+      "note": ""
+    },
+    {
+      "item": "Rubel Vhaiya",
+      "amount": 100,
+      "category": "",
+      "date": "2026-06-09",
+      "note": ""
+    },
+    {
+      "item": "Eid Salami (Afif,Amir,Zayn,Monalisa)",
+      "amount": 400,
+      "category": "",
+      "date": "2026-03-27",
+      "note": ""
+    },
+    {
+      "item": "Bhaiyar Basa",
+      "amount": 80,
+      "category": "",
+      "date": "2026-06-09",
+      "note": ""
+    },
+    {
+      "item": "Transport Cost",
+      "amount": 40,
+      "category": "Transport",
+      "date": "2026-10-14",
+      "note": ""
+    },
+    {
+      "item": "Feni to Versity",
+      "amount": 50,
+      "category": "",
+      "date": "2026-06-29",
+      "note": ""
+    },
+    {
+      "item": "Banana",
+      "amount": 30,
+      "category": "",
+      "date": "2026-09-03",
+      "note": ""
+    },
+    {
+      "item": "Badir Bazar",
+      "amount": 270,
+      "category": "",
+      "date": "2026-08-08",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-05",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 30,
+      "category": "",
+      "date": "2026-06-25",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge",
+      "amount": 70,
+      "category": "",
+      "date": "2026-07-08",
+      "note": ""
+    },
+    {
+      "item": "Bangla Bazar Beach ",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-17",
+      "note": ""
+    },
+    {
+      "item": "Azmir ",
+      "amount": 80,
+      "category": "Azmir Restaurant Nasta",
+      "date": "2026-10-08",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-17",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-18",
+      "note": ""
+    },
+    {
+      "item": "Cloth Sewing ",
+      "amount": 111,
+      "category": "",
+      "date": "2026-01-04",
+      "note": ""
+    },
+    {
+      "item": "Recharge ",
+      "amount": 80,
+      "category": "",
+      "date": "2026-01-16",
+      "note": ""
+    },
+    {
+      "item": "Town",
+      "amount": 200,
+      "category": "",
+      "date": "2026-01-15",
+      "note": ""
+    },
+    {
+      "item": "Hair Cut",
+      "amount": 120,
+      "category": "",
+      "date": "2026-04-30",
+      "note": ""
+    },
+    {
+      "item": "C",
+      "amount": 270,
+      "category": "",
+      "date": "2025-10-30",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge",
+      "amount": 120,
+      "category": "",
+      "date": "2026-04-23",
+      "note": ""
+    },
+    {
+      "item": "Eid Salami ( Afsara,araf,ayan,saoda)",
+      "amount": 400,
+      "category": "",
+      "date": "2026-05-28",
+      "note": ""
+    },
+    {
+      "item": "parents",
+      "amount": 1000,
+      "category": "",
+      "date": "2026-03-10",
+      "note": ""
+    },
+    {
+      "item": "Nanur Badi",
+      "amount": 150,
+      "category": "",
+      "date": "2026-02-14",
+      "note": ""
+    },
+    {
+      "item": "Tooth Paste",
+      "amount": 50,
+      "category": "",
+      "date": "2025-11-09",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 40,
+      "category": "",
+      "date": "2026-07-24",
+      "note": ""
+    },
+    {
+      "item": "Home to University",
+      "amount": 120,
+      "category": "",
+      "date": "2026-03-28",
+      "note": ""
+    },
+    {
+      "item": "Badi to University",
+      "amount": 140,
+      "category": "",
+      "date": "2026-02-02",
+      "note": ""
+    },
+    {
+      "item": "New market",
+      "amount": 850,
+      "category": "",
+      "date": "2025-10-26",
+      "note": ""
+    },
+    {
+      "item": "Meal Cost for April Month",
+      "amount": 1500,
+      "category": "",
+      "date": "2026-03-28",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 35,
+      "category": "",
+      "date": "2026-07-13",
+      "note": ""
+    },
+    {
+      "item": "Biscuits",
+      "amount": 10,
+      "category": "",
+      "date": "2025-10-12",
+      "note": ""
+    },
+    {
+      "item": "Meal Cost extended of November",
+      "amount": 368,
+      "category": "",
+      "date": "2025-12-02",
+      "note": ""
+    },
+    {
+      "item": "Water 2 litre",
+      "amount": 40,
+      "category": "",
+      "date": "2026-09-21",
+      "note": ""
+    },
+    {
+      "item": "Akilpur Sea Beach",
+      "amount": 40,
+      "category": "",
+      "date": "2026-07-11",
+      "note": ""
+    },
+    {
+      "item": "Doi",
+      "amount": 30,
+      "category": "",
+      "date": "2026-04-06",
+      "note": ""
+    },
+    {
+      "item": "Online charge ",
+      "amount": 30,
+      "category": "",
+      "date": "2026-09-28",
+      "note": ""
+    },
+    {
+      "item": "..",
+      "amount": 55,
+      "category": "",
+      "date": "2026-01-30",
+      "note": ""
+    },
+    {
+      "item": "July Month extended meal cost ",
+      "amount": 955,
+      "category": "",
+      "date": "2026-09-13",
+      "note": ""
+    },
+    {
+      "item": "Azmir ( Chap + Tea )",
+      "amount": 180,
+      "category": "",
+      "date": "2026-04-28",
+      "note": ""
+    },
+    {
+      "item": "Lab Report",
+      "amount": 65,
+      "category": "",
+      "date": "2026-08-29",
+      "note": ""
+    },
+    {
+      "item": "..",
+      "amount": 30,
+      "category": "",
+      "date": "2025-11-16",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-19",
+      "note": ""
+    },
+    {
+      "item": "Sentu Genji",
+      "amount": 60,
+      "category": "",
+      "date": "2026-03-18",
+      "note": ""
+    },
+    {
+      "item": "Soap",
+      "amount": 50,
+      "category": "",
+      "date": "2026-05-17",
+      "note": ""
+    },
+    {
+      "item": "Badam",
+      "amount": 10,
+      "category": "",
+      "date": "2026-09-03",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "",
+      "date": "2026-09-21",
+      "note": ""
+    },
+    {
+      "item": "Chhhhagalnaiya",
+      "amount": 120,
+      "category": "",
+      "date": "2026-03-24",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya",
+      "amount": 200,
+      "category": "",
+      "date": "2026-04-03",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya",
+      "amount": 400,
+      "category": "",
+      "date": "2026-05-31",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-08",
+      "note": ""
+    },
+    {
+      "item": "Hall meal cost for last 15 days",
+      "amount": 1500,
+      "category": "",
+      "date": "2025-12-18",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-03-04",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 40,
+      "category": "",
+      "date": "2026-06-29",
+      "note": ""
+    },
+    {
+      "item": "Gift",
+      "amount": 20,
+      "category": "",
+      "date": "2025-12-08",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-13",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta",
+      "amount": 80,
+      "category": "",
+      "date": "2026-05-15",
+      "note": ""
+    },
+    {
+      "item": "Jaheda apu badi",
+      "amount": 210,
+      "category": "",
+      "date": "2026-02-06",
+      "note": ""
+    },
+    {
+      "item": "Money Bag",
+      "amount": 120,
+      "category": "",
+      "date": "2026-09-02",
+      "note": ""
+    },
+    {
+      "item": "Motua ",
+      "amount": 100,
+      "category": "Relative Cost",
+      "date": "2026-09-24",
+      "note": "Chhagalnaiya To Motua"
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 30,
+      "category": "",
+      "date": "2026-04-28",
+      "note": ""
+    },
+    {
+      "item": "Ator(Chroclate)",
+      "amount": 50,
+      "category": "",
+      "date": "2025-11-26",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-02",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-19",
+      "note": ""
+    },
+    {
+      "item": "Dinner",
+      "amount": 60,
+      "category": "",
+      "date": "2026-05-08",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 45,
+      "category": "",
+      "date": "2026-05-21",
+      "note": ""
+    },
+    {
+      "item": "Potato(Alu)",
+      "amount": 30,
+      "category": "",
+      "date": "2026-09-10",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-30",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 45,
+      "category": "",
+      "date": "2025-11-26",
+      "note": ""
+    },
+    {
+      "item": "Badi",
+      "amount": 155,
+      "category": "",
+      "date": "2025-11-19",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 25,
+      "category": "Tuition Transport Cost",
+      "date": "2026-09-29",
+      "note": ""
+    },
+    {
+      "item": "Bodo kumira",
+      "amount": 135,
+      "category": "",
+      "date": "2025-12-11",
+      "note": ""
+    },
+    {
+      "item": "Banana",
+      "amount": 30,
+      "category": "",
+      "date": "2026-07-01",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-26",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 10,
+      "category": "",
+      "date": "2026-06-06",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-20",
+      "note": ""
+    },
+    {
+      "item": "Patenga Sea Beach",
+      "amount": 400,
+      "category": "",
+      "date": "2026-06-14",
+      "note": ""
+    },
+    {
+      "item": "Medicine",
+      "amount": 500,
+      "category": "",
+      "date": "2025-12-05",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-22",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 25,
+      "category": "",
+      "date": "2026-09-18",
+      "note": ""
+    },
+    {
+      "item": "Leap Balm",
+      "amount": 50,
+      "category": "",
+      "date": "2026-06-17",
+      "note": ""
+    },
+    {
+      "item": "Feni",
+      "amount": 40,
+      "category": "",
+      "date": "2026-08-28",
+      "note": ""
+    },
+    {
+      "item": "Ban",
+      "amount": 10,
+      "category": "",
+      "date": "2026-07-26",
+      "note": ""
+    },
+    {
+      "item": "Ma",
+      "amount": 1500,
+      "category": "",
+      "date": "2026-02-14",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya",
+      "amount": 80,
+      "category": "",
+      "date": "2026-01-01",
+      "note": ""
+    },
+    {
+      "item": "Pathanghar",
+      "amount": 150,
+      "category": "",
+      "date": "2026-07-21",
+      "note": ""
+    },
+    {
+      "item": "Nasta ",
+      "amount": 13,
+      "category": "",
+      "date": "2025-12-27",
+      "note": ""
+    },
+    {
+      "item": "Home to University",
+      "amount": 95,
+      "category": "",
+      "date": "2026-05-02",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-04",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge",
+      "amount": 121,
+      "category": "",
+      "date": "2026-05-24",
+      "note": ""
+    },
+    {
+      "item": "Touser",
+      "amount": 450,
+      "category": "",
+      "date": "2026-01-15",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 10,
+      "category": "",
+      "date": "2026-05-20",
+      "note": ""
+    },
+    {
+      "item": "University To Home",
+      "amount": 260,
+      "category": "University To Home",
+      "date": "2026-10-16",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-17",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "",
+      "date": "2026-09-20",
+      "note": ""
+    },
+    {
+      "item": "Dragon Fruits",
+      "amount": 80,
+      "category": "",
+      "date": "2026-09-04",
+      "note": ""
+    },
+    {
+      "item": "Bashbaria Tour",
+      "amount": 80,
+      "category": "",
+      "date": "2026-02-27",
+      "note": ""
+    },
+    {
+      "item": "Azmir ",
+      "amount": 87,
+      "category": "",
+      "date": "2026-07-06",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-10",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya",
+      "amount": 300,
+      "category": "",
+      "date": "2026-08-16",
+      "note": ""
+    },
+    {
+      "item": "Hair Cut",
+      "amount": 200,
+      "category": "",
+      "date": "2026-07-09",
+      "note": ""
+    },
+    {
+      "item": "Tank,Esogul",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-22",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "",
+      "date": "2026-09-16",
+      "note": ""
+    },
+    {
+      "item": "Nasta ",
+      "amount": 70,
+      "category": "",
+      "date": "2026-07-14",
+      "note": ""
+    },
+    {
+      "item": "ETE SEMINAR",
+      "amount": 30,
+      "category": "",
+      "date": "2025-10-27",
+      "note": ""
+    },
+    {
+      "item": "University to Home",
+      "amount": 170,
+      "category": "",
+      "date": "2026-04-01",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-03-05",
+      "note": ""
+    },
+    {
+      "item": "Feni to University",
+      "amount": 100,
+      "category": "",
+      "date": "2026-06-29",
+      "note": ""
+    },
+    {
+      "item": "Tank & Esobgul",
+      "amount": 40,
+      "category": "",
+      "date": "2026-07-23",
+      "note": ""
+    },
+    {
+      "item": "Badir Cost",
+      "amount": 100,
+      "category": "",
+      "date": "2026-08-12",
+      "note": ""
+    },
+    {
+      "item": "Trouser Pocket Sweing",
+      "amount": 120,
+      "category": "",
+      "date": "2026-03-24",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "",
+      "date": "2026-07-23",
+      "note": ""
+    },
+    {
+      "item": "Dinner",
+      "amount": 70,
+      "category": "",
+      "date": "2026-02-02",
+      "note": ""
+    },
+    {
+      "item": "Breakfast",
+      "amount": 90,
+      "category": "",
+      "date": "2026-02-03",
+      "note": ""
+    },
+    {
+      "item": "Lab Report",
+      "amount": 43,
+      "category": "",
+      "date": "2025-12-23",
+      "note": ""
+    },
+    {
+      "item": "Room Key",
+      "amount": 96,
+      "category": "",
+      "date": "2026-09-16",
+      "note": ""
+    },
+    {
+      "item": "Ajmir (Chap)",
+      "amount": 180,
+      "category": "",
+      "date": "2025-12-11",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-17",
+      "note": ""
+    },
+    {
+      "item": "Town",
+      "amount": 90,
+      "category": "",
+      "date": "2026-06-14",
+      "note": ""
+    },
+    {
+      "item": "Univesity to home",
+      "amount": 80,
+      "category": "",
+      "date": "2026-08-25",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 10,
+      "category": "",
+      "date": "2026-09-23",
+      "note": ""
+    },
+    {
+      "item": "Wall Sticky",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-15",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 10,
+      "category": "",
+      "date": "2026-07-03",
+      "note": ""
+    },
+    {
+      "item": "Nanur Badi ",
+      "amount": 170,
+      "category": "",
+      "date": "2026-03-19",
+      "note": ""
+    },
+    {
+      "item": "Cox'S Shopping For Home ",
+      "amount": 2000,
+      "category": "",
+      "date": "2026-06-11",
+      "note": ""
+    },
+    {
+      "item": "kumira ghat ",
+      "amount": 60,
+      "category": "",
+      "date": "2025-10-21",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta ",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-22",
+      "note": ""
+    },
+    {
+      "item": "University to Home",
+      "amount": 150,
+      "category": "",
+      "date": "2026-08-07",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-22",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 10,
+      "category": "",
+      "date": "2026-07-25",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-12",
+      "note": ""
+    },
+    {
+      "item": "Ma-Baba",
+      "amount": 1000,
+      "category": "",
+      "date": "2025-10-31",
+      "note": ""
+    },
+    {
+      "item": "Baba",
+      "amount": 200,
+      "category": "",
+      "date": "2026-08-16",
+      "note": ""
+    },
+    {
+      "item": "Ator",
+      "amount": 140,
+      "category": "",
+      "date": "2025-11-26",
+      "note": ""
+    },
+    {
+      "item": "Market",
+      "amount": 700,
+      "category": "",
+      "date": "2026-04-30",
+      "note": ""
+    },
+    {
+      "item": "Badir cost",
+      "amount": 50,
+      "category": "",
+      "date": "2026-08-14",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-05",
+      "note": ""
+    },
+    {
+      "item": "Drawer Key ",
+      "amount": 90,
+      "category": "",
+      "date": "2026-09-15",
+      "note": ""
+    },
+    {
+      "item": "Town",
+      "amount": 115,
+      "category": "",
+      "date": "2025-12-10",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge",
+      "amount": 50,
+      "category": "",
+      "date": "2025-12-12",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 ",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-23",
+      "note": ""
+    },
+    {
+      "item": "Recharge ",
+      "amount": 100,
+      "category": "",
+      "date": "2026-03-27",
+      "note": ""
+    },
+    {
+      "item": "Friend Adda",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-24",
+      "note": ""
+    },
+    {
+      "item": "Adda",
+      "amount": 40,
+      "category": "",
+      "date": "2026-06-03",
+      "note": ""
+    },
+    {
+      "item": "Shopping",
+      "amount": 670,
+      "category": "",
+      "date": "2025-11-18",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 25,
+      "category": "",
+      "date": "2025-12-28",
+      "note": ""
+    },
+    {
+      "item": "University to Badi + Feni",
+      "amount": 450,
+      "category": "",
+      "date": "2026-06-29",
+      "note": ""
+    },
+    {
+      "item": "Mobile Rechage",
+      "amount": 100,
+      "category": "",
+      "date": "2026-09-12",
+      "note": ""
+    },
+    {
+      "item": "Alokdia Tour",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-04",
+      "note": ""
+    },
+    {
+      "item": "Chips",
+      "amount": 15,
+      "category": "",
+      "date": "2026-01-29",
+      "note": ""
+    },
+    {
+      "item": "Civit",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-28",
+      "note": ""
+    },
+    {
+      "item": "Bhaiyar Basa",
+      "amount": 100,
+      "category": "",
+      "date": "2026-09-09",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-02-28",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge",
+      "amount": 150,
+      "category": "Mobile Recharge",
+      "date": "2026-09-20",
+      "note": ""
+    },
+    {
+      "item": "Transport fee",
+      "amount": 70,
+      "category": "",
+      "date": "2025-11-18",
+      "note": ""
+    },
+    {
+      "item": "Varsity Bag",
+      "amount": 1500,
+      "category": "",
+      "date": "2025-12-13",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-02-22",
+      "note": ""
+    },
+    {
+      "item": "IIUC to Feni",
+      "amount": 50,
+      "category": "",
+      "date": "2026-06-09",
+      "note": ""
+    },
+    {
+      "item": "Feni",
+      "amount": 300,
+      "category": "",
+      "date": "2026-02-07",
+      "note": ""
+    },
+    {
+      "item": "Cake",
+      "amount": 90,
+      "category": "",
+      "date": "2026-09-28",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-03",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 40,
+      "category": "",
+      "date": "2025-11-27",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 100,
+      "category": "",
+      "date": "2025-12-17",
+      "note": ""
+    },
+    {
+      "item": ".....",
+      "amount": 100,
+      "category": "",
+      "date": "2025-12-04",
+      "note": ""
+    },
+    {
+      "item": "1st 15 days for Meal cost",
+      "amount": 1500,
+      "category": "",
+      "date": "2026-01-03",
+      "note": ""
+    },
+    {
+      "item": "Ecorevolution Cox'S Bazar Tour",
+      "amount": 2000,
+      "category": "",
+      "date": "2026-06-05",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-16",
+      "note": ""
+    },
+    {
+      "item": "Electricity Socket",
+      "amount": 70,
+      "category": "",
+      "date": "2026-09-15",
+      "note": ""
+    },
+    {
+      "item": "Subedari (Prova)",
+      "amount": 870,
+      "category": "Relative Cost",
+      "date": "2026-09-24",
+      "note": "Chhagalnaiya To Subedari"
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 25,
+      "category": "",
+      "date": "2026-09-14",
+      "note": ""
+    },
+    {
+      "item": "Motorolla Protector",
+      "amount": 250,
+      "category": "",
+      "date": "2026-02-07",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 50,
+      "category": "",
+      "date": "2025-11-14",
+      "note": ""
+    },
+    {
+      "item": "Parents",
+      "amount": 1000,
+      "category": "",
+      "date": "2026-06-29",
+      "note": ""
+    },
+    {
+      "item": "Mobile recharge",
+      "amount": 130,
+      "category": "",
+      "date": "2026-02-08",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-01",
+      "note": ""
+    },
+    {
+      "item": "Rupali Mango",
+      "amount": 35,
+      "category": "",
+      "date": "2026-07-02",
+      "note": ""
+    },
+    {
+      "item": "Home to University ",
+      "amount": 85,
+      "category": "",
+      "date": "2026-09-26",
+      "note": ""
+    },
+    {
+      "item": "Badi ",
+      "amount": 540,
+      "category": "",
+      "date": "2025-10-29",
+      "note": ""
+    },
+    {
+      "item": "..",
+      "amount": 35,
+      "category": "",
+      "date": "2025-11-28",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-22",
+      "note": ""
+    },
+    {
+      "item": "Montair 10 Medicine",
+      "amount": 170,
+      "category": "",
+      "date": "2026-08-10",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 35,
+      "category": "",
+      "date": "2026-09-02",
+      "note": ""
+    },
+    {
+      "item": "Tank",
+      "amount": 140,
+      "category": "",
+      "date": "2026-09-12",
+      "note": ""
+    },
+    {
+      "item": "Home To Varsity",
+      "amount": 60,
+      "category": "",
+      "date": "2025-12-17",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-02-17",
+      "note": ""
+    },
+    {
+      "item": "Hair cut & Shave",
+      "amount": 200,
+      "category": "",
+      "date": "2026-09-10",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 ",
+      "amount": 30,
+      "category": "",
+      "date": "2026-07-16",
+      "note": ""
+    },
+    {
+      "item": "Mishwak",
+      "amount": 26,
+      "category": "",
+      "date": "2026-03-02",
+      "note": ""
+    },
+    {
+      "item": "University to Badi",
+      "amount": 115,
+      "category": "",
+      "date": "2025-12-30",
+      "note": ""
+    },
+    {
+      "item": "Hair Cut ",
+      "amount": 120,
+      "category": "",
+      "date": "2026-05-30",
+      "note": ""
+    },
+    {
+      "item": "Tour Guliakhali ",
+      "amount": 160,
+      "category": "",
+      "date": "2026-03-07",
+      "note": ""
+    },
+    {
+      "item": "ML Webinar",
+      "amount": 120,
+      "category": "",
+      "date": "2026-06-02",
+      "note": ""
+    },
+    {
+      "item": "Lab Report",
+      "amount": 15,
+      "category": "",
+      "date": "2026-09-19",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta",
+      "amount": 130,
+      "category": "",
+      "date": "2026-04-23",
+      "note": ""
+    },
+    {
+      "item": "Semester fee + Hall Seat fee",
+      "amount": 39650,
+      "category": "",
+      "date": "2025-12-23",
+      "note": ""
+    },
+    {
+      "item": "..",
+      "amount": 10,
+      "category": "",
+      "date": "2025-11-08",
+      "note": ""
+    },
+    {
+      "item": "Medicine",
+      "amount": 1050,
+      "category": "",
+      "date": "2026-07-21",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "",
+      "date": "2026-07-08",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-05",
+      "note": ""
+    },
+    {
+      "item": "May month extended meal cost",
+      "amount": 176,
+      "category": "",
+      "date": "2026-06-15",
+      "note": ""
+    },
+    {
+      "item": "Jins Pant",
+      "amount": 600,
+      "category": "",
+      "date": "2026-03-18",
+      "note": ""
+    },
+    {
+      "item": "Washroom Handwash",
+      "amount": 30,
+      "category": "",
+      "date": "2026-07-13",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-03-02",
+      "note": ""
+    },
+    {
+      "item": "Extended meal cost on October",
+      "amount": 516,
+      "category": "",
+      "date": "2025-11-05",
+      "note": ""
+    },
+    {
+      "item": "Microprocessor Lab Report",
+      "amount": 57,
+      "category": "",
+      "date": "2026-06-21",
+      "note": ""
+    },
+    {
+      "item": "Milkshake",
+      "amount": 50,
+      "category": "",
+      "date": "2026-04-24",
+      "note": ""
+    },
+    {
+      "item": "Pen",
+      "amount": 10,
+      "category": "Study Materials",
+      "date": "2026-10-10",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-02-24",
+      "note": ""
+    },
+    {
+      "item": "Matha",
+      "amount": 80,
+      "category": "",
+      "date": "2026-09-16",
+      "note": ""
+    },
+    {
+      "item": "2 Shirt",
+      "amount": 1400,
+      "category": "",
+      "date": "2025-11-15",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "Tuition Transport Cost",
+      "date": "2026-09-26",
+      "note": ""
+    },
+    {
+      "item": "Home to University",
+      "amount": 70,
+      "category": "",
+      "date": "2026-08-22",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )\t",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-13",
+      "note": ""
+    },
+    {
+      "item": "Microprocessor cp",
+      "amount": 3,
+      "category": "",
+      "date": "2026-02-28",
+      "note": ""
+    },
+    {
+      "item": "Parents Medicine ",
+      "amount": 260,
+      "category": "Family Cost",
+      "date": "2026-10-17",
+      "note": ""
+    },
+    {
+      "item": "Nasta ",
+      "amount": 110,
+      "category": "Nasta",
+      "date": "2026-10-14",
+      "note": ""
+    },
+    {
+      "item": "Hall meal cost for last 15 days",
+      "amount": 2000,
+      "category": "",
+      "date": "2026-07-05",
+      "note": ""
+    },
+    {
+      "item": "University to Home",
+      "amount": 600,
+      "category": "",
+      "date": "2026-05-23",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-16",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta",
+      "amount": 25,
+      "category": "Azmir Restaurant Nasta",
+      "date": "2026-10-05",
+      "note": ""
+    },
+    {
+      "item": "Biyer Dawoat Gift ",
+      "amount": 220,
+      "category": "",
+      "date": "2026-07-24",
+      "note": ""
+    },
+    {
+      "item": "Juta",
+      "amount": 750,
+      "category": "",
+      "date": "2026-04-29",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-28",
+      "note": ""
+    },
+    {
+      "item": "Hall meal cost for 1st 15 days",
+      "amount": 1500,
+      "category": "",
+      "date": "2025-12-01",
+      "note": ""
+    },
+    {
+      "item": "Shopping",
+      "amount": 1650,
+      "category": "",
+      "date": "2025-10-16",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 30,
+      "category": "",
+      "date": "2025-11-09",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-24",
+      "note": ""
+    },
+    {
+      "item": "Sandip Up-Down Cost",
+      "amount": 750,
+      "category": "",
+      "date": "2025-11-06",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 ",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-01",
+      "note": ""
+    },
+    {
+      "item": "URED lecture sheet printout",
+      "amount": 90,
+      "category": "",
+      "date": "2026-02-26",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge ",
+      "amount": 350,
+      "category": "",
+      "date": "2026-01-22",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-05",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-09",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-07",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta ",
+      "amount": 30,
+      "category": "",
+      "date": "2026-07-28",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-04",
+      "note": ""
+    },
+    {
+      "item": "LAb report",
+      "amount": 20,
+      "category": "",
+      "date": "2025-11-11",
+      "note": ""
+    },
+    {
+      "item": "October 1st 15 days meal cost",
+      "amount": 1500,
+      "category": "Hall Meal Cost",
+      "date": "2026-10-01",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 ",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-01",
+      "note": ""
+    },
+    {
+      "item": "Mango",
+      "amount": 100,
+      "category": "",
+      "date": "2026-07-11",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-28",
+      "note": ""
+    },
+    {
+      "item": "Ator ( Sea Water )",
+      "amount": 110,
+      "category": "",
+      "date": "2026-04-14",
+      "note": ""
+    },
+    {
+      "item": "Azmir ",
+      "amount": 65,
+      "category": "",
+      "date": "2026-07-13",
+      "note": ""
+    },
+    {
+      "item": "Mother Teath treatment",
+      "amount": 1000,
+      "category": "",
+      "date": "2026-08-16",
+      "note": ""
+    },
+    {
+      "item": "Achar",
+      "amount": 20,
+      "category": "",
+      "date": "2025-11-10",
+      "note": ""
+    },
+    {
+      "item": "Home to University ",
+      "amount": 70,
+      "category": "",
+      "date": "2026-04-04",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-23",
+      "note": ""
+    },
+    {
+      "item": "Recharge",
+      "amount": 80,
+      "category": "",
+      "date": "2026-03-21",
+      "note": ""
+    },
+    {
+      "item": "Cough Doctor Visit (DR Niloy Sir )",
+      "amount": 500,
+      "category": "",
+      "date": "2026-07-21",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 80,
+      "category": "",
+      "date": "2026-07-08",
+      "note": ""
+    },
+    {
+      "item": "Maks Milk Powder",
+      "amount": 230,
+      "category": "",
+      "date": "2026-09-13",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-29",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 10,
+      "category": "Nasta",
+      "date": "2026-10-12",
+      "note": ""
+    },
+    {
+      "item": "September last 15 Days Hall Meal Cost",
+      "amount": 1000,
+      "category": "",
+      "date": "2026-09-19",
+      "note": ""
+    },
+    {
+      "item": "Varsity to Badi ",
+      "amount": 130,
+      "category": "",
+      "date": "2025-12-03",
+      "note": ""
+    },
+    {
+      "item": ".....",
+      "amount": 50,
+      "category": "",
+      "date": "2025-12-12",
+      "note": ""
+    },
+    {
+      "item": "Civit",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-15",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta",
+      "amount": 105,
+      "category": "",
+      "date": "2026-09-22",
+      "note": ""
+    },
+    {
+      "item": "Hall id",
+      "amount": 190,
+      "category": "",
+      "date": "2025-10-23",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 25,
+      "category": "",
+      "date": "2026-06-07",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 10,
+      "category": "",
+      "date": "2026-01-14",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-10",
+      "note": ""
+    },
+    {
+      "item": "Breakfast",
+      "amount": 28,
+      "category": "",
+      "date": "2026-08-01",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-31",
+      "note": ""
+    },
+    {
+      "item": "Transport",
+      "amount": 60,
+      "category": "",
+      "date": "2025-11-15",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-06",
+      "note": ""
+    },
+    {
+      "item": "Badam",
+      "amount": 10,
+      "category": "",
+      "date": "2026-05-11",
+      "note": ""
+    },
+    {
+      "item": "Maya Fufur Badi",
+      "amount": 410,
+      "category": "",
+      "date": "2026-08-13",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 25,
+      "category": "Tuition Transport Cost",
+      "date": "2026-09-29",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 30,
+      "category": "",
+      "date": "2026-04-06",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 10,
+      "category": "",
+      "date": "2025-12-18",
+      "note": ""
+    },
+    {
+      "item": "Feni",
+      "amount": 170,
+      "category": "",
+      "date": "2026-03-12",
+      "note": ""
+    },
+    {
+      "item": "Ghalmuri",
+      "amount": 80,
+      "category": "",
+      "date": "2026-06-28",
+      "note": ""
+    },
+    {
+      "item": ".....",
+      "amount": 31,
+      "category": "",
+      "date": "2025-12-07",
+      "note": ""
+    },
+    {
+      "item": "IIUC Marathon ",
+      "amount": 50,
+      "category": "",
+      "date": "2026-05-17",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 106,
+      "category": "",
+      "date": "2025-12-26",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 10,
+      "category": "",
+      "date": "2026-01-11",
+      "note": ""
+    },
+    {
+      "item": "Eid Salami ( Parents )",
+      "amount": 1000,
+      "category": "",
+      "date": "2026-05-28",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-20",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-03",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-13",
+      "note": ""
+    },
+    {
+      "item": "porosh",
+      "amount": 50,
+      "category": "",
+      "date": "2026-03-16",
+      "note": ""
+    },
+    {
+      "item": "Hair Cut ",
+      "amount": 120,
+      "category": "",
+      "date": "2026-01-29",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta",
+      "amount": 220,
+      "category": "",
+      "date": "2026-07-15",
+      "note": ""
+    },
+    {
+      "item": "Badi",
+      "amount": 150,
+      "category": "",
+      "date": "2025-10-06",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-01",
+      "note": ""
+    },
+    {
+      "item": ".....",
+      "amount": 50,
+      "category": "",
+      "date": "2025-12-05",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-26",
+      "note": ""
+    },
+    {
+      "item": "Horlicks",
+      "amount": 250,
+      "category": "",
+      "date": "2026-09-13",
+      "note": ""
+    },
+    {
+      "item": "Pathanghar to University Transport Cost",
+      "amount": 180,
+      "category": "",
+      "date": "2026-07-22",
+      "note": ""
+    },
+    {
+      "item": "CNG",
+      "amount": 30,
+      "category": "",
+      "date": "2026-03-25",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )  12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-06",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-08",
+      "note": ""
+    },
+    {
+      "item": "Home",
+      "amount": 90,
+      "category": "",
+      "date": "2026-01-21",
+      "note": ""
+    },
+    {
+      "item": "Nasta ",
+      "amount": 20,
+      "category": "",
+      "date": "2025-12-01",
+      "note": ""
+    },
+    {
+      "item": "Home to University ",
+      "amount": 70,
+      "category": "",
+      "date": "2026-01-03",
+      "note": ""
+    },
+    {
+      "item": "Akilpur5",
+      "amount": 50,
+      "category": "",
+      "date": "2026-02-20",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 10,
+      "category": "",
+      "date": "2026-01-20",
+      "note": ""
+    },
+    {
+      "item": "Oxygen( Rahi Apur Basa )",
+      "amount": 500,
+      "category": "",
+      "date": "2026-04-15",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 30,
+      "category": "",
+      "date": "2026-06-26",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "",
+      "date": "2026-07-12",
+      "note": ""
+    },
+    {
+      "item": "Hand Wash",
+      "amount": 30,
+      "category": "",
+      "date": "2026-01-05",
+      "note": ""
+    },
+    {
+      "item": "Meal Cost ForJanuary last 15 Days",
+      "amount": 500,
+      "category": "",
+      "date": "2026-01-17",
+      "note": ""
+    },
+    {
+      "item": "Hall to Town For Bag ",
+      "amount": 105,
+      "category": "",
+      "date": "2025-12-13",
+      "note": ""
+    },
+    {
+      "item": "..",
+      "amount": 80,
+      "category": "",
+      "date": "2026-01-02",
+      "note": ""
+    },
+    {
+      "item": "Meal cost for Ramadan",
+      "amount": 3500,
+      "category": "",
+      "date": "2026-02-16",
+      "note": ""
+    },
+    {
+      "item": "Tooth Paste",
+      "amount": 50,
+      "category": "",
+      "date": "2026-09-14",
+      "note": ""
+    },
+    {
+      "item": "Ma",
+      "amount": 500,
+      "category": "",
+      "date": "2026-08-22",
+      "note": ""
+    },
+    {
+      "item": "Badir Bazar",
+      "amount": 310,
+      "category": "",
+      "date": "2026-08-09",
+      "note": ""
+    },
+    {
+      "item": "Friend's Adda",
+      "amount": 45,
+      "category": "",
+      "date": "2026-08-23",
+      "note": ""
+    },
+    {
+      "item": "T-Shirt",
+      "amount": 650,
+      "category": "",
+      "date": "2026-03-18",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-08",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-06",
+      "note": ""
+    },
+    {
+      "item": "University to Home",
+      "amount": 170,
+      "category": "",
+      "date": "2026-09-23",
+      "note": ""
+    },
+    {
+      "item": "Pen Pencil",
+      "amount": 30,
+      "category": "",
+      "date": "2026-07-08",
+      "note": ""
+    },
+    {
+      "item": "Panjabi",
+      "amount": 1000,
+      "category": "",
+      "date": "2026-03-12",
+      "note": ""
+    },
+    {
+      "item": "Wildstone Copper Perfume",
+      "amount": 450,
+      "category": "",
+      "date": "2026-08-20",
+      "note": ""
+    },
+    {
+      "item": "Pant",
+      "amount": 70,
+      "category": "",
+      "date": "2026-04-29",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-02-18",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya",
+      "amount": 250,
+      "category": "",
+      "date": "2026-08-18",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 30,
+      "category": "",
+      "date": "2026-04-07",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 45,
+      "category": "",
+      "date": "2026-09-02",
+      "note": ""
+    },
+    {
+      "item": "Badam",
+      "amount": 10,
+      "category": "",
+      "date": "2026-04-13",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya",
+      "amount": 100,
+      "category": "",
+      "date": "2026-08-20",
+      "note": ""
+    },
+    {
+      "item": "Chroclate",
+      "amount": 50,
+      "category": "",
+      "date": "2026-03-22",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-21",
+      "note": ""
+    },
+    {
+      "item": "Nasta ",
+      "amount": 17,
+      "category": "",
+      "date": "2025-12-14",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-02-19",
+      "note": ""
+    },
+    {
+      "item": "Hall 1st 15 days July meal cost ",
+      "amount": 1000,
+      "category": "",
+      "date": "2026-07-01",
+      "note": ""
+    },
+    {
+      "item": "AI ML Seminar",
+      "amount": 25,
+      "category": "",
+      "date": "2026-06-13",
+      "note": ""
+    },
+    {
+      "item": "Afsara,ayan,araf,Saoda {Eid Salami}",
+      "amount": 400,
+      "category": "",
+      "date": "2026-03-21",
+      "note": ""
+    },
+    {
+      "item": "Tea ",
+      "amount": 10,
+      "category": "",
+      "date": "2026-01-06",
+      "note": ""
+    },
+    {
+      "item": "...",
+      "amount": 100,
+      "category": "",
+      "date": "2025-11-21",
+      "note": ""
+    },
+    {
+      "item": "Shirt",
+      "amount": 400,
+      "category": "",
+      "date": "2026-08-15",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport Cost 6 ",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-03",
+      "note": ""
+    },
+    {
+      "item": "Parents",
+      "amount": 2000,
+      "category": "",
+      "date": "2026-07-22",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 10,
+      "category": "",
+      "date": "2026-07-18",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya",
+      "amount": 40,
+      "category": "",
+      "date": "2026-03-14",
+      "note": ""
+    },
+    {
+      "item": "ban",
+      "amount": 30,
+      "category": "",
+      "date": "2025-11-01",
+      "note": ""
+    },
+    {
+      "item": "Send money to Sunny ",
+      "amount": 50,
+      "category": "",
+      "date": "2026-03-09",
+      "note": ""
+    },
+    {
+      "item": "Home to University",
+      "amount": 90,
+      "category": "",
+      "date": "2026-06-06",
+      "note": ""
+    },
+    {
+      "item": "Cake",
+      "amount": 10,
+      "category": "",
+      "date": "2026-07-10",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-02-23",
+      "note": ""
+    },
+    {
+      "item": "Badi to Campus ",
+      "amount": 80,
+      "category": "",
+      "date": "2025-11-22",
+      "note": ""
+    },
+    {
+      "item": "University to Badi",
+      "amount": 250,
+      "category": "",
+      "date": "2026-04-29",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-27",
+      "note": ""
+    },
+    {
+      "item": "Bananas",
+      "amount": 50,
+      "category": "",
+      "date": "2026-04-12",
+      "note": ""
+    },
+    {
+      "item": "August 1st 15 Days meal cost",
+      "amount": 1500,
+      "category": "",
+      "date": "2026-08-01",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 12",
+      "amount": 30,
+      "category": "",
+      "date": "2026-06-24",
+      "note": ""
+    },
+    {
+      "item": "Feni Town",
+      "amount": 220,
+      "category": "",
+      "date": "2025-12-16",
+      "note": ""
+    },
+    {
+      "item": "Bazar",
+      "amount": 150,
+      "category": "",
+      "date": "2026-05-31",
+      "note": ""
+    },
+    {
+      "item": "Biyer Boy",
+      "amount": 10,
+      "category": "",
+      "date": "2026-07-24",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-30",
+      "note": ""
+    },
+    {
+      "item": "..",
+      "amount": 20,
+      "category": "",
+      "date": "2026-01-26",
+      "note": ""
+    },
+    {
+      "item": "tea",
+      "amount": 10,
+      "category": "",
+      "date": "2025-10-20",
+      "note": ""
+    },
+    {
+      "item": "University to Home",
+      "amount": 160,
+      "category": "",
+      "date": "2026-07-21",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "Tuition Transport Cost",
+      "date": "2026-09-27",
+      "note": ""
+    },
+    {
+      "item": "Pen,Admit Card",
+      "amount": 24,
+      "category": "",
+      "date": "2026-04-10",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge",
+      "amount": 30,
+      "category": "",
+      "date": "2026-08-07",
+      "note": ""
+    },
+    {
+      "item": "..",
+      "amount": 50,
+      "category": "",
+      "date": "2025-10-31",
+      "note": ""
+    },
+    {
+      "item": "Town",
+      "amount": 150,
+      "category": "",
+      "date": "2026-03-29",
+      "note": ""
+    },
+    {
+      "item": "Feni ",
+      "amount": 150,
+      "category": "",
+      "date": "2026-03-18",
+      "note": ""
+    },
+    {
+      "item": "Adda",
+      "amount": 50,
+      "category": "",
+      "date": "2026-02-10",
+      "note": ""
+    },
+    {
+      "item": "Bhaiyar Basa",
+      "amount": 300,
+      "category": "",
+      "date": "2026-09-10",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 30,
+      "category": "",
+      "date": "2026-02-21",
+      "note": ""
+    },
+    {
+      "item": "Guliakhali Sea Beach",
+      "amount": 150,
+      "category": "",
+      "date": "2026-09-18",
+      "note": ""
+    },
+    {
+      "item": "Sticky",
+      "amount": 30,
+      "category": "",
+      "date": "2026-09-15",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 20,
+      "category": "Nasta",
+      "date": "2026-10-09",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-20",
+      "note": ""
+    },
+    {
+      "item": "Doi",
+      "amount": 30,
+      "category": "",
+      "date": "2026-04-04",
+      "note": ""
+    },
+    {
+      "item": "Cox's Bazar Khuruskul",
+      "amount": 300,
+      "category": "",
+      "date": "2026-06-13",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-14",
+      "note": ""
+    },
+    {
+      "item": "Tank",
+      "amount": 10,
+      "category": "",
+      "date": "2026-07-27",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 50,
+      "category": "",
+      "date": "2025-12-24",
+      "note": ""
+    },
+    {
+      "item": "Khejur",
+      "amount": 160,
+      "category": "",
+      "date": "2026-09-06",
+      "note": ""
+    },
+    {
+      "item": "Badi",
+      "amount": 60,
+      "category": "",
+      "date": "2025-11-01",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-31",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya ",
+      "amount": 260,
+      "category": "",
+      "date": "2026-03-26",
+      "note": ""
+    },
+    {
+      "item": "tea",
+      "amount": 10,
+      "category": "",
+      "date": "2025-10-22",
+      "note": ""
+    },
+    {
+      "item": "Dinner",
+      "amount": 50,
+      "category": "",
+      "date": "2026-02-26",
+      "note": ""
+    },
+    {
+      "item": "Motorolla G96",
+      "amount": 27200,
+      "category": "",
+      "date": "2026-02-07",
+      "note": ""
+    },
+    {
+      "item": "Lab Report",
+      "amount": 25,
+      "category": "",
+      "date": "2026-09-01",
+      "note": ""
+    },
+    {
+      "item": "I,Jahid,Porosh Resturents cost",
+      "amount": 640,
+      "category": "",
+      "date": "2026-03-22",
+      "note": ""
+    },
+    {
+      "item": "Banana",
+      "amount": 60,
+      "category": "",
+      "date": "2026-05-17",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-21",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya ",
+      "amount": 150,
+      "category": "",
+      "date": "2026-05-25",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 15,
+      "category": "",
+      "date": "2025-12-21",
+      "note": ""
+    },
+    {
+      "item": "Nasta(Azmir Restora)",
+      "amount": 260,
+      "category": "",
+      "date": "2025-11-13",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-13",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-05",
+      "note": ""
+    },
+    {
+      "item": "Town ",
+      "amount": 75,
+      "category": "",
+      "date": "2026-01-17",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-10",
+      "note": ""
+    },
+    {
+      "item": "tea",
+      "amount": 10,
+      "category": "",
+      "date": "2025-12-23",
+      "note": ""
+    },
+    {
+      "item": "Town",
+      "amount": 45,
+      "category": "",
+      "date": "2026-01-07",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-15",
+      "note": ""
+    },
+    {
+      "item": "Kazal Fufu",
+      "amount": 410,
+      "category": "",
+      "date": "2026-08-13",
+      "note": ""
+    },
+    {
+      "item": "Brush",
+      "amount": 50,
+      "category": "",
+      "date": "2026-08-02",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 30,
+      "category": "",
+      "date": "2026-01-10",
+      "note": ""
+    },
+    {
+      "item": "Medicine",
+      "amount": 270,
+      "category": "",
+      "date": "2026-07-16",
+      "note": ""
+    },
+    {
+      "item": "efootball Registration",
+      "amount": 50,
+      "category": "",
+      "date": "2026-03-09",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-14",
+      "note": ""
+    },
+    {
+      "item": "Saban",
+      "amount": 15,
+      "category": "",
+      "date": "2026-07-31",
+      "note": ""
+    },
+    {
+      "item": "Hall meal cost",
+      "amount": 1500,
+      "category": "",
+      "date": "2025-10-04",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 25,
+      "category": "",
+      "date": "2026-05-02",
+      "note": ""
+    },
+    {
+      "item": "chhagalnaiya",
+      "amount": 20,
+      "category": "",
+      "date": "2026-03-16",
+      "note": ""
+    },
+    {
+      "item": "Ramadan Extended meal cost",
+      "amount": 412,
+      "category": "",
+      "date": "2026-04-06",
+      "note": ""
+    },
+    {
+      "item": "Bkash charge",
+      "amount": 15,
+      "category": "",
+      "date": "2026-03-22",
+      "note": ""
+    },
+    {
+      "item": "Meal Cost for April Month 2nd Installment",
+      "amount": 2000,
+      "category": "",
+      "date": "2026-04-12",
+      "note": ""
+    },
+    {
+      "item": "Train Journey",
+      "amount": 95,
+      "category": "",
+      "date": "2026-04-29",
+      "note": ""
+    },
+    {
+      "item": "Eid Salami give tution students",
+      "amount": 400,
+      "category": "",
+      "date": "2026-03-10",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 30,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-15",
+      "note": ""
+    },
+    {
+      "item": "Banana ( 6 pcs )",
+      "amount": 40,
+      "category": "",
+      "date": "2026-04-25",
+      "note": ""
+    },
+    {
+      "item": "CRM Islami Bank security uncle",
+      "amount": 300,
+      "category": "",
+      "date": "2025-11-06",
+      "note": ""
+    },
+    {
+      "item": "BCE Lab report",
+      "amount": 12,
+      "category": "",
+      "date": "2025-11-30",
+      "note": ""
+    },
+    {
+      "item": "Hall meal cost for June 15 days",
+      "amount": 1500,
+      "category": "",
+      "date": "2026-06-06",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-19",
+      "note": ""
+    },
+    {
+      "item": "Badi to University",
+      "amount": 170,
+      "category": "",
+      "date": "2025-12-06",
+      "note": ""
+    },
+    {
+      "item": "Azmir ",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-29",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-13",
+      "note": ""
+    },
+    {
+      "item": "lab R",
+      "amount": 20,
+      "category": "",
+      "date": "2025-10-08",
+      "note": ""
+    },
+    {
+      "item": "Home To University",
+      "amount": 65,
+      "category": "",
+      "date": "2026-08-29",
+      "note": ""
+    },
+    {
+      "item": "Lab",
+      "amount": 3,
+      "category": "",
+      "date": "2025-12-02",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-03-01",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-16",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-06",
+      "note": ""
+    },
+    {
+      "item": "Hand Tissue",
+      "amount": 70,
+      "category": "",
+      "date": "2026-06-19",
+      "note": ""
+    },
+    {
+      "item": "Motorolla cover",
+      "amount": 150,
+      "category": "",
+      "date": "2026-02-07",
+      "note": ""
+    },
+    {
+      "item": "Lunch",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-02",
+      "note": ""
+    },
+    {
+      "item": "Medicine + Mehedi",
+      "amount": 100,
+      "category": "",
+      "date": "2026-05-27",
+      "note": ""
+    },
+    {
+      "item": "Bangla Bazar Beach",
+      "amount": 45,
+      "category": "",
+      "date": "2026-05-10",
+      "note": ""
+    },
+    {
+      "item": "BCE Lab Report",
+      "amount": 63,
+      "category": "",
+      "date": "2025-12-20",
+      "note": ""
+    },
+    {
+      "item": "Town",
+      "amount": 70,
+      "category": "",
+      "date": "2026-05-02",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "Tuition Transport Cost",
+      "date": "2026-10-11",
+      "note": ""
+    },
+    {
+      "item": "UV Protector",
+      "amount": 300,
+      "category": "",
+      "date": "2026-08-15",
+      "note": ""
+    },
+    {
+      "item": "Change Watch Battey",
+      "amount": 100,
+      "category": "",
+      "date": "2026-07-23",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 30,
+      "category": "",
+      "date": "2026-06-16",
+      "note": ""
+    },
+    {
+      "item": "Medicine : Montair + Precodil",
+      "amount": 220,
+      "category": "",
+      "date": "2026-07-28",
+      "note": ""
+    },
+    {
+      "item": "Badam",
+      "amount": 10,
+      "category": "",
+      "date": "2026-07-03",
+      "note": ""
+    },
+    {
+      "item": "Chips",
+      "amount": 20,
+      "category": "",
+      "date": "2025-11-29",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-12",
+      "note": ""
+    },
+    {
+      "item": "Lab Report",
+      "amount": 25,
+      "category": "",
+      "date": "2025-11-23",
+      "note": ""
+    },
+    {
+      "item": "6th Semester 1st Installment ",
+      "amount": 30000,
+      "category": "Semester Fee",
+      "date": "2026-09-28",
+      "note": ""
+    },
+    {
+      "item": ".....",
+      "amount": 30,
+      "category": "",
+      "date": "2025-12-09",
+      "note": ""
+    },
+    {
+      "item": "Khata ",
+      "amount": 90,
+      "category": "",
+      "date": "2026-06-05",
+      "note": ""
+    },
+    {
+      "item": "Alur chap",
+      "amount": 4,
+      "category": "",
+      "date": "2026-01-08",
+      "note": ""
+    },
+    {
+      "item": "Badir Cost",
+      "amount": 130,
+      "category": "",
+      "date": "2026-08-10",
+      "note": ""
+    },
+    {
+      "item": "Ice Cream",
+      "amount": 50,
+      "category": "",
+      "date": "2025-10-10",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya",
+      "amount": 60,
+      "category": "",
+      "date": "2026-03-17",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge ",
+      "amount": 50,
+      "category": "Mobile Recharge",
+      "date": "2026-10-17",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge",
+      "amount": 50,
+      "category": "",
+      "date": "2026-05-29",
+      "note": ""
+    },
+    {
+      "item": "Hall meal cost ",
+      "amount": 1500,
+      "category": "",
+      "date": "2025-10-12",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-17",
+      "note": ""
+    },
+    {
+      "item": "University to Feni",
+      "amount": 50,
+      "category": "",
+      "date": "2026-09-09",
+      "note": ""
+    },
+    {
+      "item": "Hand Wash",
+      "amount": 30,
+      "category": "",
+      "date": "2026-04-09",
+      "note": ""
+    },
+    {
+      "item": "Selon ",
+      "amount": 200,
+      "category": "",
+      "date": "2025-12-04",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-15",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 12,
+      "category": "",
+      "date": "2026-02-19",
+      "note": ""
+    },
+    {
+      "item": "Alokdia",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-28",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 8,
+      "category": "",
+      "date": "2026-09-19",
+      "note": ""
+    },
+    {
+      "item": "Guliakhali Tour",
+      "amount": 150,
+      "category": "",
+      "date": "2026-03-29",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-18",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta",
+      "amount": 75,
+      "category": "",
+      "date": "2026-07-20",
+      "note": ""
+    },
+    {
+      "item": "5th Semester 2nd Installment Fee",
+      "amount": 44460,
+      "category": "",
+      "date": "2026-06-29",
+      "note": ""
+    },
+    {
+      "item": "Hand Tissue",
+      "amount": 50,
+      "category": "",
+      "date": "2026-04-22",
+      "note": ""
+    },
+    {
+      "item": "Balance Withdraw",
+      "amount": 30,
+      "category": "",
+      "date": "2026-04-04",
+      "note": ""
+    },
+    {
+      "item": "Nasta(Azmir)",
+      "amount": 70,
+      "category": "",
+      "date": "2026-04-11",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-02",
+      "note": ""
+    },
+    {
+      "item": "Shilua",
+      "amount": 550,
+      "category": "Relative Cost",
+      "date": "2026-09-24",
+      "note": "Home To Shilua"
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6 , 12",
+      "amount": 20,
+      "category": "",
+      "date": "2026-06-14",
+      "note": ""
+    },
+    {
+      "item": "Badi to University",
+      "amount": 170,
+      "category": "",
+      "date": "2026-02-16",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-09",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-12",
+      "note": ""
+    },
+    {
+      "item": "tea",
+      "amount": 10,
+      "category": "",
+      "date": "2025-10-27",
+      "note": ""
+    },
+    {
+      "item": " Tution Transport cost",
+      "amount": 20,
+      "category": "",
+      "date": "2026-03-07",
+      "note": ""
+    },
+    {
+      "item": "Mobile Recharge ",
+      "amount": 50,
+      "category": "Mobile Recharge",
+      "date": "2026-10-12",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 200,
+      "category": "",
+      "date": "2026-03-14",
+      "note": ""
+    },
+    {
+      "item": "Joramtol",
+      "amount": 10,
+      "category": "",
+      "date": "2026-07-29",
+      "note": ""
+    },
+    {
+      "item": "Tissue",
+      "amount": 50,
+      "category": "",
+      "date": "2026-09-05",
+      "note": ""
+    },
+    {
+      "item": "Feni to University",
+      "amount": 70,
+      "category": "",
+      "date": "2026-09-12",
+      "note": ""
+    },
+    {
+      "item": "Milkshake",
+      "amount": 40,
+      "category": "",
+      "date": "2026-07-02",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 25,
+      "category": "",
+      "date": "2026-09-09",
+      "note": ""
+    },
+    {
+      "item": "Mid admit card",
+      "amount": 5,
+      "category": "",
+      "date": "2026-09-30",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-04",
+      "note": ""
+    },
+    {
+      "item": "Feni",
+      "amount": 240,
+      "category": "",
+      "date": "2026-08-15",
+      "note": ""
+    },
+    {
+      "item": "Dinner",
+      "amount": 60,
+      "category": "",
+      "date": "2026-02-23",
+      "note": ""
+    },
+    {
+      "item": "Tution Six Ky Factory",
+      "amount": 20,
+      "category": "",
+      "date": "2026-08-22",
+      "note": ""
+    },
+    {
+      "item": "May month hall meal cost",
+      "amount": 2000,
+      "category": "",
+      "date": "2026-05-03",
+      "note": ""
+    },
+    {
+      "item": "Achar + Nasta",
+      "amount": 37,
+      "category": "",
+      "date": "2025-11-24",
+      "note": ""
+    },
+    {
+      "item": "Fotikchori Tour",
+      "amount": 400,
+      "category": "",
+      "date": "2026-05-06",
+      "note": ""
+    },
+    {
+      "item": "Azmir Nasta",
+      "amount": 164,
+      "category": "",
+      "date": "2026-01-04",
+      "note": ""
+    },
+    {
+      "item": "Chips",
+      "amount": 20,
+      "category": "",
+      "date": "2026-04-21",
+      "note": ""
+    },
+    {
+      "item": "Peyaju",
+      "amount": 80,
+      "category": "",
+      "date": "2025-11-20",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 30,
+      "category": "",
+      "date": "2026-04-08",
+      "note": ""
+    },
+    {
+      "item": "Alokdia Sea Beach",
+      "amount": 20,
+      "category": "",
+      "date": "2026-07-29",
+      "note": ""
+    },
+    {
+      "item": "December Extended meal cost",
+      "amount": 147,
+      "category": "",
+      "date": "2026-01-04",
+      "note": ""
+    },
+    {
+      "item": "Extended meal cost for January",
+      "amount": 398,
+      "category": "",
+      "date": "2026-02-19",
+      "note": ""
+    },
+    {
+      "item": "DLD CP",
+      "amount": 6,
+      "category": "",
+      "date": "2025-11-04",
+      "note": ""
+    },
+    {
+      "item": "Bazar",
+      "amount": 150,
+      "category": "",
+      "date": "2026-03-27",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 15,
+      "category": "",
+      "date": "2026-01-12",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 30,
+      "category": "",
+      "date": "2026-01-13",
+      "note": ""
+    },
+    {
+      "item": "..",
+      "amount": 45,
+      "category": "",
+      "date": "2025-11-05",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 30,
+      "category": "",
+      "date": "2026-04-05",
+      "note": ""
+    },
+    {
+      "item": "Chhagalnaiya",
+      "amount": 80,
+      "category": "",
+      "date": "2026-08-13",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 40,
+      "category": "",
+      "date": "2025-12-29",
+      "note": ""
+    },
+    {
+      "item": "April month extended meal cost",
+      "amount": 375,
+      "category": "",
+      "date": "2026-05-05",
+      "note": ""
+    },
+    {
+      "item": "Tution Transport Cost ",
+      "amount": 20,
+      "category": "",
+      "date": "2026-03-08",
+      "note": ""
+    },
+    {
+      "item": "University to Home",
+      "amount": 200,
+      "category": "",
+      "date": "2026-02-04",
+      "note": ""
+    },
+    {
+      "item": "University to Badi",
+      "amount": 190,
+      "category": "",
+      "date": "2026-03-10",
+      "note": ""
+    },
+    {
+      "item": "5th Semester1st installment",
+      "amount": 27640,
+      "category": "",
+      "date": "2026-04-06",
+      "note": ""
+    },
+    {
+      "item": "Ma",
+      "amount": 200,
+      "category": "",
+      "date": "2026-08-15",
+      "note": ""
+    },
+    {
+      "item": "CCE Farewell",
+      "amount": 150,
+      "category": "",
+      "date": "2026-05-16",
+      "note": ""
+    },
+    {
+      "item": "Saban",
+      "amount": 15,
+      "category": "",
+      "date": "2026-07-15",
+      "note": ""
+    },
+    {
+      "item": "Home to University ",
+      "amount": 70,
+      "category": "",
+      "date": "2026-06-13",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-18",
+      "note": ""
+    },
+    {
+      "item": "Tea",
+      "amount": 10,
+      "category": "",
+      "date": "2026-01-09",
+      "note": ""
+    },
+    {
+      "item": "Hall Meal Cost For 1st 15 days",
+      "amount": 1500,
+      "category": "",
+      "date": "2025-11-01",
+      "note": ""
+    },
+    {
+      "item": "Doi Ice-cream",
+      "amount": 60,
+      "category": "",
+      "date": "2026-03-25",
+      "note": ""
+    },
+    {
+      "item": "Nasta",
+      "amount": 20,
+      "category": "",
+      "date": "2025-12-20",
+      "note": ""
+    },
+    {
+      "item": "Cement",
+      "amount": 50,
+      "category": "",
+      "date": "2026-04-30",
+      "note": ""
+    },
+    {
+      "item": "Tissue",
+      "amount": 45,
+      "category": "",
+      "date": "2026-02-23",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-09-04",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-19",
+      "note": ""
+    },
+    {
+      "item": "Bhatiyari",
+      "amount": 15,
+      "category": "",
+      "date": "2026-04-06",
+      "note": ""
+    },
+    {
+      "item": "..",
+      "amount": 40,
+      "category": "",
+      "date": "2025-10-13",
+      "note": ""
+    },
+    {
+      "item": "Microprocessor Sheet",
+      "amount": 90,
+      "category": "",
+      "date": "2026-03-07",
+      "note": ""
+    },
+    {
+      "item": "Azmir",
+      "amount": 30,
+      "category": "",
+      "date": "2026-07-30",
+      "note": ""
+    },
+    {
+      "item": "Food",
+      "amount": 50,
+      "category": "",
+      "date": "2025-10-18",
+      "note": ""
+    },
+    {
+      "item": "Tution KY Factory( Choto Kumira )",
+      "amount": 20,
+      "category": "",
+      "date": "2026-05-06",
+      "note": ""
+    },
+    {
+      "item": "...",
+      "amount": 60,
+      "category": "",
+      "date": "2025-11-25",
+      "note": ""
+    },
+    {
+      "item": "Payjama",
+      "amount": 300,
+      "category": "",
+      "date": "2026-03-12",
+      "note": ""
+    }
+  ],
+  "income": [
+    {
+      "giver": "June Meal Cost",
+      "amount": 422,
+      "incomeCategory": "Other",
+      "date": "14",
+      "month": "July",
+      "year": "2026"
+    },
+    {
+      "giver": "Ibrahim Bhaiya",
+      "amount": 8000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "1",
+      "month": "December",
+      "year": "2025"
+    },
+    {
+      "giver": "Ibrahim Bhaiya",
+      "amount": 8000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "5",
+      "month": "May",
+      "year": "2026"
+    },
+    {
+      "giver": "Rubel Bhaiya",
+      "amount": 500,
+      "incomeCategory": "Rubel Bhaiya",
+      "date": "12",
+      "month": "September",
+      "year": "2026"
+    },
+    {
+      "giver": "Hujur mama",
+      "amount": 500,
+      "incomeCategory": "Other",
+      "date": "18",
+      "month": "March",
+      "year": "2026"
+    },
+    {
+      "giver": "Jaheda Apu",
+      "amount": 1000,
+      "incomeCategory": "Jaheda Apu",
+      "date": "24",
+      "month": "September",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 5000,
+      "incomeCategory": "Tuition",
+      "date": "29",
+      "month": "August",
+      "year": "2026"
+    },
+    {
+      "giver": "Rubel Bhaiya {Eid Salami}",
+      "amount": 5500,
+      "incomeCategory": "Rubel Bhaiya",
+      "date": "21",
+      "month": "March",
+      "year": "2026"
+    },
+    {
+      "giver": "Rubel Bhaiya",
+      "amount": 1000,
+      "incomeCategory": "Rubel Bhaiya",
+      "date": "28",
+      "month": "May",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution {Joramtal} ",
+      "amount": 2000,
+      "incomeCategory": "Tuition",
+      "date": "11",
+      "month": "July",
+      "year": "2026"
+    },
+    {
+      "giver": "Ibrahim Bhaiya (4th Sem 2nd installment)",
+      "amount": 30000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "14",
+      "month": "December",
+      "year": "2025"
+    },
+    {
+      "giver": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 5000,
+      "incomeCategory": "Tuition",
+      "date": "17",
+      "month": "September",
+      "year": "2026"
+    },
+    {
+      "giver": "Ibrahim Bhaiya",
+      "amount": 10000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "12",
+      "month": "November",
+      "year": "2025"
+    },
+    {
+      "giver": "Arjina Mami",
+      "amount": 200,
+      "incomeCategory": "Other",
+      "date": "14",
+      "month": "February",
+      "year": "2026"
+    },
+    {
+      "giver": "Huzur Mama",
+      "amount": 500,
+      "incomeCategory": "Other",
+      "date": "8",
+      "month": "August",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution",
+      "amount": 1500,
+      "incomeCategory": "Tuition",
+      "date": "1",
+      "month": "November",
+      "year": "2025"
+    },
+    {
+      "giver": "Ibrahim Bhaiya",
+      "amount": 8418,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "19",
+      "month": "June",
+      "year": "2026"
+    },
+    {
+      "giver": "Nasrin Babi",
+      "amount": 1000,
+      "incomeCategory": "Rubel Bhaiya",
+      "date": "10",
+      "month": "June",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution(PHP Gate)",
+      "amount": 3000,
+      "incomeCategory": "Tuition",
+      "date": "8",
+      "month": "March",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution KY Factory( Choto Kumira )",
+      "amount": 3000,
+      "incomeCategory": "Tuition",
+      "date": "5",
+      "month": "May",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution {Joramtal}",
+      "amount": 2500,
+      "incomeCategory": "Tuition",
+      "date": "7",
+      "month": "September",
+      "year": "2026"
+    },
+    {
+      "giver": "Ibrahim Vhaiya",
+      "amount": 5000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "31",
+      "month": "October",
+      "year": "2025"
+    },
+    {
+      "giver": "Ibrahim Bhaiya",
+      "amount": 8000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "29",
+      "month": "July",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution",
+      "amount": 1500,
+      "incomeCategory": "Tuition",
+      "date": "4",
+      "month": "September",
+      "year": "2025"
+    },
+    {
+      "giver": "Tution KY Factory( Choto Kumira ) 12",
+      "amount": 3000,
+      "incomeCategory": "Tuition",
+      "date": "06",
+      "month": "July",
+      "year": "2026"
+    },
+    {
+      "giver": "Sharif Bhaiya {Eid Salami}",
+      "amount": 500,
+      "incomeCategory": "Sharif Bhaiya",
+      "date": "21",
+      "month": "March",
+      "year": "2026"
+    },
+    {
+      "giver": "Ibrahim Bhaiya",
+      "amount": 9000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "31",
+      "month": "August",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution",
+      "amount": 2000,
+      "incomeCategory": "Tuition",
+      "date": "08",
+      "month": "December",
+      "year": "2025"
+    },
+    {
+      "giver": "Ibrahim Bhaiya",
+      "amount": 38000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "4",
+      "month": "March",
+      "year": "2026"
+    },
+    {
+      "giver": "Ibrahim Bhaiya",
+      "amount": 45019,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "4",
+      "month": "July",
+      "year": "2026"
+    },
+    {
+      "giver": "Sharif Bhaiya",
+      "amount": 500,
+      "incomeCategory": "Sharif Bhaiya",
+      "date": "28",
+      "month": "June",
+      "year": "2026"
+    },
+    {
+      "giver": "Ibrahim Bhaiya",
+      "amount": 8000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "4",
+      "month": "January",
+      "year": "2026"
+    },
+    {
+      "giver": "Rubel Bhaiya",
+      "amount": 5800,
+      "incomeCategory": "Rubel Bhaiya",
+      "date": "29",
+      "month": "December",
+      "year": "2025"
+    },
+    {
+      "giver": "Jahedar Sasudi",
+      "amount": 1000,
+      "incomeCategory": "Jaheda Apu",
+      "date": "19",
+      "month": "March",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution {Joramtal}",
+      "amount": 2000,
+      "incomeCategory": "Tuition",
+      "date": "10",
+      "month": "March",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution KY Factory( Choto Kumira ) 12",
+      "amount": 3000,
+      "incomeCategory": "Tuition",
+      "date": "7",
+      "month": "June",
+      "year": "2026"
+    },
+    {
+      "giver": "Jaheda'r Sasudi",
+      "amount": 500,
+      "incomeCategory": "Jaheda Apu",
+      "date": "28",
+      "month": "May",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution {Joramtal}",
+      "amount": 2000,
+      "incomeCategory": "Tuition",
+      "date": "7",
+      "month": "June",
+      "year": "2026"
+    },
+    {
+      "giver": "Ibrahim Vhaiya",
+      "amount": 9000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "5",
+      "month": "October",
+      "year": "2026"
+    },
+    {
+      "giver": "Jaheda apu",
+      "amount": 3000,
+      "incomeCategory": "Jaheda Apu",
+      "date": "14",
+      "month": "February",
+      "year": "2026"
+    },
+    {
+      "giver": "Jaheda Apu",
+      "amount": 2000,
+      "incomeCategory": "Jaheda Apu",
+      "date": "11",
+      "month": "June",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution Joramtol",
+      "amount": 2500,
+      "incomeCategory": "Tuition",
+      "date": "7",
+      "month": "October",
+      "year": "2026"
+    },
+    {
+      "giver": "Shikha Apu",
+      "amount": 2000,
+      "incomeCategory": "Shikha Apu",
+      "date": "18",
+      "month": "March",
+      "year": "2026"
+    },
+    {
+      "giver": "Ibrahim Vhaiya[For Buying Mobile]",
+      "amount": 30000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "2",
+      "month": "February",
+      "year": "2026"
+    },
+    {
+      "giver": "Ibrahim Bhaiya",
+      "amount": 8000,
+      "incomeCategory": "Ibrahim Bhaiya",
+      "date": "8",
+      "month": "April",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution {Joramtal}",
+      "amount": 2000,
+      "incomeCategory": "Tuition",
+      "date": "10",
+      "month": "May",
+      "year": "2026"
+    },
+    {
+      "giver": "Baba {Eid Salami}",
+      "amount": 200,
+      "incomeCategory": "Baba",
+      "date": "21",
+      "month": "March",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 5000,
+      "incomeCategory": "Tuition",
+      "date": "15",
+      "month": "October",
+      "year": "2026"
+    },
+    {
+      "giver": "Tution KY Factory( Choto Kumira ) 6",
+      "amount": 5000,
+      "incomeCategory": "Tuition",
+      "date": "5",
+      "month": "July",
+      "year": "2026"
+    }
+  ]
+}

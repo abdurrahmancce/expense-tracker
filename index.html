@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker & Bonus Tracker</title>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FVN5YKTWHG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FVN5YKTWHG');
+  </script>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#007bff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Expenses">
+  <!-- ── DNS / TLS pre-warm for every external origin ── -->
+  <link rel="preconnect" href="https://www.gstatic.com">
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- All scripts use defer — HTML parses without blocking, scripts run
+       in order after parsing is done. Firebase → Chart.js → script.js -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+  <script src="script.js" defer></script>
+
+  <!-- PDF + Excel — heavy libs loaded lazily on first export click -->
+
+<base target="_blank">
+</head>
+<body>
+
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+    <p id="loadingText">Loading...</p>
+  </div>
+
+  <!-- Feature 12: Network status banner -->
+  <div id="networkStatus"></div>
+
+  <!-- Currency Bar (hidden — merged into app header) -->
+  <div id="currencyBar" style="display:none;">
+    <select id="currencySelect">
+      <option value="BDT" selected>BDT</option>
+      <option value="USD">USD</option>
+      <option value="EUR">EUR</option>
+      <option value="GBP">GBP</option>
+      <option value="INR">INR</option>
+      <option value="SAR">SAR</option>
+    </select>
+    <span id="currencyRate"></span>
+  </div>
+
+  <!-- Keyboard Shortcut Panel -->
+  <div id="kbShortcutPanel" role="dialog" aria-label="Keyboard shortcuts">
+    <h4>⌨️ Keyboard Shortcuts</h4>
+    <div class="kb-row"><span>New Expense</span><span class="kb-key">Alt + N</span></div>
+    <div class="kb-row"><span>Toggle Dark Mode</span><span class="kb-key">Alt + D</span></div>
+    <div class="kb-row"><span>Search Expenses</span><span class="kb-key">Alt + F</span></div>
+    <div class="kb-row"><span>Export PDF</span><span class="kb-key">Alt + P</span></div>
+    <div class="kb-row"><span>Show Shortcuts</span><span class="kb-key">Alt + ?</span></div>
+    <div class="kb-row"><span>Close this panel</span><span class="kb-key">Esc</span></div>
+  </div>
+
+  <!-- Feature 26: SW Update Banner -->
+  <div id="swUpdateBanner" style="display:none;">
+    <span>🎉 New version available!</span>
+    <button onclick="window.location.reload()">🔄 Reload to Update</button>
+    <button onclick="document.getElementById('swUpdateBanner').style.display='none'">✕</button>
+  </div>
+
+  <!-- Feature 27: PWA Install Prompt Banner -->
+  <div id="pwaInstallBanner" style="display:none;" aria-label="Install app banner">
+    <div class="pwa-banner-inner">
+      <div class="pwa-banner-left">
+        <div class="pwa-banner-icon">💰</div>
+        <div class="pwa-banner-text">
+          <span class="pwa-banner-title">Install Expense Tracker</span>
+          <span class="pwa-banner-sub">Add to home screen — works offline!</span>
+        </div>
+      </div>
+      <div class="pwa-banner-actions">
+        <button id="pwaInstallBtn" class="pwa-btn-install">⬇️ Install</button>
+        <button id="pwaInstallDismiss" class="pwa-btn-dismiss">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 3: Bottom Navigation Bar (mobile only) -->
+  <nav id="bottomNav" aria-label="Bottom navigation">
+    <div class="bnav-item active" data-bnav="expenses">
+      <span class="bnav-icon">💸</span>Expenses
+    </div>
+    <div class="bnav-item" data-bnav="income">
+      <span class="bnav-icon">💰</span>Income
+    </div>
+    <div class="bnav-item" data-bnav="charts">
+      <span class="bnav-icon">📊</span>Charts
+    </div>
+    <div class="bnav-item" data-bnav="summary">
+      <span class="bnav-icon">📋</span>Summary
+    </div>
+  </nav>
+
+  <!-- Feature 3: FAB — floating add expense button (mobile) -->
+  <button id="fabAdd" aria-label="Add expense">＋</button>
+
+
+  <!-- ===========================
+       LOGIN / SIGNUP SCREEN
+  ============================ -->
+  <!-- auth-screen hidden by default; shown only if Firebase confirms no session -->
+  <script>
+    // Hide everything until Firebase resolves auth state — prevents login screen flash on refresh
+    document.documentElement.style.setProperty('--auth-init', '1');
+  </script>
+  <div id="authScreen" class="auth-screen auth-pending">
+    <!-- Live particle canvas -->
+    <canvas id="authParticleCanvas" class="auth-particle-canvas"></canvas>
+
+    <!-- Animated gradient orbs -->
+    <div class="auth-orb auth-orb-1"></div>
+    <div class="auth-orb auth-orb-2"></div>
+    <div class="auth-orb auth-orb-3"></div>
+
+    <!-- Floating finance icons -->
+    <div class="auth-float-icons" aria-hidden="true">
+      <span class="afi" style="--d:0s;--x:8%;--s:1.1">💸</span>
+      <span class="afi" style="--d:1.2s;--x:18%;--s:0.8">📊</span>
+      <span class="afi" style="--d:2.5s;--x:78%;--s:1.0">💳</span>
+      <span class="afi" style="--d:0.7s;--x:88%;--s:0.9">📈</span>
+      <span class="afi" style="--d:3.1s;--x:50%;--s:0.7">🏦</span>
+      <span class="afi" style="--d:1.9s;--x:35%;--s:1.2">💵</span>
+      <span class="afi" style="--d:4.0s;--x:65%;--s:0.85">🪙</span>
+    </div>
+
+    <div class="auth-card">
+      <!-- Card shimmer sweep -->
+      <div class="auth-card-shine"></div>
+
+      <!-- Logo with pulse ring -->
+      <div class="auth-logo-wrap">
+        <div class="auth-logo-ring"></div>
+        <div class="auth-logo">💰</div>
+      </div>
+
+      <h1 class="auth-title">Expense Tracker</h1>
+      <p class="auth-subtitle" id="authTypewriter"></p>
+
+      <p id="authError" class="auth-error"></p>
+
+      <div class="auth-tabs">
+        <div class="auth-tab-slider"></div>
+        <button id="loginTab" class="auth-tab active">🔑 Login</button>
+        <button id="signupTab" class="auth-tab">✨ Sign Up</button>
+      </div>
+
+      <div id="loginForm" class="auth-form">
+        <div class="auth-field">
+          <span class="auth-icon">✉️</span>
+          <input type="email" id="loginEmail" placeholder="Email address" maxlength="254" autocomplete="email">
+          <span class="auth-field-line"></span>
+        </div>
+        <div class="auth-field">
+          <span class="auth-icon">🔒</span>
+          <input type="password" id="loginPassword" placeholder="Password" maxlength="128" autocomplete="current-password">
+          <span class="auth-field-line"></span>
+        </div>
+        <button id="loginBtn" class="auth-submit-btn">
+          <span class="auth-btn-text">Login</span>
+          <span class="auth-btn-icon">→</span>
+          <span class="auth-btn-ripple"></span>
+        </button>
+        <button type="button" id="forgotPasswordBtn" class="link-btn">Forgot Password?</button>
+      </div>
+
+      <div id="signupForm" class="auth-form hidden">
+        <div class="auth-field">
+          <span class="auth-icon">✉️</span>
+          <input type="email" id="signupEmail" placeholder="Email address" maxlength="254" autocomplete="email">
+          <span class="auth-field-line"></span>
+        </div>
+        <div class="auth-field">
+          <span class="auth-icon">🔒</span>
+          <input type="password" id="signupPassword" placeholder="Password (min 8 characters)" maxlength="128" autocomplete="new-password">
+          <span class="auth-field-line"></span>
+        </div>
+        <button id="signupBtn" class="auth-submit-btn">
+          <span class="auth-btn-text">Create Account</span>
+          <span class="auth-btn-icon">✓</span>
+          <span class="auth-btn-ripple"></span>
+        </button>
+      </div>
+
+      <!-- Trust badges -->
+      <div class="auth-badges">
+        <span class="auth-badge">🔐 Encrypted</span>
+        <span class="auth-badge">☁️ Cloud Sync</span>
+        <span class="auth-badge">📱 PWA</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===========================
+       MAIN APP (hidden until logged in)
+  ============================ -->
+  <div class="app-wrapper hidden" id="appScreen">
+
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="app-header-title">
+        <span class="app-header-icon">💰</span>
+        <h1>Expense Tracker</h1>
+      </div>
+      <div class="app-header-controls">
+
+        <!-- Currency picker button -->
+        <div class="hdr-picker-wrap" id="currencyPickerWrap">
+          <button class="hdr-pill-btn" id="currencyPickerBtn" aria-haspopup="true" aria-expanded="false" title="Switch currency">
+            <span class="hdr-pill-icon">💱</span>
+            <span id="currencyPickerLabel">BDT</span>
+            <span class="hdr-pill-caret">▾</span>
+          </button>
+          <div class="hdr-dropdown" id="currencyDropdown" role="listbox" aria-label="Currency">
+            <div class="hdr-dropdown-title">Currency</div>
+            <button class="hdr-drop-item active" data-currency="BDT" role="option"><span class="hdr-drop-sym">৳</span><span class="hdr-drop-name">BDT — Bangladeshi Taka</span></button>
+            <button class="hdr-drop-item" data-currency="USD" role="option"><span class="hdr-drop-sym">$</span><span class="hdr-drop-name">USD — US Dollar</span></button>
+            <button class="hdr-drop-item" data-currency="EUR" role="option"><span class="hdr-drop-sym">€</span><span class="hdr-drop-name">EUR — Euro</span></button>
+            <button class="hdr-drop-item" data-currency="GBP" role="option"><span class="hdr-drop-sym">£</span><span class="hdr-drop-name">GBP — British Pound</span></button>
+            <button class="hdr-drop-item" data-currency="INR" role="option"><span class="hdr-drop-sym">₹</span><span class="hdr-drop-name">INR — Indian Rupee</span></button>
+            <button class="hdr-drop-item" data-currency="SAR" role="option"><span class="hdr-drop-sym">﷼</span><span class="hdr-drop-name">SAR — Saudi Riyal</span></button>
+            <div class="hdr-drop-rate" id="currencyRateHeader"></div>
+          </div>
+        </div>
+
+        <!-- Theme picker button -->
+        <div class="hdr-picker-wrap" id="themePickerWrap">
+          <button class="hdr-pill-btn" id="themePickerBtn" aria-haspopup="true" aria-expanded="false" title="Change theme">
+            <span class="hdr-pill-icon">🎨</span>
+            <span id="themePickerLabel">Theme</span>
+            <span class="hdr-pill-caret">▾</span>
+          </button>
+          <div class="hdr-dropdown hdr-theme-dropdown" id="themeDropdown" role="listbox" aria-label="Color theme">
+            <div class="hdr-dropdown-title">Color Theme</div>
+            <button class="hdr-theme-item active" data-theme="blue"   role="option"><span class="hdr-theme-dot" style="background:#2563eb"></span>Blue</button>
+            <button class="hdr-theme-item"        data-theme="purple" role="option"><span class="hdr-theme-dot" style="background:#7c3aed"></span>Purple</button>
+            <button class="hdr-theme-item"        data-theme="green"  role="option"><span class="hdr-theme-dot" style="background:#16a34a"></span>Green</button>
+            <button class="hdr-theme-item"        data-theme="rose"   role="option"><span class="hdr-theme-dot" style="background:#e11d48"></span>Rose</button>
+            <button class="hdr-theme-item"        data-theme="orange" role="option"><span class="hdr-theme-dot" style="background:#ea580c"></span>Orange</button>
+          </div>
+        </div>
+
+        <!-- Dark mode toggle switch -->
+        <button id="toggleDarkMode" class="dm-toggle-btn" role="switch" aria-checked="false" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <span class="dm-thumb">
+            <span class="dm-thumb-icon"></span>
+          </span>
+        </button>
+        <button id="logoutBtn" class="header-icon-btn header-logout-btn" title="Logout" aria-label="Logout">🚪</button>
+
+        <!-- Legacy hidden selects kept for JS compatibility -->
+        <select id="currencySelectHeader" style="display:none">
+          <option value="BDT" selected>BDT</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="INR">INR</option>
+          <option value="SAR">SAR</option>
+        </select>
+        <div id="themePicker" style="display:none">
+          <button class="theme-swatch active" data-theme="blue"></button>
+          <button class="theme-swatch" data-theme="purple"></button>
+          <button class="theme-swatch" data-theme="green"></button>
+          <button class="theme-swatch" data-theme="rose"></button>
+          <button class="theme-swatch" data-theme="orange"></button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Shown only if old browser (localStorage) data is found on this device -->
+    <button id="migrateBtn" class="migrate-btn hidden">⬆️ Import old data saved on this device</button>
+
+    <!-- Summary Card (skeleton shown until first data load) -->
+    <div id="summaryCard" class="summary-card">
+      <div class="summary-skeleton">
+        <div class="skel-block"></div>
+        <div class="skel-block"></div>
+        <div class="skel-block"></div>
+      </div>
+    </div>
+
+    <!-- Add Expense Form -->
+    <div class="form" id="addExpenseSection">
+      <input type="text" id="item" placeholder="Item Name" maxlength="200">
+      <input type="number" id="amount" placeholder="Amount" min="0.01" max="99999999" step="any">
+      <select id="expenseCategory"></select>
+      <input type="date" id="date">
+      <input type="text" id="expenseNote" placeholder="Note (optional)" maxlength="500">
+      <button onclick="addExpense()">Save Expense</button>
+    </div>
+
+    <!-- Pinned Items (quick-fill shortcuts for frequently typed item names) -->
+    <div class="pinned-section">
+      <div class="pinned-list" id="pinnedItemsList"></div>
+      <div class="pinned-add">
+        <input type="text" id="newPinInput" placeholder="New pin text (e.g., Transport Cost)" maxlength="100">
+        <button type="button" id="addPinBtn">📌 Pin</button>
+      </div>
+    </div>
+
+    <!-- Manage Categories (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn category-btn" id="categoryDropdownBtn">🏷️ Manage Categories <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="categoryDropdownContent">
+        <div class="category-list" id="categoryManageList"></div>
+        <div class="pinned-add">
+          <input type="text" id="newCategoryInput" placeholder="New category name" maxlength="60">
+          <button type="button" id="addCategoryBtn">🏷️ Add Category</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Expenses (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn" id="expenseDropdownBtn">All Expenses <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="expenseDropdownContent">
+        <div class="month-nav" id="expenseMonthNav"></div>
+        <input type="text" id="expenseSearchInput" class="search-input" placeholder="🔍 Search by item name..." maxlength="200">
+        <div class="filter-sort-row">
+          <select id="expenseCategoryFilter"></select>
+          <select id="expenseSortBy">
+            <option value="date-asc">Date (Oldest ⇨ Newest)</option>
+            <option value="date-desc">Date (Newest ⇨ Oldest)</option>
+            <option value="amount-asc">Amount (Small ⇨ Big)</option>
+            <option value="amount-desc">Amount (Big ⇨ Small)</option>
+          </select>
+        </div>
+        <div class="expense-total" id="expenseTotal"></div>
+        <!-- Expense Cards (replaces table) -->
+        <div class="expense-card-list" id="expenseCardList"></div>
+      </div>
+    </div>
+
+    <!-- Monthly & Yearly Summary (Dropdown Menu) -->
+    <div class="dropdown" id="summaryDropdownSection">
+      <button class="dropdown-btn" id="summaryDropdownBtn">Monthly & Yearly Summary <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="summaryDropdownContent">
+        <div id="monthlyTables"></div>
+        <div id="yearlyTables"></div>
+      </div>
+    </div>
+
+    <!-- Export All Data -->
+    <button id="exportPdfBtn" class="export-btn">📄 Export All Data to PDF</button>
+    <button id="exportExcelBtn" class="export-btn excel-btn">📊 Export All Data to Excel</button>
+
+    <!-- JSON Backup & Restore -->
+    <div class="backup-row">
+      <button id="exportJsonBtn" class="export-btn json-btn">💾 Backup All Data (JSON)</button>
+      <label class="export-btn restore-btn" id="restoreBtnLabel" title="Restore from a previously downloaded JSON backup">
+        📂 Restore from JSON Backup
+        <input type="file" id="restoreFileInput" accept=".json" style="display:none">
+      </label>
+    </div>
+
+    <!-- Expenses Charts -->
+    <h2 id="chartsSectionAnchor">Expenses Charts</h2>
+    <div id="monthlyChartWrapper" style="width:100%;padding:0 4px;box-sizing:border-box;position:relative;height:320px;">
+      <canvas id="monthlyChart" style="width:100% !important;height:100% !important;"></canvas>
+    </div>
+    <button class="chart-download-btn" data-chart="monthlyChart">⬇️ Download Chart (PNG)</button>
+
+    <div class="chart-wrapper">
+      <canvas id="yearlyChart" class="chart"></canvas>
+    </div>
+    <button class="chart-download-btn" data-chart="yearlyChart">⬇️ Download Chart (PNG)</button>
+
+    <div id="categoryChartWrapper" class="chart-wrapper" style="width:100%;box-sizing:border-box;">
+      <canvas id="categoryChart" class="chart"></canvas>
+    </div>
+    <button class="chart-download-btn" data-chart="categoryChart">⬇️ Download Chart (PNG)</button>
+
+    <!-- Analytics Section: Top 5 + Heatmap -->
+    <div class="analytics-section" id="analyticsInsights">
+      <h3>🔍 Spending Insights</h3>
+      <div id="top5Section">
+        <h4 style="font-size:13px;margin:0 0 10px;color:var(--text-muted);">🏆 Top 5 Expensive Items</h4>
+        <ul class="top5-list" id="top5List"></ul>
+      </div>
+      <div style="margin-top:20px;">
+        <h4 style="font-size:13px;margin:0 0 10px;color:var(--text-muted);">📅 Spending by Day of Week</h4>
+        <div class="heatmap-grid" id="dowHeatmap"></div>
+      </div>
+    </div>
+
+    <!-- Income vs Expense Comparison Chart -->
+    <h2>Income vs Expense</h2>
+    <div id="comparisonChartWrapper" style="width:100%;padding:0 4px;box-sizing:border-box;position:relative;height:420px;">
+      <canvas id="comparisonChart" style="width:100% !important;height:100% !important;"></canvas>
+    </div>
+    <button class="chart-download-btn" data-chart="comparisonChart">⬇️ Download Chart (PNG)</button>
+
+    <!-- Bonus/Income Section -->
+    <h2 id="incomeSectionAnchor">Bonus/Income Tracker</h2>
+    <form id="eidForm" class="form">
+      <input type="number" id="eidYear" placeholder="Year" min="2000" max="2100">
+      <select id="eidMonth">
+        <option value="">Select Month</option>
+        <option value="January">January</option>
+        <option value="February">February</option>
+        <option value="March">March</option>
+        <option value="April">April</option>
+        <option value="May">May</option>
+        <option value="June">June</option>
+        <option value="July">July</option>
+        <option value="August">August</option>
+        <option value="September">September</option>
+        <option value="October">October</option>
+        <option value="November">November</option>
+        <option value="December">December</option>
+      </select>
+      <input type="number" id="eidDate" placeholder="Date" min="1" max="31">
+      <input type="text" id="eidGiver" placeholder="Giver Name" maxlength="150">
+      <select id="incomeCategory"></select>
+      <input type="number" id="eidAmount" placeholder="Amount" min="0.01" max="99999999" step="any">
+      <button type="submit">Save Bonus</button>
+    </form>
+
+    <!-- Manage Income Categories (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn category-btn" id="incomeCategoryDropdownBtn">🏷️ Manage Income Categories <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="incomeCategoryDropdownContent">
+        <div class="category-list" id="incomeCategoryManageList"></div>
+        <div class="pinned-add">
+          <input type="text" id="newIncomeCategoryInput" placeholder="New income category name" maxlength="60">
+          <button type="button" id="addIncomeCategoryBtn">🏷️ Add Category</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Bonus/Income (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn" id="eidAllDropdownBtn">All Bonus/Income <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="eidAllDropdownContent">
+        <div class="month-nav" id="eidMonthNav"></div>
+        <input type="text" id="eidSearchInput" class="search-input" placeholder="🔍 Search by giver or category..." maxlength="200">
+        <div class="filter-sort-row">
+          <select id="eidSortBy">
+            <option value="date-asc">Date (Oldest ⇨ Newest)</option>
+            <option value="date-desc">Date (Newest ⇨ Oldest)</option>
+            <option value="amount-asc">Amount (Small ⇨ Big)</option>
+            <option value="amount-desc">Amount (Big ⇨ Small)</option>
+          </select>
+        </div>
+        <div class="expense-total" id="eidTotal"></div>
+        <div class="table-wrapper">
+          <table id="eidFlatTable">
+            <thead>
+              <tr><th>Date</th><th>Giver</th><th>Category</th><th>Amount</th><th>Action</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bonus/Income Monthly & Yearly Summary (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn" id="eidSummaryDropdownBtn">Bonus/Income Monthly & Yearly Summary <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="eidSummaryDropdownContent">
+        <div id="eidTables"></div>
+      </div>
+    </div>
+
+    <!-- Trash (Dropdown Menu) -->
+    <div class="dropdown">
+      <button class="dropdown-btn trash-btn" id="trashDropdownBtn">🗑️ Trash <span class="caret">▾</span></button>
+      <div class="dropdown-content" id="trashDropdownContent">
+        <p class="trash-note">Deleted entries will stay in the trash for 30 days before permanent deletion. You can restore them anytime within this period.</p>
+
+        <h4>Trashed Expenses</h4>
+        <div class="table-wrapper">
+          <table id="trashExpenseTable">
+            <thead>
+              <tr><th>Item</th><th>Amount</th><th>Date</th><th>Deleted On</th><th>Action</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <h4>Trashed Bonus/Income</h4>
+        <div class="table-wrapper">
+          <table id="trashSalamiTable">
+            <thead>
+              <tr><th>Giver</th><th>Amount</th><th>Month/Year</th><th>Deleted On</th><th>Action</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===========================
+         Bonus/Income Charts (after Trash)
+    ============================ -->
+    <h2>Bonus/Income Charts</h2>
+    <div id="monthlyIncomeChartWrapper" style="width:100%;padding:0 4px;box-sizing:border-box;position:relative;height:320px;">
+      <canvas id="monthlyIncomeChart" style="width:100% !important;height:100% !important;"></canvas>
+    </div>
+    <button class="chart-download-btn" data-chart="monthlyIncomeChart">⬇️ Download Chart (PNG)</button>
+
+    <div class="chart-wrapper">
+      <canvas id="yearlyIncomeChart" class="chart"></canvas>
+    </div>
+    <button class="chart-download-btn" data-chart="yearlyIncomeChart">⬇️ Download Chart (PNG)</button>
+
+    <div id="incomeCategoryChartWrapper" class="chart-wrapper" style="width:100%;box-sizing:border-box;">
+      <canvas id="incomeCategoryChart" class="chart"></canvas>
+    </div>
+    <button class="chart-download-btn" data-chart="incomeCategoryChart">⬇️ Download Chart (PNG)</button>
+
+    <div style="margin:10px 0 4px;text-align:center;">
+      <label for="incomeCategoryYearFilter" style="font-weight:700;font-size:16px;margin-right:10px;">Monthly by Category — Year:</label>
+      <select id="incomeCategoryYearFilter" style="padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:14px;">
+        <option value="all">All Years</option>
+      </select>
+    </div>
+    <div id="monthCatWrapper" style="width:100%;padding:0 4px;box-sizing:border-box;position:relative;height:420px;">
+      <canvas id="incomeMonthlyByCategoryChart" style="width:100% !important;height:100% !important;"></canvas>
+    </div>
+    <button class="chart-download-btn" data-chart="incomeMonthlyByCategoryChart">⬇️ Download Chart (PNG)</button>
+
+  </div>
+
+  <!-- Bill Splitter Section -->
+  <div class="dropdown">
+    <button class="dropdown-btn" id="splitDropdownBtn" style="background:linear-gradient(90deg,#7c3aed,#2563eb);color:#fff;">🤝 Bill Splitter <span class="caret">▾</span></button>
+    <div class="dropdown-content" id="splitDropdownContent">
+      <div class="split-form" id="splitForm">
+        <input type="text" id="splitTitle" placeholder="Bill name (e.g., Dinner, Trip)" maxlength="100">
+        <input type="number" id="splitTotal" placeholder="Total amount" min="0">
+        <div id="splitPeopleList"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="text" id="splitPersonName" placeholder="Add person name" maxlength="60" style="flex:1;">
+          <button type="button" id="splitAddPersonBtn">➕ Add</button>
+        </div>
+        <button type="button" id="splitCalcBtn" style="margin-top:10px;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;width:100%;">🧮 Calculate Split</button>
+      </div>
+      <div id="splitResult"></div>
+    </div>
+  </div>
+
+  <!-- ===========================
+       DEVELOPER FOOTER
+  ============================ -->
+  <footer class="dev-footer" id="devFooter">
+    <div class="dev-footer-inner">
+      <div class="dev-footer-left">
+        <div class="dev-footer-avatar">👨‍💻</div>
+        <div class="dev-footer-texts">
+          <span class="dev-footer-label">Abdur Rahman</span>
+          <span class="dev-footer-sub">Developer · IIUC, Chittagong</span>
+          <div class="dev-footer-chips">
+            <span class="dev-footer-chip">Firebase</span>
+            <span class="dev-footer-chip">PWA</span>
+            <span class="dev-footer-chip">Vanilla JS</span>
+          </div>
+        </div>
+      </div>
+      <a href="https://abdurrahmancce.github.io/Personal-Portfolio/" class="dev-footer-btn" target="_blank" rel="noopener">
+        View Portfolio
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    if("serviceWorker" in navigator){
+      // Register with explicit scope so root-domain SW cannot intercept our paths.
+      navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(err =>
+        console.warn("SW registration failed:", err)
+      );
+
+      // ── Update detection: SW sends SW_UPDATED after activating ──────────────
+      navigator.serviceWorker.addEventListener("message", e => {
+        if(e.data && e.data.type === "SW_UPDATED"){
+          // Show a persistent update banner
+          const banner = document.getElementById("swUpdateBanner");
+          if(banner) banner.style.display = "flex";
+        }
+      });
+
+      // Also detect when a new SW takes over via controller change
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if(!refreshing){ refreshing = true; /* page will reload automatically */ }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Remove Duplicate Data</title>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<style>
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; background:#f4f6f8; margin:0; padding:20px; }
+  .container { max-width: 500px; margin: 40px auto; background:#fff; padding:30px; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+  h1 { text-align:center; font-size: 22px; }
+  input, button { width:100%; box-sizing:border-box; padding:12px; margin-bottom:12px; font-size:16px; border-radius:5px; border:1px solid #ccc; }
+  button { background:#dc3545; color:#fff; border:none; cursor:pointer; font-weight:bold; }
+  button:hover { background:#b02a37; }
+  button:disabled { background:#aaa; cursor:not-allowed; }
+  #status { text-align:center; margin-top:15px; font-weight:bold; white-space:pre-wrap; }
+  .info { background:#fff3cd; padding:12px; border-radius:5px; font-size:14px; margin-bottom:20px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🧹 Remove Duplicate Entries</h1>
+  <div class="info">
+    এই টুলটা আপনার Firestore-এর <b>expenses</b> এবং <b>salamis</b> ডেটা থেকে
+    হুবহু একই (item/amount/date বা year/month/date/giver/amount মিলে যাওয়া) ডুপ্লিকেট এন্ট্রি সরিয়ে দেবে।
+    একবারই চালান, বারবার চালাবেন না।
+  </div>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button id="dedupeBtn">Remove Duplicates</button>
+  <div id="status"></div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCwOhzNXM0ia2BF9XYiweQ9hlzhl5H7-l4",
+  authDomain: "expense-tracker-10592.firebaseapp.com",
+  projectId: "expense-tracker-10592",
+  storageBucket: "expense-tracker-10592.firebasestorage.app",
+  messagingSenderId: "863211273020",
+  appId: "1:863211273020:web:d79b5141274175012d3c39"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const statusEl = document.getElementById("status");
+const btn = document.getElementById("dedupeBtn");
+
+function dedupeArray(arr, keyFields) {
+  const seen = new Set();
+  const result = [];
+  for (const item of arr) {
+    const key = keyFields.map(f => String(item[f]).trim().toLowerCase()).join("|");
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(item);
+    }
+  }
+  return result;
+}
+
+btn.addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  if (!email || !password) {
+    statusEl.style.color = "red";
+    statusEl.textContent = "Email o password din।";
+    return;
+  }
+
+  btn.disabled = true;
+  statusEl.style.color = "black";
+  statusEl.textContent = "Logging in...";
+
+  try {
+    const cred = await auth.signInWithEmailAndPassword(email, password);
+    const uid = cred.user.uid;
+
+    statusEl.textContent = "Fetching current data...";
+    const docRef = db.collection("users").doc(uid);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+      statusEl.style.color = "red";
+      statusEl.textContent = "No data found for this account.";
+      btn.disabled = false;
+      return;
+    }
+
+    const data = docSnap.data();
+    const expenses = data.expenses || [];
+    const salamis = data.salamis || [];
+    const darkMode = data.darkMode || false;
+
+    const dedupedExpenses = dedupeArray(expenses, ["item", "amount", "date"]);
+    const dedupedSalamis = dedupeArray(salamis, ["year", "month", "date", "giver", "amount"]);
+
+    statusEl.textContent = "Saving cleaned data...";
+
+    await docRef.set({
+      expenses: dedupedExpenses,
+      salamis: dedupedSalamis,
+      darkMode: darkMode
+    });
+
+    statusEl.style.color = "green";
+    statusEl.textContent =
+      "✅ Done!\n" +
+      "Expenses: " + expenses.length + " → " + dedupedExpenses.length + "\n" +
+      "Bonus entries: " + salamis.length + " → " + dedupedSalamis.length +
+      "\n\nMain app-e giye refresh korun.";
+  } catch (err) {
+    statusEl.style.color = "red";
+    statusEl.textContent = "Error: " + err.message;
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
