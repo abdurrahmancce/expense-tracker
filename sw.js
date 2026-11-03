@@ -1,8 +1,13 @@
 // ─── Cache version ──────────────────────────────────────────────────────────
 // Bump ONLY when you want users to get fresh files.
 // Old cache is kept alive until the new SW fully installs — so offline never breaks.
-const CACHE_SHELL = "expense-tracker-shell-v13";
-const CACHE_CDN   = "expense-tracker-cdn-v13";
+const CACHE_SHELL = "expense-tracker-shell-v14";
+const CACHE_CDN   = "expense-tracker-cdn-v14";
+
+// This SW only handles requests under its own scope (/expense-tracker/).
+// Requests outside this scope are ignored so other apps on the same domain
+// (e.g. abdurrahmancce.github.io root) are never intercepted.
+const SW_SCOPE = "/expense-tracker/";
 
 // App shell files to pre-cache on install
 const SHELL_FILES = [
@@ -82,6 +87,15 @@ self.addEventListener("activate", e => {
 // ─── Fetch strategy ──────────────────────────────────────────────────────────
 self.addEventListener("fetch", e => {
   const url = e.request.url;
+
+  // Only handle requests within our scope — ignore everything else
+  // (prevents this SW from serving pages from other apps on the same domain)
+  try {
+    const parsed = new URL(url);
+    if(!parsed.pathname.startsWith(SW_SCOPE) && !CDN_FILES.some(f => url === f)){
+      return; // let browser handle it normally
+    }
+  } catch { return; }
 
   // Never intercept Firebase / Google API calls — always go to network
   if(

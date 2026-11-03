@@ -586,8 +586,8 @@
 
   <script>
     if("serviceWorker" in navigator){
-      // Use a relative path so it works no matter what the repo/folder is called.
-      navigator.serviceWorker.register("./sw.js").catch(err =>
+      // Register with explicit scope so root-domain SW cannot intercept our paths.
+      navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(err =>
         console.warn("SW registration failed:", err)
       );
 
