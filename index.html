@@ -311,6 +311,12 @@
 
     <!-- Add Expense Form -->
     <div class="form" id="addExpenseSection">
+      <!-- Voice input bar -->
+      <div class="voice-input-row" id="voiceInputRow">
+        <button type="button" id="voiceMicBtn" class="voice-mic-btn" title="Add expense by voice">🎤</button>
+        <span id="voiceStatusText" class="voice-status-text">Tap mic &amp; say: "Rice 50 taka"</span>
+      </div>
+      <div id="voiceTranscriptBox" class="voice-transcript-box hidden"></div>
       <input type="text" id="item" placeholder="Item Name" maxlength="200">
       <input type="number" id="amount" placeholder="Amount" min="0.01" max="99999999" step="any">
       <select id="expenseCategory"></select>
@@ -381,6 +387,7 @@
     <div class="export-main-row">
       <button id="exportPdfBtn" class="export-btn">📄 Export to PDF</button>
       <button id="exportExcelBtn" class="export-btn excel-btn">📊 Export to Excel</button>
+      <button id="driveBackupBtn" class="export-btn drive-btn" title="Backup all data to Google Drive as JSON">☁️ Drive Backup</button>
     </div>
 
     <!-- JSON Backup & Restore -->
