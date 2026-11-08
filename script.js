@@ -2274,7 +2274,7 @@ document.getElementById("exportExcelBtn").addEventListener("click", async () => 
 });
 
 document.getElementById("driveBackupBtn").addEventListener("click", () => {
-  triggerDriveBackup(false);
+  downloadBackupJSON();
 });
 
 function exportAllDataToPDF(){
@@ -4748,6 +4748,34 @@ async function _initDriveTokenClient(){
       }
     }
   });
+}
+
+function downloadBackupJSON(){
+  if(!currentUser){
+    showToast("Sign in first to backup.", "error"); return;
+  }
+  const expenses = JSON.parse(localStorage.getItem("expenses_" + currentUser.uid) || "[]");
+  const income = JSON.parse(localStorage.getItem("income_" + currentUser.uid) || "[]");
+  const budget = localStorage.getItem("monthlyBudget_" + currentUser.uid) || "";
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    user: currentUser.email,
+    monthlyBudget: budget,
+    expenses: expenses,
+    income: income
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const now = new Date();
+  const fileName = `expense-tracker-backup-${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}.json`;
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Backup downloaded: " + fileName, "success");
 }
 
 async function triggerDriveBackup(isAuto){
