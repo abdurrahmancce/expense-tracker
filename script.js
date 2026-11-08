@@ -1767,6 +1767,9 @@ function renderSummaryCard(){
       <button class="summary-share-btn" onclick="shareMonthlySummary()">📤 Share / Download Monthly Summary</button>
     </div>
   `;
+
+  // Inject spending forecast block after card renders
+  _injectForecastIntoSummary();
 }
 
 // ===========================
@@ -4652,12 +4655,8 @@ function getSpendingForecast(){
   return { totalSoFar, dailyAvg, projected, daysLeft, todayDay, daysInMonth };
 }
 
-// Patch renderSummaryCard to append forecast row after it renders
-const _origRenderSummaryCard = renderSummaryCard;
-function renderSummaryCard(){
-  _origRenderSummaryCard();
-  _injectForecastIntoSummary();
-}
+// _injectForecastIntoSummary() is called directly at the END of renderSummaryCard below.
+// (No patch/override needed — avoids infinite recursion)
 
 function _injectForecastIntoSummary(){
   const card = document.getElementById("summaryCard");
