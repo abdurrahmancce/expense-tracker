@@ -434,9 +434,6 @@ auth.onAuthStateChanged(async (user) => {
     // Load budget limit from Firestore
     loadBudgetLimit();
 
-    // Check if monthly Google Drive auto-backup is due
-    checkAutoBackup();
-
     // Live listeners — first snapshot fires quickly from Firestore offline cache
     subscribeToExpenses();
     subscribeToSalamis();
@@ -4705,51 +4702,6 @@ function _injectForecastIntoSummary(){
 // ===========================
 // Feature: Google Drive Auto-Backup
 // Uses Google Identity Services (GIS) token client
-// Backs up all expenses + income as JSON to Google Drive
-// Auto-trigger on first day of month (once per month per user)
-// ===========================
-// SETUP: Replace with your OAuth 2.0 Client ID from Google Cloud Console
-// Steps: console.cloud.google.com → APIs & Services → Credentials → Create OAuth client ID
-//        Application type: Web, Authorized JS origin: https://abdurrahmancce.github.io
-const DRIVE_BACKUP_CLIENT_ID = "164487477381-00tjnn8fk5edjbn8dr73j7bv0k8h9phu.apps.googleusercontent.com";
-const DRIVE_BACKUP_SCOPE     = "https://www.googleapis.com/auth/drive.file";
-
-let _driveTokenClient = null;
-let _driveAccessToken = null;
-let _driveBackupPending = false; // true when waiting for token to run auto-backup
-
-function _loadGisScript(){
-  return new Promise((res, rej) => {
-    if(window.google && window.google.accounts){ res(); return; }
-    const s = document.createElement("script");
-    s.src = "https://accounts.google.com/gsi/client";
-    s.onload  = res;
-    s.onerror = () => rej(new Error("Failed to load Google Identity Services"));
-    document.head.appendChild(s);
-  });
-}
-
-async function _initDriveTokenClient(){
-  if(_driveTokenClient) return;
-  await _loadGisScript();
-  _driveTokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: DRIVE_BACKUP_CLIENT_ID,
-    scope: DRIVE_BACKUP_SCOPE,
-    callback: (tokenResponse) => {
-      if(tokenResponse.error){
-        showToast("Google Drive auth failed: " + tokenResponse.error, "error");
-        _driveBackupPending = false;
-        return;
-      }
-      _driveAccessToken = tokenResponse.access_token;
-      if(_driveBackupPending){
-        _driveBackupPending = false;
-        _executeDriveBackup();
-      }
-    }
-  });
-}
-
 function downloadBackupJSON(){
   if(!currentUser){
     showToast("Sign in first to backup.", "error"); return;
@@ -4776,102 +4728,4 @@ function downloadBackupJSON(){
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   showToast("Backup downloaded: " + fileName, "success");
-}
-
-async function triggerDriveBackup(isAuto){
-  if(!currentUser){
-    showToast("Sign in first.", "error"); return;
-  }
-  if(DRIVE_BACKUP_CLIENT_ID.includes("xxxxxxxx")){
-    showToast("Google Drive not configured yet. Set up OAuth Client ID in script.js.", "error");
-    return;
-  }
-  await _initDriveTokenClient();
-  _driveBackupPending = true;
-  if(_driveAccessToken){
-    // Token already available — use it directly
-    _driveBackupPending = false;
-    await _executeDriveBackup();
-  } else {
-    // Opens Google consent popup
-    _driveTokenClient.requestAccessToken({ prompt: isAuto ? "" : "consent" });
-  }
-}
-
-async function _executeDriveBackup(){
-  if(!_driveAccessToken){ showToast("Not authenticated with Google Drive.", "error"); return; }
-
-  showLoading("Backing up to Google Drive…");
-  try {
-    const now = new Date();
-    const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
-    const filename = `expense-tracker-backup-${stamp}.json`;
-    const payload  = JSON.stringify({ exportedAt: now.toISOString(), expenses, salamis }, null, 2);
-
-    // Multipart upload: metadata + file content
-    const boundary = "expense_tracker_drive_boundary";
-    const metadata = JSON.stringify({ name: filename, mimeType: "application/json" });
-    const body = [
-      `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metadata}`,
-      `\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${payload}`,
-      `\r\n--${boundary}--`
-    ].join("");
-
-    const res = await fetch(
-      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${_driveAccessToken}`,
-          "Content-Type": `multipart/related; boundary=${boundary}`
-        },
-        body
-      }
-    );
-
-    if(!res.ok){
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `HTTP ${res.status}`);
-    }
-
-    // Mark this month's backup done in Firestore
-    if(currentUser){
-      await db.collection("users").doc(currentUser.uid)
-        .set({ lastDriveBackup: stamp }, { merge: true });
-    }
-    // Also mark in localStorage
-    localStorage.setItem("driveBackupDone_" + stamp, "1");
-
-    hideLoading();
-    showToast(`✅ Backed up to Google Drive: ${filename}`, "success");
-  } catch(err){
-    hideLoading();
-    showToast("Drive backup failed: " + err.message, "error");
-    console.error("Drive backup error:", err);
-  }
-}
-
-// Auto-trigger: on first login of each new month
-async function checkAutoBackup(){
-  if(!currentUser) return;
-  const now   = new Date();
-  const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
-
-  // Skip if already done this month (localStorage fast check)
-  if(localStorage.getItem("driveBackupDone_" + stamp) === "1") return;
-
-  try {
-    const snap = await db.collection("users").doc(currentUser.uid).get();
-    const last  = snap.exists ? (snap.data().lastDriveBackup || "") : "";
-    if(last === stamp) {
-      localStorage.setItem("driveBackupDone_" + stamp, "1");
-      return;
-    }
-  } catch(e){ return; } // fail silently if Firestore unreachable
-
-  // Auto-backup only fires on the 1st of the month
-  if(now.getDate() === 1){
-    showToast("🔄 Auto-backup to Google Drive starting…", "info");
-    setTimeout(() => triggerDriveBackup(true), 2000);
-  }
 }
