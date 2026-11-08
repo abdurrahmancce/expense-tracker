@@ -67,7 +67,8 @@ body {
 #bottomNav, .bnav-item, #networkStatus,
 .pinned-section, .pinned-chip, .category-chip,
 .trash-note, input, select, textarea,
-.export-btn, button, .auth-card {
+.export-btn, button, .auth-card, .budget-limit-bar,
+.budget-limit-input, .budget-warning-banner, .filter-date-input {
   transition:
     background var(--transition),
     background-color var(--transition),
@@ -447,6 +448,154 @@ td button:last-of-type:hover { background: var(--danger-h); }
 .filter-sort-row select:focus { border-color: var(--primary); }
 
 /* ============================================================
+   DATE RANGE FILTER ROW
+   ============================================================ */
+.filter-date-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.filter-date-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.filter-date-input {
+  flex: 1 1 130px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.filter-date-input:focus { border-color: var(--primary); }
+.filter-date-clear {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  white-space: nowrap;
+}
+.filter-date-clear:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+/* ============================================================
+   BUDGET LIMIT BAR
+   ============================================================ */
+.budget-limit-bar {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.budget-limit-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.budget-limit-input-wrap {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.budget-limit-input {
+  flex: 1 1 160px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.budget-limit-input:focus { border-color: var(--primary); }
+.budget-limit-save-btn {
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.budget-limit-save-btn:hover { opacity: 0.85; }
+.budget-limit-clear-btn {
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.budget-limit-clear-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+.budget-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.budget-progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+.budget-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease, background 0.3s ease;
+}
+.budget-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+/* Budget warning banner */
+.budget-warning-banner {
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  animation: slideDown 0.25s ease;
+}
+.budget-warning-banner.over {
+  background: rgba(220,38,38,0.1);
+  border: 1.5px solid var(--danger);
+  color: var(--danger);
+}
+.budget-warning-banner.near {
+  background: rgba(245,158,11,0.1);
+  border: 1.5px solid #f59e0b;
+  color: #b45309;
+}
+.dark-mode .budget-warning-banner.near { color: #fbbf24; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
    SEARCH INPUT
    ============================================================ */
 .search-input {
@@ -601,6 +750,20 @@ td button:last-of-type:hover { background: var(--danger-h); }
 /* ============================================================
    EXPORT BUTTONS
    ============================================================ */
+/* Main export row: PDF + Excel side by side */
+#exportPdfBtn,
+#exportExcelBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+/* Wrapper so PDF + Excel sit side by side */
+#exportPdfBtn + #exportExcelBtn {
+  /* sibling selector — handled via flex wrapper below */
+}
+
 .export-btn {
   display: block;
   width: 100%;
@@ -615,10 +778,21 @@ td button:last-of-type:hover { background: var(--danger-h); }
   color: #fff;
 }
 .export-btn { background: var(--purple); }
-.export-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.export-btn:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
 .excel-btn { background: #16a34a; }
 .json-btn    { background: #b45309; }
 .restore-btn { background: #0e7490; cursor: pointer; text-align: center; }
+
+/* Main export row: PDF + Excel side by side */
+.export-main-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 0;
+}
+.export-main-row .export-btn {
+  flex: 1;
+  margin-bottom: 10px;
+}
 
 /* Backup row — two buttons side by side */
 .backup-row {

@@ -181,6 +181,13 @@ let currentCategoryFilter = "all";
 // Current sort mode for the "All Expenses" list
 let currentExpenseSort = "date-asc";
 
+// Date range filter for "All Expenses"
+let expenseDateFrom = "";
+let expenseDateTo   = "";
+
+// Monthly budget limit (stored in Firestore + local state)
+let monthlyBudgetLimit = 0; // 0 = not set
+
 // Search & sort for the "All Bonus/Income" list
 let eidSearchQuery = "";
 let currentEidSort = "date-asc";
@@ -396,6 +403,9 @@ auth.onAuthStateChanged(async (user) => {
     // Load theme from Firestore in background (cache already applied above)
     loadThemeFromFirestore();
 
+    // Load budget limit from Firestore
+    loadBudgetLimit();
+
     // Live listeners — first snapshot fires quickly from Firestore offline cache
     subscribeToExpenses();
     subscribeToSalamis();
@@ -523,6 +533,7 @@ function subscribeToExpenses(){
         renderExpenses();
         renderMonthlyYearlyTables();
         renderSummaryCard();
+        renderBudgetBar();
         renderTop5();
         renderDowHeatmap();
       }, 200);
@@ -603,6 +614,93 @@ async function saveDarkMode(){
   if(!currentUser) return;
   await db.collection("users").doc(currentUser.uid).set({ darkMode: isDark }, { merge: true });
 }
+
+// ===========================
+// Monthly Budget Limit
+// ===========================
+async function loadBudgetLimit(){
+  if(!currentUser) return;
+  try {
+    const snap = await db.collection("users").doc(currentUser.uid).get();
+    const data = snap.exists ? snap.data() : {};
+    monthlyBudgetLimit = Number(data.monthlyBudgetLimit) || 0;
+    const inp = document.getElementById("budgetLimitInput");
+    if(inp) inp.value = monthlyBudgetLimit > 0 ? monthlyBudgetLimit : "";
+    renderBudgetBar();
+  } catch(err){ console.warn("loadBudgetLimit error:", err); }
+}
+
+async function saveBudgetLimit(val){
+  if(!currentUser) return;
+  monthlyBudgetLimit = Number(val) || 0;
+  await db.collection("users").doc(currentUser.uid)
+    .set({ monthlyBudgetLimit }, { merge: true });
+  renderBudgetBar();
+  renderSummaryCard();
+}
+
+function renderBudgetBar(){
+  const bar = document.getElementById("budgetLimitBar");
+  if(!bar) return;
+
+  // Remove old warning/progress elements
+  let existingProgress = bar.querySelector(".budget-progress-wrap");
+  if(existingProgress) existingProgress.remove();
+  let existingWarn = document.getElementById("budgetWarningBanner");
+  if(existingWarn) existingWarn.remove();
+
+  if(monthlyBudgetLimit <= 0) return;
+
+  // Current month expense
+  const now = new Date();
+  const thisYear = now.getFullYear(), thisMonth = now.getMonth();
+  const monthExpense = expenses
+    .filter(e => { const d = new Date(e.date); return d.getFullYear() === thisYear && d.getMonth() === thisMonth; })
+    .reduce((sum, e) => sum + e.amount, 0);
+
+  const pct = Math.min(100, (monthExpense / monthlyBudgetLimit) * 100);
+  const remaining = monthlyBudgetLimit - monthExpense;
+  const isOver = monthExpense > monthlyBudgetLimit;
+  const isNear = !isOver && pct >= 80;
+
+  // Progress bar
+  const color = isOver ? "var(--danger)" : isNear ? "#f59e0b" : "var(--success)";
+  const progressHtml = `
+    <div class="budget-progress-wrap">
+      <div class="budget-progress-track">
+        <div class="budget-progress-fill" style="width:${pct}%;background:${color};"></div>
+      </div>
+      <div class="budget-progress-labels">
+        <span style="color:${color};font-weight:700;">${fmt(monthExpense)} spent</span>
+        <span style="color:var(--text-muted);">Limit: ${fmt(monthlyBudgetLimit)}</span>
+      </div>
+    </div>`;
+  bar.insertAdjacentHTML("beforeend", progressHtml);
+
+  // Warning banner
+  if(isOver || isNear){
+    const banner = document.createElement("div");
+    banner.id = "budgetWarningBanner";
+    banner.className = `budget-warning-banner ${isOver ? "over" : "near"}`;
+    banner.innerHTML = isOver
+      ? `⚠️ <strong>Budget exceeded!</strong> You've spent <strong>${fmt(monthExpense)}</strong> — that's <strong>${fmt(-remaining)}</strong> over your <strong>${fmt(monthlyBudgetLimit)}</strong> limit.`
+      : `⚠️ <strong>Nearing budget limit!</strong> <strong>${fmt(remaining)}</strong> remaining out of <strong>${fmt(monthlyBudgetLimit)}</strong> (${pct.toFixed(0)}% used).`;
+    bar.insertAdjacentElement("afterend", banner);
+  }
+}
+
+document.getElementById("budgetLimitSaveBtn").addEventListener("click", async () => {
+  const val = parseFloat(document.getElementById("budgetLimitInput").value);
+  if(!val || val <= 0){ showToast("Enter a valid budget amount.", "error"); return; }
+  await saveBudgetLimit(val);
+  showToast(`Monthly budget set to ${fmt(val)}`, "success");
+});
+
+document.getElementById("budgetLimitClearBtn").addEventListener("click", async () => {
+  document.getElementById("budgetLimitInput").value = "";
+  await saveBudgetLimit(0);
+  showToast("Monthly budget limit removed.", "info");
+});
 
 // ===========================
 // Migrate old localStorage data (this device only, one-time)
@@ -1191,6 +1289,23 @@ document.getElementById("expenseSearchInput").addEventListener("input", (e) => {
   renderExpenses();
 });
 
+// Date range filter listeners
+document.getElementById("expenseDateFrom").addEventListener("change", (e) => {
+  expenseDateFrom = e.target.value;
+  renderExpenses();
+});
+document.getElementById("expenseDateTo").addEventListener("change", (e) => {
+  expenseDateTo = e.target.value;
+  renderExpenses();
+});
+document.getElementById("expenseDateClear").addEventListener("click", () => {
+  expenseDateFrom = "";
+  expenseDateTo   = "";
+  document.getElementById("expenseDateFrom").value = "";
+  document.getElementById("expenseDateTo").value   = "";
+  renderExpenses();
+});
+
 // ===========================
 // Search & Sort for Bonus/Income
 // ===========================
@@ -1398,6 +1513,9 @@ function renderExpenses(){
       if(key !== currentExpenseFilter) return false;
     }
     if(expenseSearchQuery && !e.item.toLowerCase().includes(expenseSearchQuery)) return false;
+    // Date range filter
+    if(expenseDateFrom && e.date < expenseDateFrom) return false;
+    if(expenseDateTo   && e.date > expenseDateTo)   return false;
     if(currentCategoryFilter === "__uncategorized__"){
       if(e.category) return false;
     } else if(currentCategoryFilter !== "all"){

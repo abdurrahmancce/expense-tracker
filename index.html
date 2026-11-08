@@ -299,6 +299,16 @@
       </div>
     </div>
 
+    <!-- Monthly Budget Limit -->
+    <div id="budgetLimitBar" class="budget-limit-bar">
+      <span class="budget-limit-label">📊 Monthly Budget</span>
+      <div class="budget-limit-input-wrap">
+        <input type="number" id="budgetLimitInput" class="budget-limit-input" placeholder="Set limit (optional)" min="0" step="any">
+        <button type="button" id="budgetLimitSaveBtn" class="budget-limit-save-btn">Save</button>
+        <button type="button" id="budgetLimitClearBtn" class="budget-limit-clear-btn">✕</button>
+      </div>
+    </div>
+
     <!-- Add Expense Form -->
     <div class="form" id="addExpenseSection">
       <input type="text" id="item" placeholder="Item Name" maxlength="200">
@@ -345,6 +355,13 @@
             <option value="amount-desc">Amount (Big ⇨ Small)</option>
           </select>
         </div>
+        <div class="filter-date-row">
+          <label class="filter-date-label">📅 From</label>
+          <input type="date" id="expenseDateFrom" class="filter-date-input">
+          <label class="filter-date-label">To</label>
+          <input type="date" id="expenseDateTo" class="filter-date-input">
+          <button type="button" id="expenseDateClear" class="filter-date-clear">✕ Clear</button>
+        </div>
         <div class="expense-total" id="expenseTotal"></div>
         <!-- Expense Cards (replaces table) -->
         <div class="expense-card-list" id="expenseCardList"></div>
@@ -361,8 +378,10 @@
     </div>
 
     <!-- Export All Data -->
-    <button id="exportPdfBtn" class="export-btn">📄 Export All Data to PDF</button>
-    <button id="exportExcelBtn" class="export-btn excel-btn">📊 Export All Data to Excel</button>
+    <div class="export-main-row">
+      <button id="exportPdfBtn" class="export-btn">📄 Export to PDF</button>
+      <button id="exportExcelBtn" class="export-btn excel-btn">📊 Export to Excel</button>
+    </div>
 
     <!-- JSON Backup & Restore -->
     <div class="backup-row">
