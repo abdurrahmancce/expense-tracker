@@ -188,6 +188,34 @@ let expenseDateTo   = "";
 // Monthly budget limit (stored in Firestore + local state)
 let monthlyBudgetLimit = 0; // 0 = not set
 
+// Budget threshold alert tracking — key: "budget_alert_YYYY-MM-PCT"
+function _getBudgetAlertKey(pct){
+  const now = new Date();
+  return `budget_alert_${now.getFullYear()}-${now.getMonth()+1}-${pct}`;
+}
+function _budgetAlertFired(pct){
+  return localStorage.getItem(_getBudgetAlertKey(pct)) === "1";
+}
+function _markBudgetAlertFired(pct){
+  localStorage.setItem(_getBudgetAlertKey(pct), "1");
+}
+function fireBudgetThresholdAlerts(pct){
+  if(monthlyBudgetLimit <= 0) return;
+  const thresholds = [50, 80, 100];
+  thresholds.forEach(t => {
+    if(pct >= t && !_budgetAlertFired(t)){
+      _markBudgetAlertFired(t);
+      const msgs = {
+        50:  "⚡ You've used 50% of your monthly budget!",
+        80:  "⚠️ Warning: 80% of your monthly budget used!",
+        100: "🚨 Budget limit reached! You've hit 100% of your monthly budget."
+      };
+      const types = { 50: "info", 80: "warning", 100: "error" };
+      showToast(msgs[t], types[t]);
+    }
+  });
+}
+
 // Search & sort for the "All Bonus/Income" list
 let eidSearchQuery = "";
 let currentEidSort = "date-asc";
@@ -405,6 +433,9 @@ auth.onAuthStateChanged(async (user) => {
 
     // Load budget limit from Firestore
     loadBudgetLimit();
+
+    // Check if monthly Google Drive auto-backup is due
+    checkAutoBackup();
 
     // Live listeners — first snapshot fires quickly from Firestore offline cache
     subscribeToExpenses();
@@ -658,10 +689,14 @@ function renderBudgetBar(){
     .filter(e => { const d = new Date(e.date); return d.getFullYear() === thisYear && d.getMonth() === thisMonth; })
     .reduce((sum, e) => sum + e.amount, 0);
 
-  const pct = Math.min(100, (monthExpense / monthlyBudgetLimit) * 100);
+  const rawPct = (monthExpense / monthlyBudgetLimit) * 100;
+  const pct = Math.min(100, rawPct);
   const remaining = monthlyBudgetLimit - monthExpense;
   const isOver = monthExpense > monthlyBudgetLimit;
   const isNear = !isOver && pct >= 80;
+
+  // Fire threshold alerts at 50 / 80 / 100%
+  fireBudgetThresholdAlerts(rawPct);
 
   // Progress bar
   const color = isOver ? "var(--danger)" : isNear ? "#f59e0b" : "var(--success)";
@@ -2233,6 +2268,10 @@ document.getElementById("exportExcelBtn").addEventListener("click", async () => 
   try { await loadExportLibs(); } catch(e){ hideLoading(); showToast("Failed to load Excel library. Check your connection.", "error"); return; }
   hideLoading();
   exportAllDataToExcel();
+});
+
+document.getElementById("driveBackupBtn").addEventListener("click", () => {
+  triggerDriveBackup(false);
 });
 
 function exportAllDataToPDF(){
@@ -4468,3 +4507,344 @@ function _generateSplitCard(title, total, people, share){
     loginTab.addEventListener("click",   () => tabsEl.classList.remove("signup-active"));
   }
 })();
+
+// ===========================
+// Feature: Voice Input (Web Speech API)
+// Say "Rice 50 taka" or "Transport 120" → fills Item + Amount fields
+// ===========================
+(function initVoiceInput(){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtn     = document.getElementById("voiceMicBtn");
+  const statusTxt  = document.getElementById("voiceStatusText");
+  const transcript = document.getElementById("voiceTranscriptBox");
+
+  if(!micBtn) return;
+
+  if(!SpeechRecognition){
+    micBtn.disabled = true;
+    micBtn.title = "Voice input is not supported in this browser. Use Chrome or Edge.";
+    if(statusTxt) statusTxt.textContent = "Voice not supported (use Chrome/Edge)";
+    return;
+  }
+
+  let recognition = null;
+  let listening = false;
+
+  // Parse spoken text: extract description + amount
+  // Patterns: "Rice 50 taka", "rice fifty", "transport 120 bdt", "50 rice"
+  function parseVoiceInput(text){
+    const t = text.toLowerCase().trim();
+    // Remove trailing units
+    const cleaned = t.replace(/\b(taka|bdt|tk|৳|rupee|dollar|usd|inr)\b/gi, "").trim();
+
+    // Try: words + number  ("rice 50")
+    let m = cleaned.match(/^([a-zA-Z][a-zA-Z\s]{0,40}?)\s+(\d+(?:\.\d+)?)$/);
+    if(m) return { desc: _capitalize(m[1].trim()), amount: parseFloat(m[2]) };
+
+    // Try: number + words  ("50 rice")
+    m = cleaned.match(/^(\d+(?:\.\d+)?)\s+([a-zA-Z][a-zA-Z\s]{0,40})$/);
+    if(m) return { desc: _capitalize(m[2].trim()), amount: parseFloat(m[1]) };
+
+    // Try: just a number (amount only)
+    m = cleaned.match(/^(\d+(?:\.\d+)?)$/);
+    if(m) return { desc: "", amount: parseFloat(m[1]) };
+
+    return null;
+  }
+
+  function _capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function setListening(val){
+    listening = val;
+    micBtn.classList.toggle("voice-listening", val);
+    micBtn.textContent = val ? "🛑" : "🎤";
+    if(statusTxt) statusTxt.textContent = val
+      ? "Listening… say expense (e.g. Rice 50 taka)"
+      : 'Tap mic & say: "Rice 50 taka"';
+  }
+
+  micBtn.addEventListener("click", () => {
+    if(listening){
+      recognition && recognition.stop();
+      setListening(false);
+      return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setListening(true);
+    recognition.onend   = () => setListening(false);
+    recognition.onerror = (e) => {
+      setListening(false);
+      const friendlyMsg = {
+        "not-allowed":  "Microphone permission denied. Allow mic access and try again.",
+        "no-speech":    "No speech detected. Try again.",
+        "audio-capture":"No microphone found.",
+        "network":      "Network error during voice recognition."
+      };
+      showToast(friendlyMsg[e.error] || `Voice error: ${e.error}`, "error");
+    };
+
+    recognition.onresult = (event) => {
+      const result   = event.results[event.results.length - 1];
+      const spoken   = result[0].transcript.trim();
+      const isFinal  = result.isFinal;
+
+      if(transcript){
+        transcript.textContent = `"${spoken}"`;
+        transcript.classList.remove("hidden");
+      }
+
+      if(!isFinal) return;
+
+      const parsed = parseVoiceInput(spoken);
+      if(!parsed){
+        showToast(`Could not parse: "${spoken}". Try "Rice 50 taka".`, "error");
+        return;
+      }
+
+      // Fill form fields
+      const itemEl   = document.getElementById("item");
+      const amountEl = document.getElementById("amount");
+      if(parsed.desc   && itemEl)   itemEl.value   = parsed.desc;
+      if(parsed.amount && amountEl) amountEl.value = parsed.amount;
+
+      // Auto-set today's date if empty
+      const dateEl = document.getElementById("date");
+      if(dateEl && !dateEl.value){
+        dateEl.value = new Date().toISOString().slice(0, 10);
+      }
+
+      if(transcript){
+        transcript.textContent = `✅ Filled: ${parsed.desc || "(no name)"} — ${fmt(parsed.amount)}`;
+      }
+      showToast(`Voice filled: ${parsed.desc || "amount"} = ${fmt(parsed.amount)}`, "success");
+    };
+
+    recognition.start();
+  });
+})();
+
+// ===========================
+// Feature: Spending Forecast (injected into Summary Card)
+// Projects month-end total at current daily spend pace
+// ===========================
+function getSpendingForecast(){
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const todayDay = now.getDate();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysLeft = daysInMonth - todayDay; // remaining days (excluding today)
+
+  const monthExpenses = expenses.filter(e => {
+    const d = new Date(e.date);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+  const totalSoFar = monthExpenses.reduce((s, e) => s + e.amount, 0);
+
+  if(totalSoFar === 0) return null;
+
+  const dailyAvg  = totalSoFar / todayDay;
+  const projected = totalSoFar + dailyAvg * daysLeft;
+  return { totalSoFar, dailyAvg, projected, daysLeft, todayDay, daysInMonth };
+}
+
+// Patch renderSummaryCard to append forecast row after it renders
+const _origRenderSummaryCard = renderSummaryCard;
+function renderSummaryCard(){
+  _origRenderSummaryCard();
+  _injectForecastIntoSummary();
+}
+
+function _injectForecastIntoSummary(){
+  const card = document.getElementById("summaryCard");
+  if(!card) return;
+  // Remove old forecast block
+  const old = card.querySelector(".forecast-block");
+  if(old) old.remove();
+
+  const f = getSpendingForecast();
+  if(!f) return;
+
+  const overBudget = monthlyBudgetLimit > 0 && f.projected > monthlyBudgetLimit;
+  const projColor  = overBudget ? "var(--danger)" : "var(--success)";
+  const budgetNote = monthlyBudgetLimit > 0
+    ? `<span style="color:${projColor};font-size:11px;display:block;margin-top:3px;">
+        ${overBudget
+          ? `⚠️ Projected to exceed budget by ${fmt(f.projected - monthlyBudgetLimit)}`
+          : `✅ Within budget (${fmt(monthlyBudgetLimit - f.projected)} to spare)`}
+       </span>`
+    : "";
+
+  const html = `
+    <div class="forecast-block">
+      <div class="forecast-title">📈 Month-End Forecast</div>
+      <div class="forecast-row">
+        <span class="forecast-label">Daily avg (${f.todayDay} day${f.todayDay>1?"s":""})</span>
+        <span class="forecast-val">${fmt(f.dailyAvg)}</span>
+      </div>
+      <div class="forecast-row">
+        <span class="forecast-label">Days remaining</span>
+        <span class="forecast-val">${f.daysLeft}</span>
+      </div>
+      <div class="forecast-row projected">
+        <span class="forecast-label">Projected total</span>
+        <span class="forecast-val" style="color:${projColor};font-weight:700;">${fmt(f.projected)}</span>
+      </div>
+      ${budgetNote}
+    </div>`;
+
+  // Insert before the share button
+  const shareBtn = card.querySelector(".summary-share-btn");
+  if(shareBtn) shareBtn.insertAdjacentHTML("beforebegin", html);
+  else card.querySelector(".summary-card-inner").insertAdjacentHTML("beforeend", html);
+}
+
+// ===========================
+// Feature: Google Drive Auto-Backup
+// Uses Google Identity Services (GIS) token client
+// Backs up all expenses + income as JSON to Google Drive
+// Auto-trigger on first day of month (once per month per user)
+// ===========================
+// SETUP: Replace with your OAuth 2.0 Client ID from Google Cloud Console
+// Steps: console.cloud.google.com → APIs & Services → Credentials → Create OAuth client ID
+//        Application type: Web, Authorized JS origin: https://abdurrahmancce.github.io
+const DRIVE_BACKUP_CLIENT_ID = "164487477381-00tjnn8fk5edjbn8dr73j7bv0k8h9phu.apps.googleusercontent.com";
+const DRIVE_BACKUP_SCOPE     = "https://www.googleapis.com/auth/drive.file";
+
+let _driveTokenClient = null;
+let _driveAccessToken = null;
+let _driveBackupPending = false; // true when waiting for token to run auto-backup
+
+function _loadGisScript(){
+  return new Promise((res, rej) => {
+    if(window.google && window.google.accounts){ res(); return; }
+    const s = document.createElement("script");
+    s.src = "https://accounts.google.com/gsi/client";
+    s.onload  = res;
+    s.onerror = () => rej(new Error("Failed to load Google Identity Services"));
+    document.head.appendChild(s);
+  });
+}
+
+async function _initDriveTokenClient(){
+  if(_driveTokenClient) return;
+  await _loadGisScript();
+  _driveTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: DRIVE_BACKUP_CLIENT_ID,
+    scope: DRIVE_BACKUP_SCOPE,
+    callback: (tokenResponse) => {
+      if(tokenResponse.error){
+        showToast("Google Drive auth failed: " + tokenResponse.error, "error");
+        _driveBackupPending = false;
+        return;
+      }
+      _driveAccessToken = tokenResponse.access_token;
+      if(_driveBackupPending){
+        _driveBackupPending = false;
+        _executeDriveBackup();
+      }
+    }
+  });
+}
+
+async function triggerDriveBackup(isAuto){
+  if(!currentUser){
+    showToast("Sign in first.", "error"); return;
+  }
+  if(DRIVE_BACKUP_CLIENT_ID.includes("xxxxxxxx")){
+    showToast("Google Drive not configured yet. Set up OAuth Client ID in script.js.", "error");
+    return;
+  }
+  await _initDriveTokenClient();
+  _driveBackupPending = true;
+  if(_driveAccessToken){
+    // Token already available — use it directly
+    _driveBackupPending = false;
+    await _executeDriveBackup();
+  } else {
+    // Opens Google consent popup
+    _driveTokenClient.requestAccessToken({ prompt: isAuto ? "" : "consent" });
+  }
+}
+
+async function _executeDriveBackup(){
+  if(!_driveAccessToken){ showToast("Not authenticated with Google Drive.", "error"); return; }
+
+  showLoading("Backing up to Google Drive…");
+  try {
+    const now = new Date();
+    const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+    const filename = `expense-tracker-backup-${stamp}.json`;
+    const payload  = JSON.stringify({ exportedAt: now.toISOString(), expenses, salamis }, null, 2);
+
+    // Multipart upload: metadata + file content
+    const boundary = "expense_tracker_drive_boundary";
+    const metadata = JSON.stringify({ name: filename, mimeType: "application/json" });
+    const body = [
+      `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metadata}`,
+      `\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${payload}`,
+      `\r\n--${boundary}--`
+    ].join("");
+
+    const res = await fetch(
+      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${_driveAccessToken}`,
+          "Content-Type": `multipart/related; boundary=${boundary}`
+        },
+        body
+      }
+    );
+
+    if(!res.ok){
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
+
+    // Mark this month's backup done in Firestore
+    if(currentUser){
+      await db.collection("users").doc(currentUser.uid)
+        .set({ lastDriveBackup: stamp }, { merge: true });
+    }
+    // Also mark in localStorage
+    localStorage.setItem("driveBackupDone_" + stamp, "1");
+
+    hideLoading();
+    showToast(`✅ Backed up to Google Drive: ${filename}`, "success");
+  } catch(err){
+    hideLoading();
+    showToast("Drive backup failed: " + err.message, "error");
+    console.error("Drive backup error:", err);
+  }
+}
+
+// Auto-trigger: on first login of each new month
+async function checkAutoBackup(){
+  if(!currentUser) return;
+  const now   = new Date();
+  const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+
+  // Skip if already done this month (localStorage fast check)
+  if(localStorage.getItem("driveBackupDone_" + stamp) === "1") return;
+
+  try {
+    const snap = await db.collection("users").doc(currentUser.uid).get();
+    const last  = snap.exists ? (snap.data().lastDriveBackup || "") : "";
+    if(last === stamp) {
+      localStorage.setItem("driveBackupDone_" + stamp, "1");
+      return;
+    }
+  } catch(e){ return; } // fail silently if Firestore unreachable
+
+  // Auto-backup only fires on the 1st of the month
+  if(now.getDate() === 1){
+    showToast("🔄 Auto-backup to Google Drive starting…", "info");
+    setTimeout(() => triggerDriveBackup(true), 2000);
+  }
+}
