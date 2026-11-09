@@ -109,14 +109,23 @@ function fmtPdf(amount){
 const _ESC = {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};
 function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => _ESC[c]); }
 
-function showLoading(text){
-  const overlay = document.getElementById("loadingOverlay");
-  document.getElementById("loadingText").textContent = text || "Loading...";
-  overlay.classList.remove("hidden");
+function showLoading(){
+  const bar = document.getElementById("loadingOverlay");
+  bar.classList.remove("hidden");
+  bar.style.width = "0%";
+  // Animate to 85% quickly then hold until hideLoading
+  requestAnimationFrame(() => {
+    bar.style.transition = "width .4s ease";
+    bar.style.width = "70%";
+    setTimeout(() => { bar.style.width = "85%"; }, 400);
+  });
 }
 
 function hideLoading(){
-  document.getElementById("loadingOverlay").classList.add("hidden");
+  const bar = document.getElementById("loadingOverlay");
+  bar.style.transition = "width .15s ease";
+  bar.style.width = "100%";
+  setTimeout(() => { bar.classList.add("hidden"); bar.style.width = "0%"; }, 300);
 }
 
 function showToast(message, type){
@@ -407,7 +416,7 @@ auth.onAuthStateChanged(async (user) => {
     if(cachedDark === "true") document.body.classList.add("dark-mode");
     loadThemeFromCache(user.uid); // instant theme restore
 
-    showLoading("Loading...");
+    showLoading();
 
     // Categories are served instantly from localStorage cache (if it exists),
     // then Firestore fetch runs in background inside each loader.
@@ -468,6 +477,37 @@ auth.onAuthStateChanged(async (user) => {
     hideLoading();
   }
 });
+
+// ===========================
+// Auto-logout after 1 minute away from app
+// ===========================
+(function initAutoLogout(){
+  const TIMEOUT_MS = 60 * 1000; // 1 minute
+  let _awayTimer = null;
+
+  function _startTimer(){
+    if(!currentUser) return;
+    _awayTimer = setTimeout(() => {
+      if(currentUser){
+        showToast("Logged out due to inactivity.", "info");
+        auth.signOut();
+      }
+    }, TIMEOUT_MS);
+  }
+
+  function _clearTimer(){
+    if(_awayTimer){ clearTimeout(_awayTimer); _awayTimer = null; }
+  }
+
+  // Page hidden (tab switch, minimise, lock screen)
+  document.addEventListener("visibilitychange", () => {
+    if(document.hidden){ _startTimer(); } else { _clearTimer(); }
+  });
+
+  // Window loses focus (user clicks another window)
+  window.addEventListener("blur",  () => { _startTimer(); });
+  window.addEventListener("focus", () => { _clearTimer(); });
+})();
 
 // ===========================
 // Firestore Load / Save
@@ -756,7 +796,7 @@ document.getElementById("migrateBtn").addEventListener("click", async () => {
   const confirmMsg = `Found ${oldExpenses.length} expense(s) and ${oldSalamis.length} bonus/income entry(s) saved on this device.\nWould you like to import them into your account?`;
   if(!confirm(confirmMsg)) return;
 
-  showLoading("Importing old data...");
+  showLoading();
 
   await migrateArraysToSubcollections(oldExpenses, oldSalamis);
 
@@ -1061,7 +1101,7 @@ async function renameCategory(id, oldName){
   if(!newName || !newName.trim() || newName.trim() === oldName) return;
   const trimmed = newName.trim();
 
-  showLoading("Updating category...");
+  showLoading();
 
   await userCategoriesRef().doc(id).set({ name: trimmed });
 
@@ -1089,7 +1129,7 @@ async function renameCategory(id, oldName){
 async function deleteCategory(id, name){
   if(!confirm(`Delete the category "${name}"?\n\nAll expenses under this category will become Uncategorized, but they will not be deleted.`)) return;
 
-  showLoading("Deleting category...");
+  showLoading();
 
   const affected = expenses.filter(e => e.category === name);
   for(let i=0; i<affected.length; i+=400){
@@ -1233,7 +1273,7 @@ async function renameIncomeCategory(id, oldName){
   if(!newName || !newName.trim() || newName.trim() === oldName) return;
   const trimmed = newName.trim();
 
-  showLoading("Updating income category...");
+  showLoading();
 
   await userIncomeCategoriesRef().doc(id).set({ name: trimmed });
 
@@ -1259,7 +1299,7 @@ async function renameIncomeCategory(id, oldName){
 async function deleteIncomeCategory(id, name){
   if(!confirm(`Delete the income category "${name}"?\n\nAll entries under this category will become Uncategorized, but they will not be deleted.`)) return;
 
-  showLoading("Deleting income category...");
+  showLoading();
 
   const affected = salamis.filter(s => s.incomeCategory === name);
   for(let i=0; i<affected.length; i+=400){
@@ -2186,7 +2226,7 @@ document.getElementById("restoreFileInput").addEventListener("change", async (e)
   if(!confirm(permLines.join("\n"))) return;
 
   // ── Step 5: Write new entries to Firestore in batches of 400 ─────────────
-  showLoading("Restoring backup…");
+  showLoading();
   let expOk = 0, incOk = 0;
 
   try {
@@ -2248,7 +2288,7 @@ document.getElementById("restoreFileInput").addEventListener("change", async (e)
 
 document.getElementById("exportPdfBtn").addEventListener("click", async () => {
   if(!currentUser){ showToast("Please log in first.", "error"); return; }
-  showLoading("Loading PDF library…");
+  showLoading();
   try {
     await loadExportLibs();
   } catch(e){
@@ -2256,7 +2296,7 @@ document.getElementById("exportPdfBtn").addEventListener("click", async () => {
     showToast("❌ Failed to load PDF library. Check your internet connection.", "error");
     return;
   }
-  showLoading("Generating PDF…");
+  showLoading();
   // Small delay so the loading message renders before heavy PDF work blocks the thread
   setTimeout(() => {
     hideLoading();
@@ -2264,14 +2304,10 @@ document.getElementById("exportPdfBtn").addEventListener("click", async () => {
   }, 50);
 });
 document.getElementById("exportExcelBtn").addEventListener("click", async () => {
-  showLoading("Preparing Excel…");
+  showLoading();
   try { await loadExportLibs(); } catch(e){ hideLoading(); showToast("Failed to load Excel library. Check your connection.", "error"); return; }
   hideLoading();
   exportAllDataToExcel();
-});
-
-document.getElementById("driveBackupBtn").addEventListener("click", () => {
-  downloadBackupJSON();
 });
 
 function exportAllDataToPDF(){
@@ -4697,35 +4733,4 @@ function _injectForecastIntoSummary(){
   const shareBtn = card.querySelector(".summary-share-btn");
   if(shareBtn) shareBtn.insertAdjacentHTML("beforebegin", html);
   else card.querySelector(".summary-card-inner").insertAdjacentHTML("beforeend", html);
-}
-
-// ===========================
-// Feature: Google Drive Auto-Backup
-// Uses Google Identity Services (GIS) token client
-function downloadBackupJSON(){
-  if(!currentUser){
-    showToast("Sign in first to backup.", "error"); return;
-  }
-  const expenses = JSON.parse(localStorage.getItem("expenses_" + currentUser.uid) || "[]");
-  const income = JSON.parse(localStorage.getItem("income_" + currentUser.uid) || "[]");
-  const budget = localStorage.getItem("monthlyBudget_" + currentUser.uid) || "";
-  const backup = {
-    exportedAt: new Date().toISOString(),
-    user: currentUser.email,
-    monthlyBudget: budget,
-    expenses: expenses,
-    income: income
-  };
-  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const now = new Date();
-  const fileName = `expense-tracker-backup-${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}.json`;
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast("Backup downloaded: " + fileName, "success");
 }

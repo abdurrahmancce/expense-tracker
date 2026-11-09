@@ -39,11 +39,8 @@
 </head>
 <body>
 
-  <!-- Loading overlay -->
-  <div id="loadingOverlay" class="loading-overlay hidden">
-    <div class="spinner"></div>
-    <p id="loadingText">Loading...</p>
-  </div>
+  <!-- Loading bar (slim top progress bar) -->
+  <div id="loadingOverlay" class="loading-bar hidden"></div>
 
   <!-- Feature 12: Network status banner -->
   <div id="networkStatus"></div>
@@ -387,7 +384,6 @@
     <div class="export-main-row">
       <button id="exportPdfBtn" class="export-btn">📄 Export to PDF</button>
       <button id="exportExcelBtn" class="export-btn excel-btn">📊 Export to Excel</button>
-      <button id="driveBackupBtn" class="export-btn drive-btn" title="Download all data as JSON backup file">💾 Download Backup</button>
     </div>
 
     <!-- JSON Backup & Restore -->
